@@ -7,12 +7,22 @@ def get_notion_client():
     return Client(auth=token)
 
 
-def get_events():
+def test_data_sources():
     notion = get_notion_client()
     database_id = os.environ["DATABASE_ID"]
 
-    response = notion.data_sources.query(
-        data_source_id=database_id
+    response = notion.databases.retrieve(
+        database_id=database_id
     )
 
-    return response["results"]
+    print("✅ DATABASE ENCONTRADA")
+    print("DATABASE ID:", database_id)
+
+    print("\nDATA SOURCES:")
+
+    for data_source in response.get("data_sources", []):
+        print(data_source)
+
+
+if __name__ == "__main__":
+    test_data_sources()
