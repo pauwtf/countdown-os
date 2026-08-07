@@ -22,4 +22,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Countdown OS
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          DATABASE_ID: ${{ secrets.DATABASE_ID }}
         run: python python/update.py
