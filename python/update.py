@@ -1,17 +1,22 @@
 from notion import get_events
 from event_parser import parse_events
+from countdown import get_active_event, calculate_countdown
 
 
 def main():
     events = get_events()
-
     parsed_events = parse_events(events)
 
-    print(f"Eventos encontrados: {len(parsed_events)}")
+    active_event = get_active_event(parsed_events)
 
-    for index, event in enumerate(parsed_events, start=1):
-        print(f"\n===== EVENTO {index} =====")
-        print(event)
+    if active_event is None:
+        print("No hay ningún evento activo.")
+        return
+
+    countdown = calculate_countdown(active_event)
+
+    print("===== COUNTDOWN =====")
+    print(countdown)
 
 
 if __name__ == "__main__":
