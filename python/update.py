@@ -1,5 +1,13 @@
+from notion import get_events
+
+
 def main():
-    print("🚀 Countdown OS is running!")
+    events = get_events()
+
+    print(f"Eventos encontrados: {len(events)}")
+
+    for event in events:
+        print(event["id"])
 
 
 if __name__ == "__main__":
