@@ -1,3 +1,2 @@
 notion-client
 python-dotenv
-requests
