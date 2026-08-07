@@ -41,12 +41,12 @@ jobs:
 
       - name: Check generated JSON
         run: |
-          echo "===== ARCHIVOS DATA ====="
-          ls -la data/
+          echo "===== OUTPUT FILES ====="
+          ls -la output/
 
           echo ""
           echo "===== COUNTDOWN JSON ====="
-          cat data/countdown.json
+          cat output/countdown.json
 
           echo ""
           echo "===== GIT STATUS ====="
@@ -57,7 +57,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add data/countdown.json
+          git add output/countdown.json
 
           echo "===== GIT STATUS AFTER ADD ====="
           git status
