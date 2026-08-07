@@ -9,7 +9,6 @@ def get_notion_client():
 
 def get_events():
     notion = get_notion_client()
-
     database_id = os.environ["DATABASE_ID"]
 
     response = notion.databases.query(
