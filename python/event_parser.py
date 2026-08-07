@@ -1,9 +1,9 @@
- 
 def parse_event(event):
     properties = event["properties"]
 
     title = properties["Event"]["title"]
     date = properties["Date"]["date"]
+    start_date = properties["Start Date"]["date"]
     category = properties["Category"]["select"]
     active = properties["Active"]["checkbox"]
     visible = properties["Visible"]["checkbox"]
@@ -15,6 +15,7 @@ def parse_event(event):
         "id": event["id"],
         "title": title[0]["plain_text"] if title else "",
         "date": date["start"] if date else None,
+        "start_date": start_date["start"] if start_date else None,
         "category": category["name"] if category else None,
         "active": active,
         "visible": visible,
