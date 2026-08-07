@@ -27,7 +27,7 @@ def main():
         "category": active_event["category"]
     }
 
-    output_path = Path(__file__).parent.parent / "data" / "countdown.json"
+    output_path = Path(__file__).parent.parent / "output" / "countdown.json"
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
