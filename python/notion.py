@@ -11,8 +11,8 @@ def get_events():
     notion = get_notion_client()
     database_id = os.environ["DATABASE_ID"]
 
-    response = notion.databases.query(
-        database_id=database_id
+    response = notion.data_sources.query(
+        data_source_id=database_id
     )
 
     return response["results"]
