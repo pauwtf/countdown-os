@@ -1,13 +1,8 @@
-from notion import get_events
+from notion import test_database
 
 
 def main():
-    events = get_events()
-
-    print(f"Eventos encontrados: {len(events)}")
-
-    for event in events:
-        print(event["id"])
+    test_database()
 
 
 if __name__ == "__main__":
