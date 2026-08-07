@@ -39,12 +39,28 @@ jobs:
         run: |
           python python/update.py
 
+      - name: Check generated JSON
+        run: |
+          echo "===== ARCHIVOS DATA ====="
+          ls -la data/
+
+          echo ""
+          echo "===== COUNTDOWN JSON ====="
+          cat data/countdown.json
+
+          echo ""
+          echo "===== GIT STATUS ====="
+          git status
+
       - name: Commit countdown JSON
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add data/countdown.json
+
+          echo "===== GIT STATUS AFTER ADD ====="
+          git status
 
           if git diff --cached --quiet; then
             echo "No changes to commit."
