@@ -1,23 +1,19 @@
 from notion_client import Client
-from dotenv import load_dotenv
 import os
 
-# Cargar variables de entorno
-load_dotenv()
 
-# Credenciales
-NOTION_TOKEN = os.getenv("NOTION_TOKEN")
-DATABASE_ID = os.getenv("DATABASE_ID")
-
-# Cliente de Notion
-notion = Client(auth=NOTION_TOKEN)
+def get_notion_client():
+    token = os.environ["NOTION_TOKEN"]
+    return Client(auth=token)
 
 
 def get_events():
-    """Obtiene todos los eventos de la base de datos."""
+    notion = get_notion_client()
+
+    database_id = os.environ["DATABASE_ID"]
 
     response = notion.databases.query(
-        database_id=DATABASE_ID
+        database_id=database_id
     )
 
     return response["results"]
