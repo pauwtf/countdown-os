@@ -6,8 +6,9 @@ def main():
 
     print(f"Eventos encontrados: {len(events)}")
 
-    for event in events:
-        print(event["id"])
+    for index, event in enumerate(events, start=1):
+        print(f"\n===== EVENTO {index} =====")
+        print(event["properties"])
 
 
 if __name__ == "__main__":
