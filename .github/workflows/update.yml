@@ -1,11 +1,22 @@
 name: Update Countdown
 
 on:
+  schedule:
+    - cron: "0 5 * * *"
+
   workflow_dispatch:
+
+  push:
+    paths:
+      - "python/**"
+      - ".github/workflows/update.yml"
 
 jobs:
   update:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -18,12 +29,26 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Countdown OS
+      - name: Update countdown
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           DATABASE_ID: ${{ secrets.DATABASE_ID }}
           DATA_SOURCE_ID: ${{ secrets.DATA_SOURCE_ID }}
-        run: python python/update.py
+        run: |
+          python python/update.py
+
+      - name: Commit countdown JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/countdown.json
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update countdown"
+            git push
+          fi
