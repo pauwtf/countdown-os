@@ -1,11 +1,11 @@
 {
-  "title": "UNTIL ALEX",
-  "start_date": "2026-05-18",
-  "target_date": "2026-10-05",
-  "days_remaining": 54,
-  "progress": 0.6142857142857143,
-  "category": "♥️ Love",
+  "title": "Test",
+  "start_date": "2026-08-10",
+  "target_date": "2026-08-11",
+  "days_remaining": -1,
+  "progress": 1,
+  "category": "🎉 Celebration",
   "icon": "•",
-  "status": "ACTIVE",
-  "notes": "UNTIL ALEX"
+  "status": "COMPLETED",
+  "notes": "Lalala"
 }
