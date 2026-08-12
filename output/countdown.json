@@ -1,11 +1,11 @@
 {
   "title": "Test",
   "start_date": "2026-08-10",
-  "target_date": "2026-08-11",
-  "days_remaining": -1,
-  "progress": 1,
+  "target_date": "2026-08-13",
+  "days_remaining": 1,
+  "progress": 0.6666666666666666,
   "category": "🎉 Celebration",
-  "icon": "🎂",
-  "status": "COMPLETED",
+  "icon": "♡",
+  "status": "ACTIVE",
   "notes": "Lalala"
 }
