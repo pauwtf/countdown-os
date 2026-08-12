@@ -5,6 +5,7 @@ def parse_event(event):
     date = properties["Date"]["date"]
     start_date = properties["Start Date"]["date"]
     category = properties["Category"]["select"]
+    icon = properties["Icon"]["select"]
     active = properties["Active"]["checkbox"]
     visible = properties["Visible"]["checkbox"]
     repeat = properties["Repeat"]["select"]
@@ -17,6 +18,7 @@ def parse_event(event):
         "date": date["start"] if date else None,
         "start_date": start_date["start"] if start_date else None,
         "category": category["name"] if category else None,
+        "icon": icon["name"] if icon else "",
         "active": active,
         "visible": visible,
         "repeat": repeat["name"] if repeat else None,
