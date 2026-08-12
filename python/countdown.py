@@ -1,34 +1,10 @@
 from datetime import date
 
 
-# ============================================================
-# ICON SYSTEM
-# ============================================================
-
-ICON_MAP = {
-    "birthday": "🎂",
-    "flight": "●",
-    "landing": "●",
-    "christmas": "🎄",
-    "love": "♡"
-}
-
-
-def get_icon(category):
-    """
-    Returns the icon associated with an event category.
-    """
-
-    return ICON_MAP.get(category, "•")
-
-
-# ============================================================
-# EVENT SELECTION
-# ============================================================
-
 def get_active_event(events):
     active_events = [
-        event for event in events
+        event
+        for event in events
         if event["active"]
     ]
 
@@ -37,10 +13,6 @@ def get_active_event(events):
 
     return active_events[0]
 
-
-# ============================================================
-# COUNTDOWN ENGINE
-# ============================================================
 
 def calculate_countdown(event):
     today = date.today()
@@ -75,12 +47,6 @@ def calculate_countdown(event):
         status = "COMPLETED"
 
     # --------------------------------------------------------
-    # ICON
-    # --------------------------------------------------------
-
-    icon = get_icon(event["category"])
-
-    # --------------------------------------------------------
     # RESULT
     # --------------------------------------------------------
 
@@ -91,7 +57,7 @@ def calculate_countdown(event):
         "days_remaining": days_remaining,
         "progress": progress,
         "category": event["category"],
-        "icon": icon,
+        "icon": event["icon"],
         "status": status,
         "notes": event["notes"]
     }
