@@ -7,8 +7,16 @@ from countdown import get_active_event, calculate_countdown
 
 
 def main():
+    # ========================================================
+    # GET EVENTS FROM NOTION
+    # ========================================================
+
     events = get_events()
     parsed_events = parse_events(events)
+
+    # ========================================================
+    # FIND ACTIVE EVENT
+    # ========================================================
 
     active_event = get_active_event(parsed_events)
 
@@ -16,7 +24,15 @@ def main():
         print("No hay ningún evento activo.")
         return
 
+    # ========================================================
+    # CALCULATE COUNTDOWN
+    # ========================================================
+
     countdown = calculate_countdown(active_event)
+
+    # ========================================================
+    # BUILD JSON OUTPUT
+    # ========================================================
 
     output = {
         "title": countdown["title"],
@@ -24,18 +40,55 @@ def main():
         "target_date": countdown["target_date"],
         "days_remaining": countdown["days_remaining"],
         "progress": countdown["progress"],
-        "category": active_event["category"]
+        "category": countdown["category"],
+        "icon": countdown["icon"],
+        "status": countdown["status"],
+        "notes": countdown["notes"]
     }
 
-    output_path = Path(__file__).parent.parent / "output" / "countdown.json"
+    # ========================================================
+    # OUTPUT PATH
+    # ========================================================
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path = (
+        Path(__file__).parent.parent
+        / "output"
+        / "countdown.json"
+    )
 
-    with open(output_path, "w", encoding="utf-8") as file:
-        json.dump(output, file, ensure_ascii=False, indent=2)
+    output_path.parent.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    # ========================================================
+    # WRITE JSON
+    # ========================================================
+
+    with open(
+        output_path,
+        "w",
+        encoding="utf-8"
+    ) as file:
+        json.dump(
+            output,
+            file,
+            ensure_ascii=False,
+            indent=2
+        )
+
+    # ========================================================
+    # LOG
+    # ========================================================
 
     print("✅ countdown.json generado")
-    print(json.dumps(output, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            output,
+            ensure_ascii=False,
+            indent=2
+        )
+    )
 
 
 if __name__ == "__main__":
