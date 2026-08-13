@@ -56,8 +56,5 @@ def calculate_countdown(event):
         "target_date": event["date"],
         "days_remaining": days_remaining,
         "progress": progress,
-        "category": event["category"],
-        "icon": event["icon"],
-        "status": status,
-        "notes": event["notes"]
+        "status": status
     }
