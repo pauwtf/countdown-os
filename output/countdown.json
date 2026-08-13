@@ -1,11 +1,11 @@
 {
-  "title": "Test",
-  "start_date": "2026-08-11",
-  "target_date": "2026-08-12",
-  "days_remaining": -1,
-  "progress": 1,
-  "category": "✈️ Flight",
-  "icon": "●",
-  "status": "COMPLETED",
-  "notes": "Lalala"
+  "title": "UNTIL ALEX",
+  "start_date": "2026-05-18",
+  "target_date": "2026-10-05",
+  "days_remaining": 53,
+  "progress": 0.6214285714285714,
+  "category": "♥️ Love",
+  "icon": "♡",
+  "status": "ACTIVE",
+  "notes": "UNTIL ALEX"
 }
