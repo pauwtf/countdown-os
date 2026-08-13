@@ -4,6 +4,7 @@ from pathlib import Path
 from notion import get_events
 from event_parser import parse_events
 from countdown import get_active_event, calculate_countdown
+from presentation import prepare_event
 
 
 def main():
@@ -31,20 +32,13 @@ def main():
     countdown = calculate_countdown(active_event)
 
     # ========================================================
-    # BUILD JSON OUTPUT
+    # PREPARE PRESENTATION DATA
     # ========================================================
 
-    output = {
-        "title": countdown["title"],
-        "start_date": countdown["start_date"],
-        "target_date": countdown["target_date"],
-        "days_remaining": countdown["days_remaining"],
-        "progress": countdown["progress"],
-        "category": countdown["category"],
-        "icon": countdown["icon"],
-        "status": countdown["status"],
-        "notes": countdown["notes"]
-    }
+    output = prepare_event(
+        active_event,
+        countdown
+    )
 
     # ========================================================
     # OUTPUT PATH
