@@ -8,6 +8,7 @@ from presentation import prepare_event
 
 
 def main():
+
     # ========================================================
     # GET EVENTS FROM NOTION
     # ========================================================
@@ -22,7 +23,7 @@ def main():
     active_event = get_active_event(parsed_events)
 
     if active_event is None:
-        print("No hay ningún evento activo.")
+        print("⚠️ No hay ningún evento activo.")
         return
 
     # ========================================================
@@ -64,6 +65,7 @@ def main():
         "w",
         encoding="utf-8"
     ) as file:
+
         json.dump(
             output,
             file,
@@ -76,6 +78,7 @@ def main():
     # ========================================================
 
     print("✅ countdown.json generado")
+
     print(
         json.dumps(
             output,
