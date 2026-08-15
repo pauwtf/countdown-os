@@ -1,10 +1,6 @@
 def format_title(title):
     """
-    Prepara el título para su presentación visual.
-
-    Por ahora conserva el título original.
-    La lógica de división de líneas podrá evolucionar
-    posteriormente según las necesidades del widget.
+    Prepara un título para su presentación visual.
     """
 
     if not title:
@@ -15,7 +11,7 @@ def format_title(title):
 
 def format_days(days_remaining):
     """
-    Prepara los días restantes para su presentación.
+    Prepara los días restantes para su presentación visual.
     """
 
     if days_remaining is None:
@@ -26,10 +22,8 @@ def format_days(days_remaining):
 
 def format_progress(progress):
     """
-    Prepara el progreso para su presentación visual.
-
-    Recibe un valor normalizado entre 0 y 1
-    y devuelve un porcentaje entero.
+    Convierte un progreso normalizado entre 0 y 1
+    en un porcentaje entero para presentación.
     """
 
     if progress is None:
@@ -42,7 +36,7 @@ def format_progress(progress):
 
 def format_notes(notes):
     """
-    Prepara las notas para el footer.
+    Prepara las notas para su presentación en el Footer.
     """
 
     if not notes:
@@ -51,20 +45,22 @@ def format_notes(notes):
     return notes.strip()
 
 
-def prepare_display(event, countdown):
+def prepare_display(
+    title,
+    days_remaining,
+    progress,
+    notes
+):
     """
     Genera los valores preparados para presentación visual.
+
+    Esta función no conoce el origen de los datos.
+    Solo transforma valores para la capa de UI.
     """
 
     return {
-        "titleDisplay": format_title(event["title"]),
-        "daysDisplay": format_days(
-            countdown["days_remaining"]
-        ),
-        "progressDisplay": format_progress(
-            countdown["progress"]
-        ),
-        "notesDisplay": format_notes(
-            event["notes"]
-        )
+        "titleDisplay": format_title(title),
+        "daysDisplay": format_days(days_remaining),
+        "progressDisplay": format_progress(progress),
+        "notesDisplay": format_notes(notes)
     }
