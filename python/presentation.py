@@ -11,10 +11,20 @@ def prepare_event(event, countdown):
     - valores preparados por display.py
     """
 
+    # ========================================================
+    # DISPLAY DATA
+    # ========================================================
+
     display = prepare_display(
-        event,
-        countdown
+        title=event["title"],
+        days_remaining=countdown["days_remaining"],
+        progress=countdown["progress"],
+        notes=event["notes"]
     )
+
+    # ========================================================
+    # PRESENTATION OUTPUT
+    # ========================================================
 
     return {
         # ----------------------------------------------------
