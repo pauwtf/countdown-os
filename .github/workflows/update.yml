@@ -19,17 +19,34 @@ jobs:
       contents: write
 
     steps:
+
+      # ========================================================
+      # CHECKOUT REPOSITORY
+      # ========================================================
+
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # ========================================================
+      # SET UP PYTHON
+      # ========================================================
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
+      # ========================================================
+      # INSTALL DEPENDENCIES
+      # ========================================================
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+
+      # ========================================================
+      # UPDATE COUNTDOWN
+      # ========================================================
 
       - name: Update countdown
         env:
@@ -38,6 +55,10 @@ jobs:
           DATA_SOURCE_ID: ${{ secrets.DATA_SOURCE_ID }}
         run: |
           python python/update.py
+
+      # ========================================================
+      # CHECK GENERATED JSON
+      # ========================================================
 
       - name: Check generated JSON
         run: |
@@ -51,6 +72,10 @@ jobs:
           echo ""
           echo "===== GIT STATUS ====="
           git status
+
+      # ========================================================
+      # COMMIT COUNTDOWN JSON
+      # ========================================================
 
       - name: Commit countdown JSON
         run: |
@@ -66,5 +91,10 @@ jobs:
             echo "No changes to commit."
           else
             git commit -m "Update countdown"
+
+            echo "===== SYNC WITH REMOTE ====="
+            git pull --rebase origin main
+
+            echo "===== PUSH UPDATE ====="
             git push
           fi
