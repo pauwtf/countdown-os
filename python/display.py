@@ -1,105 +1,66 @@
-def parse_event(event):
+def format_title(title):
     """
-    Convierte un evento de la API de Notion
-    en el modelo interno de Countdown OS.
+    Prepara un título para su presentación visual.
     """
 
-    properties = event["properties"]
+    if not title:
+        return ""
 
-    title = properties["Event"]["title"]
-    date = properties["Date"]["date"]
-    start_date = properties["Start Date"]["date"]
-    category = properties["Category"]["select"]
-    icon = properties["Icon"]["select"]
-    active = properties["Active"]["checkbox"]
-    visible = properties["Visible"]["checkbox"]
-    repeat = properties["Repeat"]["select"]
-    priority = properties["Priority"]["select"]
-    notes = properties["Notes"]["rich_text"]
+    return title.strip()
+
+
+def format_days(days_remaining):
+    """
+    Prepara los días restantes para su presentación visual.
+    """
+
+    if days_remaining is None:
+        return ""
+
+    return str(days_remaining)
+
+
+def format_progress(progress):
+    """
+    Convierte un progreso normalizado entre 0 y 1
+    en un porcentaje entero para presentación.
+    """
+
+    if progress is None:
+        return ""
+
+    percentage = round(progress * 100)
+
+    return f"{percentage}%"
+
+
+def format_notes(notes):
+    """
+    Prepara las notas para su presentación en el Footer.
+    """
+
+    if not notes:
+        return ""
+
+    return notes.strip()
+
+
+def prepare_display(
+    title,
+    days_remaining,
+    progress,
+    notes
+):
+    """
+    Genera los valores preparados para presentación visual.
+
+    Esta capa solamente transforma valores para su
+    presentación. No conoce Notion ni KWGT.
+    """
 
     return {
-        "id": event["id"],
-
-        # ----------------------------------------------------
-        # BASIC DATA
-        # ----------------------------------------------------
-
-        "title": (
-            title[0]["plain_text"]
-            if title
-            else ""
-        ),
-
-        "date": (
-            date["start"]
-            if date
-            else None
-        ),
-
-        "start_date": (
-            start_date["start"]
-            if start_date
-            else None
-        ),
-
-        # ----------------------------------------------------
-        # EVENT METADATA
-        # ----------------------------------------------------
-
-        "category": (
-            category["name"]
-            if category
-            else None
-        ),
-
-        "icon": (
-            icon["name"]
-            if icon
-            else ""
-        ),
-
-        # ----------------------------------------------------
-        # STATE
-        # ----------------------------------------------------
-
-        "active": active,
-        "visible": visible,
-
-        # ----------------------------------------------------
-        # CONFIGURATION
-        # ----------------------------------------------------
-
-        "repeat": (
-            repeat["name"]
-            if repeat
-            else None
-        ),
-
-        "priority": (
-            priority["name"]
-            if priority
-            else None
-        ),
-
-        # ----------------------------------------------------
-        # NOTES
-        # ----------------------------------------------------
-
-        "notes": (
-            notes[0]["plain_text"]
-            if notes
-            else ""
-        )
+        "titleDisplay": format_title(title),
+        "daysDisplay": format_days(days_remaining),
+        "progressDisplay": format_progress(progress),
+        "notesDisplay": format_notes(notes)
     }
-
-
-def parse_events(events):
-    """
-    Convierte una lista de eventos de Notion
-    en una lista de eventos internos.
-    """
-
-    return [
-        parse_event(event)
-        for event in events
-    ]
