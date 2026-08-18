@@ -11,10 +11,6 @@ def prepare_event(event, countdown):
     - valores preparados por display.py
     """
 
-    # ========================================================
-    # DISPLAY DATA
-    # ========================================================
-
     display = prepare_display(
         title=event["title"],
         days_remaining=countdown["days_remaining"],
@@ -22,18 +18,14 @@ def prepare_event(event, countdown):
         notes=event["notes"]
     )
 
-    # ========================================================
-    # PRESENTATION OUTPUT
-    # ========================================================
-
     return {
         # ----------------------------------------------------
         # CORE DATA
         # ----------------------------------------------------
 
         "title": event["title"],
-        "start_date": countdown["start_date"],
-        "target_date": countdown["target_date"],
+        "start_date": event["start_date"],
+        "target_date": event["date"],
         "days_remaining": countdown["days_remaining"],
         "progress": countdown["progress"],
 
