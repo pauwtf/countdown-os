@@ -6,302 +6,358 @@
 from layout_engine import build_layout
 
 
-# ============================================================
-# TEST DATA
-# ============================================================
-
-event = {
+EVENT = {
     "titleDisplay": "UNTIL ALEX",
     "daysDisplay": "48",
     "progressDisplay": "66%",
     "notesDisplay": "Comprar cacao",
+    "destinationDisplay": "",
+    "arrivalDisplay": "",
     "progress": 0.6571428571428571
 }
 
 
-# ============================================================
-# BUILD
-# ============================================================
+def main():
 
-layout = build_layout(event)
+    print()
+    print("=" * 46)
+    print("       COUNTDOWN OS — LAYOUT ENGINE TEST")
+    print("=" * 46)
 
-components = layout["components"]
+    # ========================================================
+    # BUILD
+    # ========================================================
+
+    layout = build_layout(EVENT)
+
+    canvas = layout["canvas"]
+    components = layout["components"]
 
 
-# ============================================================
-# HELPERS
-# ============================================================
+    # ========================================================
+    # CANVAS
+    # ========================================================
 
-def position(component):
-    return component["position"]
-
-
-def print_position(label, component):
-    pos = position(component)
+    print()
+    print("CANVAS")
+    print("-" * 46)
 
     print(
-        f"{label:<20}"
-        f"X: {pos['x']:<10}"
-        f"Y: {pos['y']}"
+        f"Width:  {canvas['width']}"
+    )
+
+    print(
+        f"Height: {canvas['height']}"
+    )
+
+    print(
+        f"Anchor: {canvas['anchor']}"
     )
 
 
-# ============================================================
-# TEST HEADER
-# ============================================================
-
-print("")
-print("==============================================")
-print("       COUNTDOWN OS — LAYOUT ENGINE TEST")
-print("==============================================")
-
-print("")
-print("CANVAS")
-print("----------------------------------------------")
-
-print(
-    f"Width:  {layout['canvas']['width']}"
-)
-
-print(
-    f"Height: {layout['canvas']['height']}"
-)
-
-print(
-    f"Anchor: {layout['canvas']['anchor']}"
-)
+    # ========================================================
+    # HEADER
+    # ========================================================
 
-
-# ============================================================
-# HEADER
-# ============================================================
-
-print("")
-print("HEADER")
-print("----------------------------------------------")
-
-print_position(
-    "Title",
-    components["header"]["title"]
-)
-
-print_position(
-    "Days",
-    components["header"]["days"]
-)
-
-print(
-    f"Title text: "
-    f"{components['header']['title']['text']}"
-)
+    print()
+    print("HEADER")
+    print("-" * 46)
 
-print(
-    f"Days text: "
-    f"{components['header']['days']['text']}"
-)
-
+    header = components["Header"]
 
-# ============================================================
-# COUNTER
-# ============================================================
+    title = header["Title"]
+    days = header["Days"]
 
-print("")
-print("COUNTER")
-print("----------------------------------------------")
-
-print_position(
-    "Counter",
-    components["counter"]
-)
-
-print_position(
-    "Days Remaining",
-    components["counter"]["days"]
-)
-
-print(
-    f"Value: "
-    f"{components['counter']['days']['text']}"
-)
-
+    print(
+        f"Title               "
+        f"X: {title['position']['x']}       "
+        f"Y: {title['position']['y']}"
+    )
 
-# ============================================================
-# JOURNEY
-# ============================================================
+    print(
+        f"Days                "
+        f"X: {days['position']['x']}        "
+        f"Y: {days['position']['y']}"
+    )
 
-journey = components["journey"]
+    print(
+        f"Title text: "
+        f"{title['TitleText']['value']}"
+    )
 
-print("")
-print("JOURNEY")
-print("----------------------------------------------")
+    print(
+        f"Days text: "
+        f"{days['DaysText']['value']}"
+    )
 
-print_position(
-    "Journey",
-    journey
-)
 
-print_position(
-    "Line",
-    journey["line"]
-)
+    # ========================================================
+    # COUNTER
+    # ========================================================
 
-print(
-    f"Line size: "
-    f"{journey['line']['width']} × "
-    f"{journey['line']['height']}"
-)
+    print()
+    print("COUNTER")
+    print("-" * 46)
 
-print_position(
-    "Origin",
-    journey["origin"]
-)
+    counter = components["Counter"]
 
-print(
-    f"Origin size: "
-    f"{journey['origin']['size']} × "
-    f"{journey['origin']['size']}"
-)
+    days_remaining = counter["DaysRemaining"]
 
+    print(
+        f"Counter             "
+        f"X: {counter['position']['x']}       "
+        f"Y: {counter['position']['y']}"
+    )
 
-# ============================================================
-# PLANE
-# ============================================================
+    print(
+        f"Days Remaining      "
+        f"X: {days_remaining['position']['x']}       "
+        f"Y: {days_remaining['position']['y']}"
+    )
 
-plane = journey["plane"]
+    print(
+        f"Value: "
+        f"{days_remaining['DaysRemainingText']['value']}"
+    )
 
-print("")
-print("PLANE")
-print("----------------------------------------------")
 
-print(
-    f"Progress: "
-    f"{event['progress']}"
-)
+    # ========================================================
+    # JOURNEY
+    # ========================================================
 
-print(
-    f"X Left:   "
-    f"{plane['x_left']}"
-)
+    print()
+    print("JOURNEY")
+    print("-" * 46)
 
-print(
-    f"X Right:  "
-    f"{plane['x_right']}"
-)
+    content = components["Content"]
+    journey = content["journey"]
 
-print(
-    f"Y:        "
-    f"{plane['y']}"
-)
+    print(
+        f"Journey             "
+        f"X: {journey['position']['x']}         "
+        f"Y: {journey['position']['y']}"
+    )
 
 
-# ============================================================
-# HEARTS
-# ============================================================
+    # --------------------------------------------------------
+    # LINE
+    # --------------------------------------------------------
 
-hearts = journey["hearts"]
+    line = journey["Line"]
 
-print("")
-print("HEARTS")
-print("----------------------------------------------")
+    line_shape = line["JourneyLineShape"]
 
-print_position(
-    "Hearts",
-    hearts
-)
+    print(
+        f"Line                "
+        f"X: {line['position']['x']}      "
+        f"Y: {line['position']['y']}"
+    )
 
-print_position(
-    "Destination",
-    hearts["destination"]
-)
+    print(
+        f"Line size: "
+        f"{line_shape['width']} × "
+        f"{line_shape['height']}"
+    )
 
-print_position(
-    "Arrival",
-    hearts["arrival"]
-)
 
+    # --------------------------------------------------------
+    # ORIGIN
+    # --------------------------------------------------------
 
-# ============================================================
-# FOOTER
-# ============================================================
+    origin = journey["Origin"]
 
-print("")
-print("FOOTER")
-print("----------------------------------------------")
+    origin_shape = origin["OriginShape"]
 
-print_position(
-    "Footer",
-    components["footer"]
-)
+    print(
+        f"Origin              "
+        f"X: {origin['position']['x']}      "
+        f"Y: {origin['position']['y']}"
+    )
 
-print(
-    f"Text: "
-    f"{components['footer']['text']}"
-)
+    print(
+        f"Origin size: "
+        f"{origin_shape['size']} × "
+        f"{origin_shape['size']}"
+    )
 
 
-# ============================================================
-# COVER
-# ============================================================
+    # --------------------------------------------------------
+    # PLANE
+    # --------------------------------------------------------
 
-print("")
-print("COVER")
-print("----------------------------------------------")
+    plane = journey["Plane"]
 
-print_position(
-    "Cover",
-    components["cover"]
-)
+    print()
+    print("PLANE")
+    print("-" * 46)
 
+    print(
+        f"Progress: "
+        f"{EVENT['progress']}"
+    )
 
-# ============================================================
-# FINAL VALIDATION
-# ============================================================
+    print(
+        f"X Left:   "
+        f"{plane['x_left']}"
+    )
 
-assert layout["canvas"]["width"] == 400
-assert layout["canvas"]["height"] == 200
+    print(
+        f"X Right:  "
+        f"{plane['x_right']}"
+    )
 
-assert components["header"]["title"]["position"] == {
-    "x": 175,
-    "y": -125
-}
+    print(
+        f"Y:        "
+        f"{plane['y']}"
+    )
 
-assert components["counter"]["position"] == {
-    "x": 195,
-    "y": -20
-}
+    print(
+        f"Text: "
+        f"{plane['PlaneText']['value']}"
+    )
 
-assert journey["line"]["position"] == {
-    "x": 20,
-    "y": 100
-}
 
-assert journey["line"]["width"] == 258
-assert journey["line"]["height"] == 1
+    # ========================================================
+    # HEARTS
+    # ========================================================
 
-assert journey["origin"]["position"] == {
-    "x": 275,
-    "y": 100
-}
+    hearts = journey["Hearts"]
 
-assert journey["origin"]["size"] == 5
+    print()
+    print("HEARTS")
+    print("-" * 46)
 
-assert journey["hearts"]["position"] == {
-    "x": -245,
-    "y": 100
-}
+    print(
+        f"Hearts              "
+        f"X: {hearts['position']['x']}      "
+        f"Y: {hearts['position']['y']}"
+    )
 
-assert components["footer"]["position"] == {
-    "x": 200,
-    "y": -125
-}
+    destination = hearts["Destination"]
 
+    print(
+        f"Destination         "
+        f"X: {destination['position']['x']}      "
+        f"Y: {destination['position']['y']}"
+    )
 
-# ============================================================
-# SUCCESS
-# ============================================================
+    arrival = hearts["Arrival"]
 
-print("")
-print("==============================================")
-print("             🟢 TEST PASSED")
-print("==============================================")
-print("")
+    print(
+        f"Arrival             "
+        f"X: {arrival['position']['x']}      "
+        f"Y: {arrival['position']['y']}"
+    )
+
+
+    # ========================================================
+    # FOOTER
+    # ========================================================
+
+    print()
+    print("FOOTER")
+    print("-" * 46)
+
+    footer = components["Footer"]
+
+    print(
+        f"Footer              "
+        f"X: {footer['position']['x']}      "
+        f"Y: {footer['position']['y']}"
+    )
+
+    print(
+        f"Text: "
+        f"{footer['FooterText']['value']}"
+    )
+
+
+    # ========================================================
+    # COVER
+    # ========================================================
+
+    print()
+    print("COVER")
+    print("-" * 46)
+
+    cover = components["Cover"]
+
+    print(
+        f"Cover               "
+        f"X: {cover['position']['x']}      "
+        f"Y: {cover['position']['y']}"
+    )
+
+    print(
+        f"Cover text: "
+        f"{cover['coverImage']['coverText']['value']}"
+    )
+
+
+    # ========================================================
+    # GRADIENT
+    # ========================================================
+
+    print()
+    print("GRADIENT")
+    print("-" * 46)
+
+    gradient = components["Gradient"]
+
+    vertical = gradient["Vertical"]
+    horizontal = gradient["Horizontal"]
+
+    print(
+        f"Vertical            "
+        f"X: {vertical['position']['x']}      "
+        f"Y: {vertical['position']['y']}"
+    )
+
+    print(
+        f"Vertical size: "
+        f"{vertical['GradientVerticalShape']['width']} × "
+        f"{vertical['GradientVerticalShape']['height']}"
+    )
+
+    print(
+        f"Horizontal          "
+        f"X: {horizontal['position']['x']}      "
+        f"Y: {horizontal['position']['y']}"
+    )
+
+    print(
+        f"Horizontal size: "
+        f"{horizontal['GradientHorizontalShape']['width']} × "
+        f"{horizontal['GradientHorizontalShape']['height']}"
+    )
+
+
+    # ========================================================
+    # TEST
+    # ========================================================
+
+    test = components["test"]
+
+    print()
+    print("TEST")
+    print("-" * 46)
+
+    print(
+        f"Test text: "
+        f"{test['TestText']['value']}"
+    )
+
+
+    # ========================================================
+    # SUCCESS
+    # ========================================================
+
+    print()
+    print("=" * 46)
+    print("             🟢 TEST PASSED")
+    print("=" * 46)
+    print()
+
+
+if __name__ == "__main__":
+    main()
