@@ -9,22 +9,50 @@ jobs:
 
     steps:
 
+      # ========================================================
+      # CHECKOUT REPOSITORY
+      # ========================================================
+
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # ========================================================
+      # SET UP PYTHON
+      # ========================================================
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
+      # ========================================================
+      # LAYOUT ENGINE TEST
+      # ========================================================
+
       - name: Run Layout Engine Test
         run: |
           python python/layout_test.py
+
+      # ========================================================
+      # PROGRESS BOUNDARY TEST
+      # ========================================================
 
       - name: Run Progress Boundary Test
         run: |
           python python/layout_progress_test.py
 
+      # ========================================================
+      # LAYOUT CONTRACT TEST
+      # ========================================================
+
       - name: Run Layout Contract Test
         run: |
           python python/layout_contract_test.py
+
+      # ========================================================
+      # KWGT COORDINATE ADAPTER TEST
+      # ========================================================
+
+      - name: Run KWGT Coordinate Adapter Test
+        run: |
+          python python/kwgt_coordinate_adapter_test.py
