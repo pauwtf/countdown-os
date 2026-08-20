@@ -1,86 +1,16 @@
-from copy import deepcopy
-
-
 # ============================================================
-# CANVAS
+# COUNTDOWN OS — LAYOUT ENGINE
+# Version: 1.2 Elegance
 # ============================================================
 
-CANVAS = {
-    "width": 400,
-    "height": 200,
-    "anchor": "center"
-}
-
-
-# ============================================================
-# LAYOUT TOKENS
-# ============================================================
-
-LAYOUT_TOKENS = {
-    "header": {
-        "title": {
-            "x": 175,
-            "y": -125,
-            "font_size": 18
-        },
-        "days": {
-            "x": 50,
-            "y": 21,
-            "font_size": 15
-        }
-    },
-
-    "counter": {
-        "x": 195,
-        "y": -20,
-        "days": {
-            "x": 0,
-            "y": 0,
-            "font_size": 100
-        }
-    },
-
-    "journey": {
-        "x": 0,
-        "y": 0,
-
-        "line": {
-            "x": 20,
-            "y": 100,
-            "width": 258,
-            "height": 1
-        },
-
-        "origin": {
-            "x": 275,
-            "y": 100,
-            "size": 5
-        },
-
-        "plane": {
-            "x_right": 275,
-            "y": 93,
-            "travel": 520,
-            "font_size": 30
-        },
-
-        "hearts": {
-            "x": -245,
-            "y": 100
-        }
-    },
-
-    "footer": {
-        "x": 200,
-        "y": -125,
-        "font_size": 10
-    },
-
-    "cover": {
-        "x": -300,
-        "font_size": 240
-    }
-}
+from layout_tokens import (
+    CANVAS,
+    HEADER,
+    COUNTER,
+    JOURNEY,
+    FOOTER,
+    COVER
+)
 
 
 # ============================================================
@@ -89,8 +19,10 @@ LAYOUT_TOKENS = {
 
 def resolve_position(parent_position, local_position):
     """
-    Resuelve la posición absoluta de un elemento
-    a partir de la posición de su padre y su offset local.
+    Resuelve la posición de un elemento hijo.
+
+    Child Position =
+    Parent Position + Local Offset
     """
 
     parent_x, parent_y = parent_position
@@ -103,122 +35,189 @@ def resolve_position(parent_position, local_position):
 
 
 # ============================================================
+# PROGRESS NORMALIZATION
+# ============================================================
+
+def normalize_progress(progress):
+    """
+    Garantiza que progress esté entre 0 y 1.
+    """
+
+    if progress is None:
+        return 0
+
+    return max(0, min(progress, 1))
+
+
+# ============================================================
 # PLANE POSITION
 # ============================================================
 
 def resolve_plane_position(progress):
     """
-    Convierte progress (0 → 1) en una posición X
-    para el Plane.
+    Convierte progress en posición horizontal del Plane.
     """
 
-    if progress is None:
-        progress = 0
+    progress = normalize_progress(progress)
 
-    progress = max(0, min(progress, 1))
+    plane = JOURNEY["plane"]
 
-    travel = LAYOUT_TOKENS["journey"]["plane"]["travel"]
+    x_left = plane["travel"] * progress
 
     return {
-        "x_left": travel * progress,
-        "x_right": LAYOUT_TOKENS["journey"]["plane"]["x_right"],
-        "y": LAYOUT_TOKENS["journey"]["plane"]["y"]
+        "x_left": x_left,
+        "x_right": plane["x_right"],
+        "y": plane["y"]
     }
 
 
 # ============================================================
-# BUILD LAYOUT
+# LAYOUT BUILDER
 # ============================================================
 
 def build_layout(event):
     """
-    Construye la geometría resuelta del widget.
+    Construye la geometría resuelta de Countdown OS.
 
     Recibe datos preparados por Presentation/Display.
     """
 
     layout = {
-        "canvas": deepcopy(CANVAS),
+        "canvas": {
+            "width": CANVAS["width"],
+            "height": CANVAS["height"],
+            "anchor": CANVAS["anchor"]
+        },
+
         "components": {}
     }
 
-    # --------------------------------------------------------
+    # ========================================================
     # HEADER
-    # --------------------------------------------------------
+    # ========================================================
 
     layout["components"]["header"] = {
+
         "title": {
             "position": {
-                "x": LAYOUT_TOKENS["header"]["title"]["x"],
-                "y": LAYOUT_TOKENS["header"]["title"]["y"]
+                "x": HEADER["title"]["x"],
+                "y": HEADER["title"]["y"]
             },
-            "font_size": LAYOUT_TOKENS["header"]["title"]["font_size"],
-            "text": event.get("titleDisplay", "")
+
+            "font_size": HEADER["title"]["font_size"],
+
+            "text": event.get(
+                "titleDisplay",
+                ""
+            )
         },
 
         "days": {
             "position": {
-                "x": LAYOUT_TOKENS["header"]["days"]["x"],
-                "y": LAYOUT_TOKENS["header"]["days"]["y"]
+                "x": HEADER["days"]["x"],
+                "y": HEADER["days"]["y"]
             },
-            "font_size": LAYOUT_TOKENS["header"]["days"]["font_size"],
+
+            "font_size": HEADER["days"]["font_size"],
+
             "text": "days"
         }
     }
 
-    # --------------------------------------------------------
+    # ========================================================
     # COUNTER
-    # --------------------------------------------------------
+    # ========================================================
 
     counter_position = {
-        "x": LAYOUT_TOKENS["counter"]["x"],
-        "y": LAYOUT_TOKENS["counter"]["y"]
+        "x": COUNTER["x"],
+        "y": COUNTER["y"]
     }
 
+    days_position = resolve_position(
+        counter_position,
+        (
+            COUNTER["days"]["x"],
+            COUNTER["days"]["y"]
+        )
+    )
+
     layout["components"]["counter"] = {
+
         "position": counter_position,
+
         "days": {
-            "position": {
-                "x": counter_position["x"],
-                "y": counter_position["y"]
-            },
-            "font_size": LAYOUT_TOKENS["counter"]["days"]["font_size"],
-            "text": event.get("daysDisplay", "")
+            "position": days_position,
+
+            "font_size": COUNTER["days"]["font_size"],
+
+            "text": event.get(
+                "daysDisplay",
+                ""
+            )
         }
     }
 
-    # --------------------------------------------------------
+    # ========================================================
     # JOURNEY
-    # --------------------------------------------------------
+    # ========================================================
 
     journey_position = {
-        "x": LAYOUT_TOKENS["journey"]["x"],
-        "y": LAYOUT_TOKENS["journey"]["y"]
+        "x": JOURNEY["x"],
+        "y": JOURNEY["y"]
     }
 
-    line = LAYOUT_TOKENS["journey"]["line"]
+    line = JOURNEY["line"]
 
-    origin = LAYOUT_TOKENS["journey"]["origin"]
+    origin = JOURNEY["origin"]
 
-    hearts = LAYOUT_TOKENS["journey"]["hearts"]
+    hearts = JOURNEY["hearts"]
+
+    line_position = resolve_position(
+        journey_position,
+        (
+            line["x"],
+            line["y"]
+        )
+    )
+
+    origin_position = resolve_position(
+        journey_position,
+        (
+            origin["x"],
+            origin["y"]
+        )
+    )
+
+    hearts_position = resolve_position(
+        journey_position,
+        (
+            hearts["x"],
+            hearts["y"]
+        )
+    )
+
+    destination_position = resolve_position(
+        hearts_position,
+        (0, 0)
+    )
+
+    arrival_position = resolve_position(
+        hearts_position,
+        (0, 0)
+    )
 
     layout["components"]["journey"] = {
+
         "position": journey_position,
 
         "line": {
-            "position": resolve_position(
-                journey_position,
-                (line["x"], line["y"])
-            ),
+            "position": line_position,
             "width": line["width"],
             "height": line["height"]
         },
 
         "origin": {
-            "position": resolve_position(
-                journey_position,
-                (origin["x"], origin["y"])
-            ),
+            "position": origin_position,
             "size": origin["size"]
         },
 
@@ -227,49 +226,49 @@ def build_layout(event):
         ),
 
         "hearts": {
-            "position": resolve_position(
-                journey_position,
-                (hearts["x"], hearts["y"])
-            ),
+            "position": hearts_position,
 
             "destination": {
-                "position": {
-                    "x": resolve_position(
-                        journey_position,
-                        (hearts["x"], hearts["y"])
-                    )["x"],
-                    "y": resolve_position(
-                        journey_position,
-                        (hearts["x"], hearts["y"])
-                    )["y"]
-                }
+                "position": destination_position
+            },
+
+            "arrival": {
+                "position": arrival_position
             }
         }
     }
 
-    # --------------------------------------------------------
+    # ========================================================
     # FOOTER
-    # --------------------------------------------------------
+    # ========================================================
 
     layout["components"]["footer"] = {
+
         "position": {
-            "x": LAYOUT_TOKENS["footer"]["x"],
-            "y": LAYOUT_TOKENS["footer"]["y"]
+            "x": FOOTER["x"],
+            "y": FOOTER["y"]
         },
-        "font_size": LAYOUT_TOKENS["footer"]["font_size"],
-        "text": event.get("notesDisplay", "")
+
+        "font_size": FOOTER["font_size"],
+
+        "text": event.get(
+            "notesDisplay",
+            ""
+        )
     }
 
-    # --------------------------------------------------------
+    # ========================================================
     # COVER
-    # --------------------------------------------------------
+    # ========================================================
 
     layout["components"]["cover"] = {
+
         "position": {
-            "x": LAYOUT_TOKENS["cover"]["x"],
+            "x": COVER["x"],
             "y": 0
         },
-        "font_size": LAYOUT_TOKENS["cover"]["font_size"]
+
+        "font_size": COVER["font_size"]
     }
 
     return layout
