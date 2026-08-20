@@ -28,6 +28,28 @@ def resolve_position(parent_position, local_position):
     parent_x, parent_y = parent_position
     local_x, local_y = local_position
 
+    # --------------------------------------------------------
+    # Ensure numeric coordinates
+    # --------------------------------------------------------
+
+    try:
+        parent_x = float(parent_x)
+        parent_y = float(parent_y)
+
+        local_x = float(local_x)
+        local_y = float(local_y)
+
+    except (TypeError, ValueError) as error:
+        raise TypeError(
+            "Layout coordinates must be numeric. "
+            f"Received parent={parent_position}, "
+            f"local={local_position}"
+        ) from error
+
+    # --------------------------------------------------------
+    # Resolve
+    # --------------------------------------------------------
+
     return {
         "x": parent_x + local_x,
         "y": parent_y + local_y
@@ -44,9 +66,17 @@ def normalize_progress(progress):
     """
 
     if progress is None:
-        return 0
+        return 0.0
 
-    return max(0, min(progress, 1))
+    try:
+        progress = float(progress)
+
+    except (TypeError, ValueError) as error:
+        raise TypeError(
+            f"Progress must be numeric. Received: {progress}"
+        ) from error
+
+    return max(0.0, min(progress, 1.0))
 
 
 # ============================================================
@@ -134,7 +164,10 @@ def build_layout(event):
     }
 
     days_position = resolve_position(
-        counter_position,
+        (
+            counter_position["x"],
+            counter_position["y"]
+        ),
         (
             COUNTER["days"]["x"],
             COUNTER["days"]["y"]
@@ -166,45 +199,80 @@ def build_layout(event):
         "y": JOURNEY["y"]
     }
 
+    journey_origin = (
+        journey_position["x"],
+        journey_position["y"]
+    )
+
+    # --------------------------------------------------------
+    # LINE
+    # --------------------------------------------------------
+
     line = JOURNEY["line"]
 
-    origin = JOURNEY["origin"]
-
-    hearts = JOURNEY["hearts"]
-
     line_position = resolve_position(
-        journey_position,
+        journey_origin,
         (
             line["x"],
             line["y"]
         )
     )
 
+    # --------------------------------------------------------
+    # ORIGIN
+    # --------------------------------------------------------
+
+    origin = JOURNEY["origin"]
+
     origin_position = resolve_position(
-        journey_position,
+        journey_origin,
         (
             origin["x"],
             origin["y"]
         )
     )
 
+    # --------------------------------------------------------
+    # HEARTS
+    # --------------------------------------------------------
+
+    hearts = JOURNEY["hearts"]
+
     hearts_position = resolve_position(
-        journey_position,
+        journey_origin,
         (
             hearts["x"],
             hearts["y"]
         )
     )
 
+    # --------------------------------------------------------
+    # DESTINATION
+    # --------------------------------------------------------
+
     destination_position = resolve_position(
-        hearts_position,
+        (
+            hearts_position["x"],
+            hearts_position["y"]
+        ),
         (0, 0)
     )
 
+    # --------------------------------------------------------
+    # ARRIVAL
+    # --------------------------------------------------------
+
     arrival_position = resolve_position(
-        hearts_position,
+        (
+            hearts_position["x"],
+            hearts_position["y"]
+        ),
         (0, 0)
     )
+
+    # --------------------------------------------------------
+    # JOURNEY RESULT
+    # --------------------------------------------------------
 
     layout["components"]["journey"] = {
 
