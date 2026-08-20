@@ -20,3 +20,7 @@ jobs:
       - name: Run Layout Engine Test
         run: |
           python python/layout_test.py
+
+      - name: Run Progress Boundary Test
+        run: |
+          python python/layout_progress_test.py
