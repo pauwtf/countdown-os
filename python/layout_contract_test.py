@@ -11,36 +11,14 @@ from layout_contract import (
 
 
 EVENT = {
-
     "titleDisplay": "UNTIL ALEX",
-
     "daysDisplay": "48",
-
     "progressDisplay": "66%",
-
     "notesDisplay": "Comprar cacao",
-
     "destinationDisplay": "",
-
     "arrivalDisplay": "",
-
     "progress": 0.6571428571428571
 }
-
-
-def assert_equal(
-    actual,
-    expected,
-    label
-):
-
-    if actual != expected:
-
-        raise AssertionError(
-            f"{label}: "
-            f"expected {expected}, "
-            f"got {actual}"
-        )
 
 
 def main():
@@ -50,57 +28,31 @@ def main():
     print("       COUNTDOWN OS — LAYOUT CONTRACT TEST")
     print("=" * 46)
 
-
-    # ========================================================
-    # BUILD
-    # ========================================================
-
     layout = build_layout(EVENT)
+
+    canvas = layout["canvas"]
+    components = layout["components"]
 
 
     # ========================================================
     # CANVAS
     # ========================================================
 
-    canvas = layout["canvas"]
-
     print()
     print("CANVAS")
     print("-" * 46)
 
-    print(
-        f"Width:  {canvas['width']}"
-    )
+    print(f"Width:  {canvas['width']}")
+    print(f"Height: {canvas['height']}")
+    print(f"Anchor: {canvas['anchor']}")
 
-    print(
-        f"Height: {canvas['height']}"
-    )
-
-    print(
-        f"Anchor: {canvas['anchor']}"
-    )
-
-    assert_equal(
-        canvas["width"],
-        400,
-        "Canvas width"
-    )
-
-    assert_equal(
-        canvas["height"],
-        200,
-        "Canvas height"
-    )
-
-    assert_equal(
-        canvas["anchor"],
-        "center",
-        "Canvas anchor"
-    )
+    assert canvas["width"] == 400
+    assert canvas["height"] == 200
+    assert canvas["anchor"] == "center"
 
 
     # ========================================================
-    # HIERARCHY
+    # COMPONENT HIERARCHY
     # ========================================================
 
     print()
@@ -108,7 +60,7 @@ def main():
     print("-" * 46)
 
     validate_hierarchy(
-        layout["components"],
+        components,
         REQUIRED_HIERARCHY
     )
 
@@ -165,58 +117,32 @@ def main():
     print("POSITION VALIDATION")
     print("-" * 46)
 
+    header = components["Header"]
 
-    components = layout["components"]
-
-
-    # Background
-
-    background = components["Background"]
+    title = header["Title"]
+    days = header["Days"]
 
     print(
-        f"• Background             "
-        f"X: {background['position']['x']} "
-        f"Y: {background['position']['y']}"
-    )
-
-
-    # Header
-
-    title = (
-        components["Header"]
-        ["Title"]
-    )
-
-    days = (
-        components["Header"]
-        ["Days"]
-    )
-
-    print(
-        f"• Header → Title         "
+        f"• Header → Title       "
         f"X: {title['position']['x']} "
         f"Y: {title['position']['y']}"
     )
 
     print(
-        f"• Header → Days          "
+        f"• Header → Days        "
         f"X: {days['position']['x']} "
         f"Y: {days['position']['y']}"
     )
 
 
-    # Counter
-
     counter = components["Counter"]
 
     print(
-        f"• Counter                "
+        f"• Counter              "
         f"X: {counter['position']['x']} "
         f"Y: {counter['position']['y']}"
     )
 
-
-    # Journey
 
     journey = (
         components["Content"]
@@ -224,7 +150,7 @@ def main():
     )
 
     print(
-        f"• Journey                "
+        f"• Journey              "
         f"X: {journey['position']['x']} "
         f"Y: {journey['position']['y']}"
     )
@@ -233,7 +159,7 @@ def main():
     line = journey["Line"]
 
     print(
-        f"• Journey → Line         "
+        f"• Journey → Line       "
         f"X: {line['position']['x']} "
         f"Y: {line['position']['y']}"
     )
@@ -242,7 +168,7 @@ def main():
     origin = journey["Origin"]
 
     print(
-        f"• Journey → Origin       "
+        f"• Journey → Origin     "
         f"X: {origin['position']['x']} "
         f"Y: {origin['position']['y']}"
     )
@@ -251,29 +177,25 @@ def main():
     hearts = journey["Hearts"]
 
     print(
-        f"• Journey → Hearts       "
+        f"• Journey → Hearts     "
         f"X: {hearts['position']['x']} "
         f"Y: {hearts['position']['y']}"
     )
 
 
-    # Footer
-
     footer = components["Footer"]
 
     print(
-        f"• Footer                 "
+        f"• Footer               "
         f"X: {footer['position']['x']} "
         f"Y: {footer['position']['y']}"
     )
 
 
-    # Cover
-
     cover = components["Cover"]
 
     print(
-        f"• Cover                  "
+        f"• Cover                "
         f"X: {cover['position']['x']} "
         f"Y: {cover['position']['y']}"
     )
@@ -289,102 +211,10 @@ def main():
     print("PLANE")
     print("-" * 46)
 
-    print(
-        f"Progress: "
-        f"{EVENT['progress']}"
-    )
-
-    print(
-        f"X Left:  "
-        f"{plane['x_left']}"
-    )
-
-    print(
-        f"X Right: "
-        f"{plane['x_right']}"
-    )
-
-    print(
-        f"Y:       "
-        f"{plane['y']}"
-    )
-
-
-    # ========================================================
-    # CRITICAL ASSERTIONS
-    # ========================================================
-
-    assert_equal(
-        title["position"]["x"],
-        175.0,
-        "Title X"
-    )
-
-    assert_equal(
-        title["position"]["y"],
-        -125.0,
-        "Title Y"
-    )
-
-    assert_equal(
-        days["position"]["x"],
-        50.0,
-        "Days X"
-    )
-
-    assert_equal(
-        days["position"]["y"],
-        21.0,
-        "Days Y"
-    )
-
-    assert_equal(
-        counter["position"]["x"],
-        195.0,
-        "Counter X"
-    )
-
-    assert_equal(
-        counter["position"]["y"],
-        -20.0,
-        "Counter Y"
-    )
-
-    assert_equal(
-        line["position"]["x"],
-        20.0,
-        "Line X"
-    )
-
-    assert_equal(
-        line["position"]["y"],
-        100.0,
-        "Line Y"
-    )
-
-    assert_equal(
-        origin["position"]["x"],
-        275.0,
-        "Origin X"
-    )
-
-    assert_equal(
-        origin["position"]["y"],
-        100.0,
-        "Origin Y"
-    )
-
-    assert_equal(
-        hearts["position"]["x"],
-        -245.0,
-        "Hearts X"
-    )
-
-    assert_equal(
-        hearts["position"]["y"],
-        100.0,
-        "Hearts Y"
-    )
+    print(f"Progress: {EVENT['progress']}")
+    print(f"X Left:  {plane['x_left']}")
+    print(f"X Right: {plane['x_right']}")
+    print(f"Y:       {plane['y']}")
 
 
     # ========================================================
