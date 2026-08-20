@@ -16,6 +16,11 @@ from layout_tokens import (
     TEST
 )
 
+from kwgt_coordinate_adapter import (
+    adapt_directional_position,
+    adapt_dual_x_position
+)
+
 
 # ============================================================
 # POSITION RESOLUTION
@@ -49,6 +54,25 @@ def resolve_position(parent_position, local_position):
         "x": parent_x + local_x,
         "y": parent_y + local_y
     }
+
+
+# ============================================================
+# KWGT POSITION HELPERS
+# ============================================================
+
+def resolve_kwgt_position(position):
+    """
+    Convierte una posición interna del Layout Engine
+    a una posición direccional de KWGT.
+
+    IMPORTANTE:
+    La posición interna se conserva intacta.
+    """
+
+    return adapt_directional_position(
+        position["x"],
+        position["y"]
+    )
 
 
 # ============================================================
@@ -107,6 +131,10 @@ def build_layout(event):
 
     layout = {
 
+        "version": "1.2",
+
+        "system": "Countdown OS Layout System",
+
         "canvas": {
             "width": CANVAS["width"],
             "height": CANVAS["height"],
@@ -121,12 +149,18 @@ def build_layout(event):
     # BACKGROUND
     # ========================================================
 
+    background_position = {
+        "x": BACKGROUND["x"],
+        "y": BACKGROUND["y"]
+    }
+
     layout["components"]["Background"] = {
 
-        "position": {
-            "x": BACKGROUND["x"],
-            "y": BACKGROUND["y"]
-        },
+        "position": background_position,
+
+        "kwgt_position": resolve_kwgt_position(
+            background_position
+        ),
 
         "Background_shape": {
 
@@ -149,12 +183,18 @@ def build_layout(event):
     # COVER
     # ========================================================
 
+    cover_position = {
+        "x": COVER["x"],
+        "y": COVER["y"]
+    }
+
     layout["components"]["Cover"] = {
 
-        "position": {
-            "x": COVER["x"],
-            "y": COVER["y"]
-        },
+        "position": cover_position,
+
+        "kwgt_position": resolve_kwgt_position(
+            cover_position
+        ),
 
         "coverImage": {
 
@@ -186,14 +226,25 @@ def build_layout(event):
     # HEADER
     # ========================================================
 
+    title_position = {
+        "x": HEADER["title"]["x"],
+        "y": HEADER["title"]["y"]
+    }
+
+    days_position = {
+        "x": HEADER["days"]["x"],
+        "y": HEADER["days"]["y"]
+    }
+
     layout["components"]["Header"] = {
 
         "Title": {
 
-            "position": {
-                "x": HEADER["title"]["x"],
-                "y": HEADER["title"]["y"]
-            },
+            "position": title_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                title_position
+            ),
 
             "TitleText": {
 
@@ -208,10 +259,11 @@ def build_layout(event):
 
         "Days": {
 
-            "position": {
-                "x": HEADER["days"]["x"],
-                "y": HEADER["days"]["y"]
-            },
+            "position": days_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                days_position
+            ),
 
             "DaysText": {
 
@@ -227,14 +279,25 @@ def build_layout(event):
     # GRADIENT
     # ========================================================
 
+    vertical_position = {
+        "x": GRADIENT["vertical"]["x"],
+        "y": GRADIENT["vertical"]["y"]
+    }
+
+    horizontal_position = {
+        "x": GRADIENT["horizontal"]["x"],
+        "y": GRADIENT["horizontal"]["y"]
+    }
+
     layout["components"]["Gradient"] = {
 
         "Vertical": {
 
-            "position": {
-                "x": GRADIENT["vertical"]["x"],
-                "y": GRADIENT["vertical"]["y"]
-            },
+            "position": vertical_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                vertical_position
+            ),
 
             "GradientVerticalShape": {
 
@@ -246,10 +309,11 @@ def build_layout(event):
 
         "Horizontal": {
 
-            "position": {
-                "x": GRADIENT["horizontal"]["x"],
-                "y": GRADIENT["horizontal"]["y"]
-            },
+            "position": horizontal_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                horizontal_position
+            ),
 
             "GradientHorizontalShape": {
 
@@ -265,19 +329,31 @@ def build_layout(event):
     # COUNTER
     # ========================================================
 
+    counter_position = {
+        "x": COUNTER["x"],
+        "y": COUNTER["y"]
+    }
+
+    days_remaining_position = {
+        "x": COUNTER["days_remaining"]["x"],
+        "y": COUNTER["days_remaining"]["y"]
+    }
+
     layout["components"]["Counter"] = {
 
-        "position": {
-            "x": COUNTER["x"],
-            "y": COUNTER["y"]
-        },
+        "position": counter_position,
+
+        "kwgt_position": resolve_kwgt_position(
+            counter_position
+        ),
 
         "DaysRemaining": {
 
-            "position": {
-                "x": COUNTER["days_remaining"]["x"],
-                "y": COUNTER["days_remaining"]["y"]
-            },
+            "position": days_remaining_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                days_remaining_position
+            ),
 
             "DaysRemainingText": {
 
@@ -377,9 +453,17 @@ def build_layout(event):
 
         "position": journey_position,
 
+        "kwgt_position": resolve_kwgt_position(
+            journey_position
+        ),
+
         "Line": {
 
             "position": line_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                line_position
+            ),
 
             "JourneyLineShape": {
 
@@ -393,6 +477,10 @@ def build_layout(event):
         "Origin": {
 
             "position": origin_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                origin_position
+            ),
 
             "OriginShape": {
 
@@ -408,6 +496,12 @@ def build_layout(event):
             "x_right": plane_position["x_right"],
             "y": plane_position["y"],
 
+            "kwgt_position": adapt_dual_x_position(
+                plane_position["x_left"],
+                plane_position["x_right"],
+                plane_position["y"]
+            ),
+
             "PlaneText": {
 
                 "font_size": JOURNEY["plane"]["font_size"],
@@ -419,6 +513,10 @@ def build_layout(event):
         "Hearts": {
 
             "position": hearts_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                hearts_position
+            ),
 
             "Destination": {
 
@@ -471,6 +569,10 @@ def build_layout(event):
 
         "position": content_position,
 
+        "kwgt_position": resolve_kwgt_position(
+            content_position
+        ),
+
         "journey": journey
     }
 
@@ -479,12 +581,18 @@ def build_layout(event):
     # FOOTER
     # ========================================================
 
+    footer_position = {
+        "x": FOOTER["x"],
+        "y": FOOTER["y"]
+    }
+
     layout["components"]["Footer"] = {
 
-        "position": {
-            "x": FOOTER["x"],
-            "y": FOOTER["y"]
-        },
+        "position": footer_position,
+
+        "kwgt_position": resolve_kwgt_position(
+            footer_position
+        ),
 
         "FooterText": {
 
