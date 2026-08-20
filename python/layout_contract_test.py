@@ -24,9 +24,9 @@ EVENT = {
 def main():
 
     print()
-    print("=" * 46)
+    print("=" * 50)
     print("       COUNTDOWN OS — LAYOUT CONTRACT TEST")
-    print("=" * 46)
+    print("=" * 50)
 
     layout = build_layout(EVENT)
 
@@ -40,7 +40,7 @@ def main():
 
     print()
     print("CANVAS")
-    print("-" * 46)
+    print("-" * 50)
 
     print(f"Width:  {canvas['width']}")
     print(f"Height: {canvas['height']}")
@@ -57,7 +57,7 @@ def main():
 
     print()
     print("COMPONENT HIERARCHY")
-    print("-" * 46)
+    print("-" * 50)
 
     validate_hierarchy(
         components,
@@ -115,7 +115,12 @@ def main():
 
     print()
     print("POSITION VALIDATION")
-    print("-" * 46)
+    print("-" * 50)
+
+
+    # --------------------------------------------------------
+    # HEADER
+    # --------------------------------------------------------
 
     header = components["Header"]
 
@@ -134,6 +139,16 @@ def main():
         f"Y: {days['position']['y']}"
     )
 
+    assert title["position"]["x"] == 175
+    assert title["position"]["y"] == -125
+
+    assert days["position"]["x"] == 50
+    assert days["position"]["y"] == 21
+
+
+    # --------------------------------------------------------
+    # COUNTER
+    # --------------------------------------------------------
 
     counter = components["Counter"]
 
@@ -143,6 +158,50 @@ def main():
         f"Y: {counter['position']['y']}"
     )
 
+    assert counter["position"]["x"] == 195
+    assert counter["position"]["y"] == -20
+
+
+    # --------------------------------------------------------
+    # COUNTER → KWGT POSITION
+    # --------------------------------------------------------
+
+    print()
+    print("KWGT POSITION VALIDATION")
+    print("-" * 50)
+
+    counter_kwgt = counter["kwgt_position"]
+
+    print(
+        f"• Counter → X Right    "
+        f"{counter_kwgt['x_right']}"
+    )
+
+    print(
+        f"• Counter → X Left     "
+        f"{counter_kwgt['x_left']}"
+    )
+
+    print(
+        f"• Counter → Y Down     "
+        f"{counter_kwgt['y_down']}"
+    )
+
+    print(
+        f"• Counter → Y Up       "
+        f"{counter_kwgt['y_up']}"
+    )
+
+    assert counter_kwgt["x_right"] == 195
+    assert counter_kwgt["x_left"] == 0
+
+    assert counter_kwgt["y_down"] == 0
+    assert counter_kwgt["y_up"] == 20
+
+
+    # --------------------------------------------------------
+    # JOURNEY
+    # --------------------------------------------------------
 
     journey = (
         components["Content"]
@@ -155,6 +214,13 @@ def main():
         f"Y: {journey['position']['y']}"
     )
 
+    assert journey["position"]["x"] == 0
+    assert journey["position"]["y"] == 0
+
+
+    # --------------------------------------------------------
+    # LINE
+    # --------------------------------------------------------
 
     line = journey["Line"]
 
@@ -164,6 +230,13 @@ def main():
         f"Y: {line['position']['y']}"
     )
 
+    assert line["position"]["x"] == 20
+    assert line["position"]["y"] == 100
+
+
+    # --------------------------------------------------------
+    # ORIGIN
+    # --------------------------------------------------------
 
     origin = journey["Origin"]
 
@@ -173,6 +246,13 @@ def main():
         f"Y: {origin['position']['y']}"
     )
 
+    assert origin["position"]["x"] == 275
+    assert origin["position"]["y"] == 100
+
+
+    # --------------------------------------------------------
+    # HEARTS
+    # --------------------------------------------------------
 
     hearts = journey["Hearts"]
 
@@ -182,15 +262,63 @@ def main():
         f"Y: {hearts['position']['y']}"
     )
 
+    assert hearts["position"]["x"] == -245
+    assert hearts["position"]["y"] == 100
+
+
+    # --------------------------------------------------------
+    # HEARTS → KWGT POSITION
+    # --------------------------------------------------------
+
+    hearts_kwgt = hearts["kwgt_position"]
+
+    print()
+    print("HEARTS → KWGT")
+    print("-" * 50)
+
+    print(
+        f"X Right: {hearts_kwgt['x_right']}"
+    )
+
+    print(
+        f"X Left:  {hearts_kwgt['x_left']}"
+    )
+
+    print(
+        f"Y Down:  {hearts_kwgt['y_down']}"
+    )
+
+    print(
+        f"Y Up:    {hearts_kwgt['y_up']}"
+    )
+
+    assert hearts_kwgt["x_right"] == 0
+    assert hearts_kwgt["x_left"] == 245
+
+    assert hearts_kwgt["y_down"] == 100
+    assert hearts_kwgt["y_up"] == 0
+
+
+    # --------------------------------------------------------
+    # FOOTER
+    # --------------------------------------------------------
 
     footer = components["Footer"]
 
+    print()
     print(
         f"• Footer               "
         f"X: {footer['position']['x']} "
         f"Y: {footer['position']['y']}"
     )
 
+    assert footer["position"]["x"] == 200
+    assert footer["position"]["y"] == -125
+
+
+    # --------------------------------------------------------
+    # COVER
+    # --------------------------------------------------------
 
     cover = components["Cover"]
 
@@ -199,6 +327,9 @@ def main():
         f"X: {cover['position']['x']} "
         f"Y: {cover['position']['y']}"
     )
+
+    assert cover["position"]["x"] == -300
+    assert cover["position"]["y"] == 0
 
 
     # ========================================================
@@ -209,7 +340,7 @@ def main():
 
     print()
     print("PLANE")
-    print("-" * 46)
+    print("-" * 50)
 
     print(f"Progress: {EVENT['progress']}")
     print(f"X Left:  {plane['x_left']}")
@@ -217,14 +348,52 @@ def main():
     print(f"Y:       {plane['y']}")
 
 
+    # --------------------------------------------------------
+    # PLANE → KWGT POSITION
+    # --------------------------------------------------------
+
+    plane_kwgt = plane["kwgt_position"]
+
+    print()
+    print("PLANE → KWGT")
+    print("-" * 50)
+
+    print(
+        f"X Left:  {plane_kwgt['x_left']}"
+    )
+
+    print(
+        f"X Right: {plane_kwgt['x_right']}"
+    )
+
+    print(
+        f"Y:       {plane_kwgt['y']}"
+    )
+
+    assert (
+        plane_kwgt["x_left"]
+        == plane["x_left"]
+    )
+
+    assert (
+        plane_kwgt["x_right"]
+        == plane["x_right"]
+    )
+
+    assert (
+        plane_kwgt["y"]
+        == plane["y"]
+    )
+
+
     # ========================================================
     # SUCCESS
     # ========================================================
 
     print()
-    print("=" * 46)
+    print("=" * 50)
     print("             🟢 TEST PASSED")
-    print("=" * 46)
+    print("=" * 50)
     print()
 
 
