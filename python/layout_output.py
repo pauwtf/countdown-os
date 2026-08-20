@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from layout_engine import build_layout
+
 from kwgt_coordinate_adapter import (
     adapt_directional_position,
     adapt_dual_x_position,
@@ -30,22 +31,22 @@ LAYOUT_FILE = OUTPUT_DIR / "layout.json"
 
 def add_kwgt_positions(node):
     """
-    Añade la representación de coordenadas KWGT
-    a todos los elementos que utilizan position.x/y.
+    Añade la representación de coordenadas KWGT.
 
-    Countdown OS conserva:
+    Countdown OS:
 
-        position:
-            x
-            y
+        position.x
+        position.y
 
-    KWGT recibe:
+    KWGT:
 
-        kwgt_position:
-            x_right
-            x_left
-            y_down
-            y_up
+        x_right
+        x_left
+        y_down
+        y_up
+
+    Los nodos ya procesados con `kwgt_position`
+    no vuelven a procesarse.
     """
 
     if isinstance(node, dict):
@@ -54,13 +55,15 @@ def add_kwgt_positions(node):
         # STANDARD POSITION
         # ----------------------------------------------------
 
-        if "position" in node:
+        if (
+            "position" in node
+            and isinstance(node["position"], dict)
+        ):
 
             position = node["position"]
 
             if (
-                isinstance(position, dict)
-                and "x" in position
+                "x" in position
                 and "y" in position
             ):
 
@@ -90,10 +93,14 @@ def add_kwgt_positions(node):
             )
 
         # ----------------------------------------------------
-        # RECURSE THROUGH CHILDREN
+        # RECURSE THROUGH ORIGINAL CHILDREN ONLY
         # ----------------------------------------------------
 
-        for value in node.values():
+        for key, value in list(node.items()):
+
+            # Never recurse into the adapter output.
+            if key == "kwgt_position":
+                continue
 
             if isinstance(value, (dict, list)):
 
@@ -128,10 +135,8 @@ def generate_layout(event):
 
 def prepare_kwgt_layout(layout):
     """
-    Añade al layout la representación de coordenadas
-    específica para KWGT.
-
-    No modifica la posición abstracta original.
+    Añade la representación de coordenadas KWGT
+    sin modificar el modelo abstracto.
     """
 
     add_kwgt_positions(layout)
@@ -147,9 +152,6 @@ def write_layout(layout):
     """
     Escribe el Layout Contract v1.2
     en output/layout.json.
-
-    El JSON conserva las coordenadas abstractas
-    y añade sus equivalentes KWGT.
     """
 
     OUTPUT_DIR.mkdir(
