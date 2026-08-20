@@ -4,15 +4,11 @@
 # ============================================================
 
 """
-Contrato formal entre:
+Contrato entre la jerarquía real de KWGT
+y el Layout Engine de Countdown OS.
 
-KWGT Component Hierarchy
-        ↓
-Layout Engine
-        ↓
-layout.json
-        ↓
-KWGT Renderer
+La jerarquía aquí debe reflejar 1:1
+la estructura del widget en KWGT.
 """
 
 
@@ -21,70 +17,105 @@ KWGT Renderer
 # ============================================================
 
 REQUIRED_HIERARCHY = {
-    "background": {},
 
-    "cover": {
-        "image": {
-            "text": {}
+    "Background": {
+
+        "Background_shape": {
+
+            "BackgroundShape": {}
         }
     },
 
-    "header": {
-        "title": {
-            "text": {}
+    "Cover": {
+
+        "coverImage": {
+
+            "coverText": {}
+        }
+    },
+
+    "Header": {
+
+        "Title": {
+
+            "TitleText": {}
         },
-        "days": {
-            "text": {}
+
+        "Days": {
+
+            "DaysText": {}
         }
     },
 
-    "gradient": {
-        "vertical": {},
-        "horizontal": {}
-    },
+    "Gradient": {
 
-    "counter": {
-        "days_remaining": {
-            "text": {}
+        "Vertical": {
+
+            "GradientVerticalShape": {}
+        },
+
+        "Horizontal": {
+
+            "GradientHorizontalShape": {}
         }
     },
 
-    "content": {
+    "Counter": {
+
+        "DaysRemaining": {
+
+            "DaysRemainingText": {}
+        }
+    },
+
+    "Content": {
+
         "journey": {
-            "line": {
-                "shape": {}
+
+            "Line": {
+
+                "JourneyLineShape": {}
             },
 
-            "origin": {
-                "shape": {}
+            "Origin": {
+
+                "OriginShape": {}
             },
 
-            "plane": {
-                "text": {}
+            "Plane": {
+
+                "PlaneText": {}
             },
 
-            "hearts": {
-                "destination": {
-                    "text": {}
+            "Hearts": {
+
+                "Destination": {
+
+                    "DestinationText": {}
                 },
 
-                "arrival": {
-                    "text": {}
+                "Arrival": {
+
+                    "ArrivalText": {}
                 }
             }
         }
     },
 
-    "footer": {
-        "text": {}
+    "Footer": {
+
+        "FooterText": {}
     },
 
-    "test": {}
+    "test": {
+
+        "TestText": {}
+    }
 }
 
 
 # ============================================================
-# REQUIRED COMPONENTS
+# HIERARCHY VALIDATION
 # ============================================================
 
 def validate_hierarchy(
@@ -93,16 +124,16 @@ def validate_hierarchy(
     path=""
 ):
     """
-    Compara recursivamente la jerarquía generada
-    contra la jerarquía oficial de KWGT.
-
-    No comprueba todavía valores visuales.
-    Comprueba únicamente estructura.
+    Comprueba recursivamente que la jerarquía
+    generada por el Layout Engine coincida con
+    la jerarquía oficial de KWGT.
     """
 
     if not isinstance(actual, dict):
+
         raise TypeError(
-            f"Component '{path}' must be a dictionary."
+            f"Component '{path}' "
+            f"must be a dictionary."
         )
 
     for name, children in expected.items():
@@ -114,6 +145,7 @@ def validate_hierarchy(
         )
 
         if name not in actual:
+
             raise ValueError(
                 f"Missing KWGT component: "
                 f"{current_path}"
@@ -125,8 +157,10 @@ def validate_hierarchy(
             actual_component,
             dict
         ):
+
             raise TypeError(
-                f"KWGT component '{current_path}' "
+                f"KWGT component "
+                f"'{current_path}' "
                 f"must be a dictionary."
             )
 
@@ -145,32 +179,38 @@ def validate_hierarchy(
 
 def normalize_position(position):
     """
-    Garantiza que una posición tenga coordenadas numéricas.
+    Garantiza que una posición tenga
+    coordenadas numéricas.
     """
 
     if not isinstance(position, dict):
+
         raise TypeError(
             "Position must be a dictionary."
         )
 
     if "x" not in position:
+
         raise ValueError(
             "Position is missing 'x'."
         )
 
     if "y" not in position:
+
         raise ValueError(
             "Position is missing 'y'."
         )
 
     try:
+
         x = float(position["x"])
         y = float(position["y"])
 
     except (TypeError, ValueError) as error:
+
         raise TypeError(
-            f"Position coordinates must be numeric: "
-            f"{position}"
+            f"Position coordinates "
+            f"must be numeric: {position}"
         ) from error
 
     return {
@@ -185,14 +225,20 @@ def normalize_position(position):
 
 def normalize_component(component):
     """
-    Normaliza un componente sin modificar
-    su contenido visual.
+    Normaliza recursivamente un componente.
+
+    Las propiedades position son convertidas
+    a coordenadas numéricas.
     """
 
-    if not isinstance(component, dict):
+    if not isinstance(
+        component,
+        dict
+    ):
+
         raise TypeError(
-            f"Component must be a dictionary: "
-            f"{component}"
+            f"Component must be "
+            f"a dictionary: {component}"
         )
 
     normalized = {}
@@ -201,11 +247,14 @@ def normalize_component(component):
 
         if key == "position":
 
-            normalized[key] = normalize_position(
-                value
+            normalized[key] = (
+                normalize_position(value)
             )
 
-        elif isinstance(value, dict):
+        elif isinstance(
+            value,
+            dict
+        ):
 
             normalized[key] = (
                 normalize_component(value)
@@ -227,24 +276,42 @@ def normalize_canvas(canvas):
     Normaliza las dimensiones del canvas.
     """
 
-    if not isinstance(canvas, dict):
+    if not isinstance(
+        canvas,
+        dict
+    ):
+
         raise TypeError(
             "Canvas must be a dictionary."
         )
 
     try:
-        width = float(canvas["width"])
-        height = float(canvas["height"])
 
-    except (KeyError, TypeError, ValueError) as error:
+        width = float(
+            canvas["width"]
+        )
+
+        height = float(
+            canvas["height"]
+        )
+
+    except (
+        KeyError,
+        TypeError,
+        ValueError
+    ) as error:
+
         raise ValueError(
-            "Canvas requires numeric width "
-            "and height."
+            "Canvas requires numeric "
+            "width and height."
         ) from error
 
     return {
+
         "width": width,
+
         "height": height,
+
         "anchor": canvas.get(
             "anchor",
             "center"
@@ -253,40 +320,51 @@ def normalize_canvas(canvas):
 
 
 # ============================================================
-# LAYOUT CONTRACT
+# BUILD CONTRACT
 # ============================================================
 
 def build_layout_contract(layout):
     """
     Construye el contrato público de layout.json.
-
-    La jerarquía debe corresponder a la estructura
-    real documentada del widget en KWGT.
     """
 
-    if not isinstance(layout, dict):
+    if not isinstance(
+        layout,
+        dict
+    ):
+
         raise TypeError(
             "Layout must be a dictionary."
         )
 
     if "canvas" not in layout:
+
         raise ValueError(
             "Layout is missing 'canvas'."
         )
 
     if "components" not in layout:
+
         raise ValueError(
             "Layout is missing 'components'."
         )
+
+    # --------------------------------------------------------
+    # CANVAS
+    # --------------------------------------------------------
 
     canvas = normalize_canvas(
         layout["canvas"]
     )
 
+    # --------------------------------------------------------
+    # COMPONENTS
+    # --------------------------------------------------------
+
     components = layout["components"]
 
     # --------------------------------------------------------
-    # Hierarchy validation
+    # HIERARCHY
     # --------------------------------------------------------
 
     validate_hierarchy(
@@ -295,7 +373,7 @@ def build_layout_contract(layout):
     )
 
     # --------------------------------------------------------
-    # Normalize components
+    # NORMALIZE
     # --------------------------------------------------------
 
     normalized_components = (
@@ -305,12 +383,16 @@ def build_layout_contract(layout):
     )
 
     # --------------------------------------------------------
-    # Public contract
+    # PUBLIC CONTRACT
     # --------------------------------------------------------
 
     return {
+
         "layout": {
+
             "canvas": canvas,
-            "components": normalized_components
+
+            "components":
+                normalized_components
         }
     }
