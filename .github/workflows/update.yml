@@ -1,5 +1,3 @@
-name: Update Countdown
-
 on:
   schedule:
     - cron: "0 5 * * *"
@@ -45,10 +43,10 @@ jobs:
           pip install -r requirements.txt
 
       # ========================================================
-      # UPDATE COUNTDOWN
+      # UPDATE COUNTDOWN + LAYOUT
       # ========================================================
 
-      - name: Update countdown
+      - name: Update Countdown OS
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           DATABASE_ID: ${{ secrets.DATABASE_ID }}
@@ -62,39 +60,80 @@ jobs:
 
       - name: Check generated JSON
         run: |
+
+          echo "=============================================="
+          echo "          COUNTDOWN OS — OUTPUT"
+          echo "=============================================="
+
+          echo ""
           echo "===== OUTPUT FILES ====="
           ls -la output/
 
           echo ""
           echo "===== COUNTDOWN JSON ====="
-          cat output/countdown.json
+
+          if [ -f output/countdown.json ]; then
+            cat output/countdown.json
+          else
+            echo "❌ countdown.json NOT FOUND"
+            exit 1
+          fi
+
+          echo ""
+          echo "===== LAYOUT JSON ====="
+
+          if [ -f output/layout.json ]; then
+            cat output/layout.json
+          else
+            echo "❌ layout.json NOT FOUND"
+            exit 1
+          fi
 
           echo ""
           echo "===== GIT STATUS ====="
           git status
 
       # ========================================================
-      # COMMIT COUNTDOWN JSON
+      # COMMIT JSON FILES
       # ========================================================
 
-      - name: Commit countdown JSON
+      - name: Commit generated JSON
         run: |
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          # Add both generated contracts
           git add output/countdown.json
+          git add output/layout.json
 
-          echo "===== GIT STATUS AFTER ADD ====="
+          echo "=============================================="
+          echo "       GIT STATUS AFTER ADD"
+          echo "=============================================="
+
           git status
 
+          # Check whether anything changed
           if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "Update countdown"
 
+            echo ""
+            echo "No changes to commit."
+
+          else
+
+            echo ""
+            echo "Changes detected."
+
+            git commit -m "Update Countdown OS data"
+
+            echo ""
             echo "===== SYNC WITH REMOTE ====="
+
             git pull --rebase origin main
 
+            echo ""
             echo "===== PUSH UPDATE ====="
+
             git push
+
           fi
