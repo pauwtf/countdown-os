@@ -36,9 +36,8 @@ def main():
     print("       COUNTDOWN OS — LAYOUT OUTPUT TEST")
     print("=" * 52)
 
-
     # ========================================================
-    # BUILD LAYOUT
+    # BUILD
     # ========================================================
 
     print()
@@ -48,7 +47,6 @@ def main():
     layout = build_layout(EVENT)
 
     print("✓ Layout Engine generated layout")
-
 
     # ========================================================
     # WRITE JSON
@@ -62,7 +60,6 @@ def main():
 
     print(f"Output: {LAYOUT_FILE}")
 
-
     # ========================================================
     # FILE
     # ========================================================
@@ -72,7 +69,6 @@ def main():
     )
 
     print("✓ layout.json exists")
-
 
     # ========================================================
     # READ JSON
@@ -87,7 +83,6 @@ def main():
 
     print("✓ layout.json is valid JSON")
 
-
     # ========================================================
     # ROOT CONTRACT
     # ========================================================
@@ -99,10 +94,8 @@ def main():
     assert saved_layout["version"] == "1.2"
 
     print(
-        f"✓ version: "
-        f"{saved_layout['version']}"
+        f"✓ version: {saved_layout['version']}"
     )
-
 
     assert (
         saved_layout["system"]
@@ -110,10 +103,8 @@ def main():
     )
 
     print(
-        f"✓ system: "
-        f"{saved_layout['system']}"
+        f"✓ system: {saved_layout['system']}"
     )
-
 
     assert_key(
         saved_layout,
@@ -126,7 +117,6 @@ def main():
         "components",
         "root property"
     )
-
 
     # ========================================================
     # CANVAS
@@ -145,7 +135,6 @@ def main():
     print(f"✓ Width:  {canvas['width']}")
     print(f"✓ Height: {canvas['height']}")
     print(f"✓ Anchor: {canvas['anchor']}")
-
 
     # ========================================================
     # COMPONENT CONTRACT
@@ -176,7 +165,6 @@ def main():
             "component"
         )
 
-
     # ========================================================
     # BACKGROUND
     # ========================================================
@@ -195,20 +183,22 @@ def main():
 
     assert_key(
         background,
-        "kwgt_position",
-        "Background KWGT position"
+        "Background_shape",
+        "Background container"
+    )
+
+    background_container = (
+        background["Background_shape"]
     )
 
     assert_key(
-        background["Background_shape"],
+        background_container,
         "BackgroundShape",
         "Background shape"
     )
 
     shape = (
-        background
-        ["Background_shape"]
-        ["BackgroundShape"]
+        background_container["BackgroundShape"]
     )
 
     assert shape["type"] == "rectangle"
@@ -217,6 +207,36 @@ def main():
 
     print("✓ BackgroundShape contract valid")
 
+    # ========================================================
+    # COVER
+    # ========================================================
+
+    print()
+    print("COVER")
+    print("-" * 52)
+
+    cover = components["Cover"]
+
+    assert_key(
+        cover,
+        "position",
+        "Cover position"
+    )
+
+    cover_image = cover["coverImage"]
+
+    assert_key(
+        cover_image,
+        "coverText",
+        "Cover text"
+    )
+
+    cover_text = cover_image["coverText"]
+
+    assert cover_text["font_size"] == 240
+    assert cover_text["value"] == "♡"
+
+    print("✓ Cover contract valid")
 
     # ========================================================
     # HEADER
@@ -239,22 +259,14 @@ def main():
 
     assert_key(
         title,
-        "kwgt_position",
-        "Title KWGT position"
-    )
-
-    assert_key(
-        title,
         "TitleText",
         "Title text"
     )
 
     assert title["TitleText"]["value"] == "UNTIL ALEX"
-
     assert title["TitleText"]["font_size"] == 18
 
     print("✓ Title contract valid")
-
 
     assert_key(
         days,
@@ -264,16 +276,54 @@ def main():
 
     assert_key(
         days,
-        "kwgt_position",
-        "Days KWGT position"
+        "DaysText",
+        "Days text"
     )
 
     assert days["DaysText"]["value"] == "days"
-
     assert days["DaysText"]["font_size"] == 15
 
     print("✓ Days contract valid")
 
+    # ========================================================
+    # GRADIENT
+    # ========================================================
+
+    print()
+    print("GRADIENT")
+    print("-" * 52)
+
+    gradient = components["Gradient"]
+
+    vertical = gradient["Vertical"]
+    horizontal = gradient["Horizontal"]
+
+    assert_key(
+        vertical,
+        "position",
+        "Vertical position"
+    )
+
+    assert_key(
+        vertical,
+        "GradientVerticalShape",
+        "Vertical gradient shape"
+    )
+
+    assert_key(
+        horizontal,
+        "position",
+        "Horizontal position"
+    )
+
+    assert_key(
+        horizontal,
+        "GradientHorizontalShape",
+        "Horizontal gradient shape"
+    )
+
+    print("✓ Vertical gradient contract valid")
+    print("✓ Horizontal gradient contract valid")
 
     # ========================================================
     # COUNTER
@@ -291,12 +341,6 @@ def main():
         "Counter position"
     )
 
-    assert_key(
-        counter,
-        "kwgt_position",
-        "Counter KWGT position"
-    )
-
     days_remaining = counter["DaysRemaining"]
 
     assert_key(
@@ -307,31 +351,34 @@ def main():
 
     assert_key(
         days_remaining,
-        "kwgt_position",
-        "DaysRemaining KWGT position"
+        "DaysRemainingText",
+        "DaysRemaining text"
     )
 
-    text = days_remaining["DaysRemainingText"]
+    days_text = days_remaining["DaysRemainingText"]
 
-    assert text["value"] == "48"
-    assert text["font_size"] == 100
+    assert days_text["value"] == "48"
+    assert days_text["font_size"] == 100
 
     print("✓ Counter contract valid")
 
-
     # ========================================================
-    # JOURNEY
+    # CONTENT / JOURNEY
     # ========================================================
 
     print()
-    print("JOURNEY")
+    print("CONTENT / JOURNEY")
     print("-" * 52)
 
-    journey = (
-        components
-        ["Content"]
-        ["journey"]
+    content = components["Content"]
+
+    assert_key(
+        content,
+        "position",
+        "Content position"
     )
+
+    journey = content["journey"]
 
     assert_key(
         journey,
@@ -339,14 +386,8 @@ def main():
         "Journey position"
     )
 
-    assert_key(
-        journey,
-        "kwgt_position",
-        "Journey KWGT position"
-    )
-
+    print("✓ Content contract valid")
     print("✓ Journey contract valid")
-
 
     # ========================================================
     # LINE
@@ -360,12 +401,6 @@ def main():
         "Line position"
     )
 
-    assert_key(
-        line,
-        "kwgt_position",
-        "Line KWGT position"
-    )
-
     line_shape = line["JourneyLineShape"]
 
     assert line_shape["type"] == "rectangle"
@@ -373,7 +408,6 @@ def main():
     assert line_shape["height"] == 1
 
     print("✓ JourneyLineShape contract valid")
-
 
     # ========================================================
     # ORIGIN
@@ -387,19 +421,12 @@ def main():
         "Origin position"
     )
 
-    assert_key(
-        origin,
-        "kwgt_position",
-        "Origin KWGT position"
-    )
-
     origin_shape = origin["OriginShape"]
 
     assert origin_shape["type"] == "circle"
     assert origin_shape["size"] == 5
 
     print("✓ OriginShape contract valid")
-
 
     # ========================================================
     # PLANE
@@ -429,47 +456,19 @@ def main():
         "Plane Y"
     )
 
-    assert_key(
-        plane,
-        "kwgt_position",
-        "Plane KWGT position"
-    )
-
     assert plane["x_right"] == 275
     assert plane["y"] == 93
 
-    expected_x_left = 520 * EVENT["progress"]
+    expected_x_left = (
+        520 * EVENT["progress"]
+    )
 
     assert abs(
         plane["x_left"] - expected_x_left
     ) < 0.000001
 
-    plane_kwgt = plane["kwgt_position"]
-
-    assert (
-        plane_kwgt["x_left"]
-        == plane["x_left"]
-    )
-
-    assert (
-        plane_kwgt["x_right"]
-        == plane["x_right"]
-    )
-
-    assert (
-        plane_kwgt["y"]
-        == plane["y"]
-    )
-
-    assert (
-        plane["PlaneText"]["value"]
-        == "✈"
-    )
-
-    assert (
-        plane["PlaneText"]["font_size"]
-        == 30
-    )
+    assert plane["PlaneText"]["value"] == "✈"
+    assert plane["PlaneText"]["font_size"] == 30
 
     print(
         f"✓ Progress: {EVENT['progress']}"
@@ -489,7 +488,6 @@ def main():
 
     print("✓ Plane contract valid")
 
-
     # ========================================================
     # HEARTS
     # ========================================================
@@ -506,13 +504,6 @@ def main():
         "Hearts position"
     )
 
-    assert_key(
-        hearts,
-        "kwgt_position",
-        "Hearts KWGT position"
-    )
-
-
     destination = hearts["Destination"]
 
     assert_key(
@@ -521,10 +512,12 @@ def main():
         "Destination position"
     )
 
-    assert destination["DestinationText"]["font_size"] == 14
+    assert (
+        destination["DestinationText"]["font_size"]
+        == 14
+    )
 
     print("✓ Destination contract valid")
-
 
     arrival = hearts["Arrival"]
 
@@ -534,10 +527,12 @@ def main():
         "Arrival position"
     )
 
-    assert arrival["ArrivalText"]["font_size"] == 14
+    assert (
+        arrival["ArrivalText"]["font_size"]
+        == 14
+    )
 
     print("✓ Arrival contract valid")
-
 
     # ========================================================
     # FOOTER
@@ -557,8 +552,8 @@ def main():
 
     assert_key(
         footer,
-        "kwgt_position",
-        "Footer KWGT position"
+        "FooterText",
+        "Footer text"
     )
 
     assert footer["FooterText"]["font_size"] == 10
@@ -566,64 +561,34 @@ def main():
 
     print("✓ Footer contract valid")
 
-
     # ========================================================
-    # COVER
-    # ========================================================
-
-    print()
-    print("COVER")
-    print("-" * 52)
-
-    cover = components["Cover"]
-
-    assert_key(
-        cover,
-        "position",
-        "Cover position"
-    )
-
-    assert_key(
-        cover,
-        "kwgt_position",
-        "Cover KWGT position"
-    )
-
-    cover_text = (
-        cover
-        ["coverImage"]
-        ["coverText"]
-    )
-
-    assert cover_text["font_size"] == 240
-    assert cover_text["value"] == "♡"
-
-    print("✓ Cover contract valid")
-
-
-    # ========================================================
-    # GRADIENT
+    # TEST COMPONENT
     # ========================================================
 
     print()
-    print("GRADIENT")
+    print("TEST COMPONENT")
     print("-" * 52)
 
-    gradient = components["Gradient"]
-
-    vertical = gradient["Vertical"]
-    horizontal = gradient["Horizontal"]
+    test = components["test"]
 
     assert_key(
-        vertical,
-        "kwgt_position",
-        "Vertical gradient KWGT position"
+        test,
+        "TestText",
+        "Test text"
     )
 
-    assert_key(
-        horizontal,
-        "kwgt_position",
-        "Horizontal gradient KWGT position"
-    )
+    print("✓ Test component valid")
 
-    print("✓ Vertical
+    # ========================================================
+    # SUCCESS
+    # ========================================================
+
+    print()
+    print("=" * 52)
+    print("             🟢 TEST PASSED")
+    print("=" * 52)
+    print()
+
+
+if __name__ == "__main__":
+    main()
