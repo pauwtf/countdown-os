@@ -1,4 +1,4 @@
- # ============================================================
+# ============================================================
 # COUNTDOWN OS — LAYOUT OUTPUT
 # Version: 1.2 Elegance
 # ============================================================
@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 # ============================================================
-# OUTPUT PATH
+# PATHS
 # ============================================================
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -19,13 +19,13 @@ LAYOUT_FILE = OUTPUT_DIR / "layout.json"
 
 
 # ============================================================
-# SERIALIZE LAYOUT
+# WRITE
 # ============================================================
 
 def write_layout(layout):
     """
-    Escribe el resultado del Layout Engine
-    en output/layout.json.
+    Guarda el layout generado por Layout Engine
+    como output/layout.json.
     """
 
     OUTPUT_DIR.mkdir(
@@ -33,7 +33,8 @@ def write_layout(layout):
         exist_ok=True
     )
 
-    with LAYOUT_FILE.open(
+    with open(
+        LAYOUT_FILE,
         "w",
         encoding="utf-8"
     ) as file:
@@ -45,9 +46,11 @@ def write_layout(layout):
             indent=2
         )
 
+    return LAYOUT_FILE
+
 
 # ============================================================
-# MAIN
+# TEST / MANUAL EXECUTION
 # ============================================================
 
 if __name__ == "__main__":
@@ -66,17 +69,29 @@ if __name__ == "__main__":
 
     layout = build_layout(event)
 
-    write_layout(layout)
+    path = write_layout(layout)
 
     print()
-    print("=" * 46)
+    print("=" * 50)
     print("       COUNTDOWN OS — LAYOUT OUTPUT")
-    print("=" * 46)
+    print("=" * 50)
 
     print()
-    print(f"Output: {LAYOUT_FILE}")
+    print("PROJECT ROOT:")
+    print(PROJECT_ROOT)
 
     print()
-    print("🟢 layout.json generated successfully")
+    print("OUTPUT DIRECTORY:")
+    print(OUTPUT_DIR)
 
+    print()
+    print("LAYOUT FILE:")
+    print(path)
+
+    print()
+    print("FILE EXISTS:")
+    print(path.exists())
+
+    print()
+    print("🟢 layout.json generated")
     print()
