@@ -6,6 +6,8 @@
 import json
 from pathlib import Path
 
+from layout_engine import build_layout
+
 
 # ============================================================
 # PATHS
@@ -19,13 +21,25 @@ LAYOUT_FILE = OUTPUT_DIR / "layout.json"
 
 
 # ============================================================
-# WRITE
+# EVENT → LAYOUT
+# ============================================================
+
+def generate_layout(event):
+    """
+    Genera el layout a partir del evento preparado.
+    """
+
+    return build_layout(event)
+
+
+# ============================================================
+# WRITE LAYOUT
 # ============================================================
 
 def write_layout(layout):
     """
-    Guarda el layout generado por Layout Engine
-    como output/layout.json.
+    Escribe el Layout Contract v1.2
+    en output/layout.json.
     """
 
     OUTPUT_DIR.mkdir(
@@ -33,14 +47,20 @@ def write_layout(layout):
         exist_ok=True
     )
 
-    with open(
-        LAYOUT_FILE,
+    output = {
+        "version": "1.2",
+        "system": "Countdown OS Layout System",
+        "canvas": layout["canvas"],
+        "components": layout["components"]
+    }
+
+    with LAYOUT_FILE.open(
         "w",
         encoding="utf-8"
     ) as file:
 
         json.dump(
-            layout,
+            output,
             file,
             ensure_ascii=False,
             indent=2
@@ -50,12 +70,24 @@ def write_layout(layout):
 
 
 # ============================================================
-# TEST / MANUAL EXECUTION
+# EVENT → JSON
+# ============================================================
+
+def generate_layout_file(event):
+    """
+    Genera el layout completo y lo guarda.
+    """
+
+    layout = generate_layout(event)
+
+    return write_layout(layout)
+
+
+# ============================================================
+# MANUAL TEST
 # ============================================================
 
 if __name__ == "__main__":
-
-    from layout_engine import build_layout
 
     event = {
         "titleDisplay": "UNTIL ALEX",
@@ -67,9 +99,7 @@ if __name__ == "__main__":
         "progress": 0.6571428571428571
     }
 
-    layout = build_layout(event)
-
-    path = write_layout(layout)
+    path = generate_layout_file(event)
 
     print()
     print("=" * 50)
@@ -77,20 +107,10 @@ if __name__ == "__main__":
     print("=" * 50)
 
     print()
-    print("PROJECT ROOT:")
-    print(PROJECT_ROOT)
+    print(f"Output: {path}")
 
     print()
-    print("OUTPUT DIRECTORY:")
-    print(OUTPUT_DIR)
-
-    print()
-    print("LAYOUT FILE:")
-    print(path)
-
-    print()
-    print("FILE EXISTS:")
-    print(path.exists())
+    print(f"Exists: {path.exists()}")
 
     print()
     print("🟢 layout.json generated")
