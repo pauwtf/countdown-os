@@ -16,6 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+
       # ========================================================
       # SET UP PYTHON
       # ========================================================
@@ -25,6 +26,7 @@ jobs:
         with:
           python-version: "3.12"
 
+
       # ========================================================
       # LAYOUT ENGINE TEST
       # ========================================================
@@ -32,6 +34,7 @@ jobs:
       - name: Run Layout Engine Test
         run: |
           python python/layout_test.py
+
 
       # ========================================================
       # PROGRESS BOUNDARY TEST
@@ -41,6 +44,7 @@ jobs:
         run: |
           python python/layout_progress_test.py
 
+
       # ========================================================
       # LAYOUT CONTRACT TEST
       # ========================================================
@@ -49,6 +53,7 @@ jobs:
         run: |
           python python/layout_contract_test.py
 
+
       # ========================================================
       # KWGT COORDINATE ADAPTER TEST
       # ========================================================
@@ -56,3 +61,12 @@ jobs:
       - name: Run KWGT Coordinate Adapter Test
         run: |
           python python/kwgt_coordinate_adapter_test.py
+
+
+      # ========================================================
+      # LAYOUT OUTPUT TEST
+      # ========================================================
+
+      - name: Run Layout Output Test
+        run: |
+          python python/layout_output_test.py
