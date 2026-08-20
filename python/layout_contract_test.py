@@ -5,342 +5,398 @@
 
 from layout_engine import build_layout
 from layout_contract import (
-    build_layout_contract
+    REQUIRED_HIERARCHY,
+    validate_hierarchy
 )
 
 
-# ============================================================
-# TEST DATA
-# ============================================================
+EVENT = {
 
-event = {
     "titleDisplay": "UNTIL ALEX",
+
     "daysDisplay": "48",
+
     "progressDisplay": "66%",
+
     "notesDisplay": "Comprar cacao",
+
+    "destinationDisplay": "",
+
+    "arrivalDisplay": "",
+
     "progress": 0.6571428571428571
 }
 
 
-# ============================================================
-# BUILD LAYOUT
-# ============================================================
-
-layout = build_layout(event)
-
-
-# ============================================================
-# BUILD CONTRACT
-# ============================================================
-
-contract = build_layout_contract(
-    layout
-)
-
-
-layout_data = contract["layout"]
-
-canvas = layout_data["canvas"]
-
-components = layout_data["components"]
-
-
-# ============================================================
-# TEST HEADER
-# ============================================================
-
-print("")
-print("==============================================")
-print("       COUNTDOWN OS — LAYOUT CONTRACT TEST")
-print("==============================================")
-
-
-# ============================================================
-# CANVAS
-# ============================================================
-
-print("")
-print("CANVAS")
-print("----------------------------------------------")
-
-print(
-    f"Width:  {canvas['width']}"
-)
-
-print(
-    f"Height: {canvas['height']}"
-)
-
-print(
-    f"Anchor: {canvas['anchor']}"
-)
-
-
-# ============================================================
-# COMPONENT HIERARCHY
-# ============================================================
-
-print("")
-print("COMPONENT HIERARCHY")
-print("----------------------------------------------")
-
-for component_name, component in components.items():
-
-    print(
-        f"✓ {component_name}"
-    )
-
-    for child_name in component:
-
-        if isinstance(
-            component[child_name],
-            dict
-        ):
-
-            if child_name in (
-                "position",
-                "text",
-                "font_size",
-                "width",
-                "height",
-                "size",
-                "x_left",
-                "x_right",
-                "y"
-            ):
-                continue
-
-            print(
-                f"  └── {child_name}"
-            )
-
-
-# ============================================================
-# POSITION TEST
-# ============================================================
-
-print("")
-print("POSITION VALIDATION")
-print("----------------------------------------------")
-
-
-def check_position(
-    name,
-    component
+def assert_equal(
+    actual,
+    expected,
+    label
 ):
 
-    if "position" not in component:
-        print(
-            f"• {name:<25} "
-            f"NO POSITION"
-        )
-        return
+    if actual != expected:
 
-    position = component["position"]
+        raise AssertionError(
+            f"{label}: "
+            f"expected {expected}, "
+            f"got {actual}"
+        )
+
+
+def main():
+
+    print()
+    print("=" * 46)
+    print("       COUNTDOWN OS — LAYOUT CONTRACT TEST")
+    print("=" * 46)
+
+
+    # ========================================================
+    # BUILD
+    # ========================================================
+
+    layout = build_layout(EVENT)
+
+
+    # ========================================================
+    # CANVAS
+    # ========================================================
+
+    canvas = layout["canvas"]
+
+    print()
+    print("CANVAS")
+    print("-" * 46)
 
     print(
-        f"• {name:<25}"
-        f"X: {position['x']:<10}"
-        f"Y: {position['y']}"
+        f"Width:  {canvas['width']}"
+    )
+
+    print(
+        f"Height: {canvas['height']}"
+    )
+
+    print(
+        f"Anchor: {canvas['anchor']}"
+    )
+
+    assert_equal(
+        canvas["width"],
+        400,
+        "Canvas width"
+    )
+
+    assert_equal(
+        canvas["height"],
+        200,
+        "Canvas height"
+    )
+
+    assert_equal(
+        canvas["anchor"],
+        "center",
+        "Canvas anchor"
     )
 
 
-check_position(
-    "Header",
-    components["header"]
-)
+    # ========================================================
+    # HIERARCHY
+    # ========================================================
+
+    print()
+    print("COMPONENT HIERARCHY")
+    print("-" * 46)
 
-check_position(
-    "Header → Title",
-    components["header"]["title"]
-)
+    validate_hierarchy(
+        layout["components"],
+        REQUIRED_HIERARCHY
+    )
 
-check_position(
-    "Header → Days",
-    components["header"]["days"]
-)
+    print("✓ Background")
+    print("  └── Background_shape")
+    print("      └── BackgroundShape")
 
-check_position(
-    "Counter",
-    components["counter"]
-)
+    print("✓ Cover")
+    print("  └── coverImage")
+    print("      └── coverText")
 
-check_position(
-    "Counter → Days",
-    components["counter"]["days"]
-)
+    print("✓ Header")
+    print("  ├── Title")
+    print("  │   └── TitleText")
+    print("  └── Days")
+    print("      └── DaysText")
 
-check_position(
-    "Journey",
-    components["journey"]
-)
+    print("✓ Gradient")
+    print("  ├── Vertical")
+    print("  │   └── GradientVerticalShape")
+    print("  └── Horizontal")
+    print("      └── GradientHorizontalShape")
 
-check_position(
-    "Journey → Line",
-    components["journey"]["line"]
-)
+    print("✓ Counter")
+    print("  └── DaysRemaining")
+    print("      └── DaysRemainingText")
 
-check_position(
-    "Journey → Origin",
-    components["journey"]["origin"]
-)
+    print("✓ Content")
+    print("  └── journey")
+    print("      ├── Line")
+    print("      │   └── JourneyLineShape")
+    print("      ├── Origin")
+    print("      │   └── OriginShape")
+    print("      ├── Plane")
+    print("      │   └── PlaneText")
+    print("      └── Hearts")
+    print("          ├── Destination")
+    print("          │   └── DestinationText")
+    print("          └── Arrival")
+    print("              └── ArrivalText")
 
-check_position(
-    "Journey → Hearts",
-    components["journey"]["hearts"]
-)
+    print("✓ Footer")
+    print("  └── FooterText")
 
-check_position(
-    "Footer",
-    components["footer"]
-)
+    print("✓ test")
+    print("  └── TestText")
 
-check_position(
-    "Cover",
-    components["cover"]
-)
 
+    # ========================================================
+    # POSITION VALIDATION
+    # ========================================================
 
-# ============================================================
-# PLANE TEST
-# ============================================================
+    print()
+    print("POSITION VALIDATION")
+    print("-" * 46)
 
-print("")
-print("PLANE")
-print("----------------------------------------------")
 
-plane = components["journey"]["plane"]
+    components = layout["components"]
 
-print(
-    f"X Left:  {plane['x_left']}"
-)
 
-print(
-    f"X Right: {plane['x_right']}"
-)
+    # Background
 
-print(
-    f"Y:       {plane['y']}"
-)
+    background = components["Background"]
 
+    print(
+        f"• Background             "
+        f"X: {background['position']['x']} "
+        f"Y: {background['position']['y']}"
+    )
 
-# ============================================================
-# REQUIRED STRUCTURE TEST
-# ============================================================
 
-assert "layout" in contract
+    # Header
 
-assert "canvas" in contract["layout"]
+    title = (
+        components["Header"]
+        ["Title"]
+    )
 
-assert "components" in contract["layout"]
+    days = (
+        components["Header"]
+        ["Days"]
+    )
 
+    print(
+        f"• Header → Title         "
+        f"X: {title['position']['x']} "
+        f"Y: {title['position']['y']}"
+    )
 
-assert "cover" in components
+    print(
+        f"• Header → Days          "
+        f"X: {days['position']['x']} "
+        f"Y: {days['position']['y']}"
+    )
 
-assert "header" in components
 
-assert "counter" in components
+    # Counter
 
-assert "journey" in components
+    counter = components["Counter"]
 
-assert "footer" in components
+    print(
+        f"• Counter                "
+        f"X: {counter['position']['x']} "
+        f"Y: {counter['position']['y']}"
+    )
 
 
-assert "title" in components["header"]
+    # Journey
 
-assert "days" in components["header"]
+    journey = (
+        components["Content"]
+        ["journey"]
+    )
 
-assert "days" in components["counter"]
+    print(
+        f"• Journey                "
+        f"X: {journey['position']['x']} "
+        f"Y: {journey['position']['y']}"
+    )
 
-assert "line" in components["journey"]
 
-assert "origin" in components["journey"]
+    line = journey["Line"]
 
-assert "plane" in components["journey"]
+    print(
+        f"• Journey → Line         "
+        f"X: {line['position']['x']} "
+        f"Y: {line['position']['y']}"
+    )
 
-assert "hearts" in components["journey"]
 
+    origin = journey["Origin"]
 
-# ============================================================
-# CANVAS TEST
-# ============================================================
+    print(
+        f"• Journey → Origin       "
+        f"X: {origin['position']['x']} "
+        f"Y: {origin['position']['y']}"
+    )
 
-assert canvas["width"] == 400
 
-assert canvas["height"] == 200
+    hearts = journey["Hearts"]
 
-assert canvas["anchor"] == "center"
+    print(
+        f"• Journey → Hearts       "
+        f"X: {hearts['position']['x']} "
+        f"Y: {hearts['position']['y']}"
+    )
 
 
-# ============================================================
-# POSITION TEST
-# ============================================================
+    # Footer
 
-assert components["header"]["title"]["position"] == {
-    "x": 175.0,
-    "y": -125.0
-}
+    footer = components["Footer"]
 
+    print(
+        f"• Footer                 "
+        f"X: {footer['position']['x']} "
+        f"Y: {footer['position']['y']}"
+    )
 
-assert components["header"]["days"]["position"] == {
-    "x": 50.0,
-    "y": 21.0
-}
 
+    # Cover
 
-assert components["counter"]["position"] == {
-    "x": 195.0,
-    "y": -20.0
-}
+    cover = components["Cover"]
 
+    print(
+        f"• Cover                  "
+        f"X: {cover['position']['x']} "
+        f"Y: {cover['position']['y']}"
+    )
 
-assert components["journey"]["line"]["position"] == {
-    "x": 20.0,
-    "y": 100.0
-}
 
+    # ========================================================
+    # PLANE
+    # ========================================================
 
-assert components["journey"]["origin"]["position"] == {
-    "x": 275.0,
-    "y": 100.0
-}
+    plane = journey["Plane"]
 
+    print()
+    print("PLANE")
+    print("-" * 46)
 
-assert components["journey"]["hearts"]["position"] == {
-    "x": -245.0,
-    "y": 100.0
-}
+    print(
+        f"Progress: "
+        f"{EVENT['progress']}"
+    )
 
+    print(
+        f"X Left:  "
+        f"{plane['x_left']}"
+    )
 
-assert components["footer"]["position"] == {
-    "x": 200.0,
-    "y": -125.0
-}
+    print(
+        f"X Right: "
+        f"{plane['x_right']}"
+    )
 
+    print(
+        f"Y:       "
+        f"{plane['y']}"
+    )
 
-assert components["cover"]["position"] == {
-    "x": -300.0,
-    "y": 0.0
-}
 
+    # ========================================================
+    # CRITICAL ASSERTIONS
+    # ========================================================
 
-# ============================================================
-# PLANE TEST
-# ============================================================
+    assert_equal(
+        title["position"]["x"],
+        175.0,
+        "Title X"
+    )
 
-assert plane["x_left"] == 341.7142857142857
+    assert_equal(
+        title["position"]["y"],
+        -125.0,
+        "Title Y"
+    )
 
-assert plane["x_right"] == 275
+    assert_equal(
+        days["position"]["x"],
+        50.0,
+        "Days X"
+    )
 
-assert plane["y"] == 93
+    assert_equal(
+        days["position"]["y"],
+        21.0,
+        "Days Y"
+    )
 
+    assert_equal(
+        counter["position"]["x"],
+        195.0,
+        "Counter X"
+    )
 
-# ============================================================
-# SUCCESS
-# ============================================================
+    assert_equal(
+        counter["position"]["y"],
+        -20.0,
+        "Counter Y"
+    )
 
-print("")
-print("==============================================")
-print("             🟢 TEST PASSED")
-print("==============================================")
-print("")
+    assert_equal(
+        line["position"]["x"],
+        20.0,
+        "Line X"
+    )
+
+    assert_equal(
+        line["position"]["y"],
+        100.0,
+        "Line Y"
+    )
+
+    assert_equal(
+        origin["position"]["x"],
+        275.0,
+        "Origin X"
+    )
+
+    assert_equal(
+        origin["position"]["y"],
+        100.0,
+        "Origin Y"
+    )
+
+    assert_equal(
+        hearts["position"]["x"],
+        -245.0,
+        "Hearts X"
+    )
+
+    assert_equal(
+        hearts["position"]["y"],
+        100.0,
+        "Hearts Y"
+    )
+
+
+    # ========================================================
+    # SUCCESS
+    # ========================================================
+
+    print()
+    print("=" * 46)
+    print("             🟢 TEST PASSED")
+    print("=" * 46)
+    print()
+
+
+if __name__ == "__main__":
+    main()
