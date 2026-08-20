@@ -29,22 +29,19 @@ def adapt_directional_position(x, y):
         "x_right": max(x, 0),
         "x_left": max(-x, 0),
         "y_down": max(y, 0),
-        "y_up": max(-y, 0)
+        "y_up": max(-y, 0),
     }
 
 
 def adapt_dual_x_position(x_left, x_right, y):
     """
-    Converts a KWGT dual-X component.
+    Converts a dual-X KWGT position.
 
-    Used by components such as Plane that expose:
-        X left
-        X right
-        Y
+    Used by components such as Plane.
     """
 
     return {
         "x_left": float(x_left or 0),
         "x_right": float(x_right or 0),
-        "y": float(y or 0)
+        "y": float(y or 0),
     }
