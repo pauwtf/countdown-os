@@ -24,3 +24,7 @@ jobs:
       - name: Run Progress Boundary Test
         run: |
           python python/layout_progress_test.py
+
+      - name: Run Layout Contract Test
+        run: |
+          python python/layout_contract_test.py
