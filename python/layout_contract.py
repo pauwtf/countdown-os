@@ -4,41 +4,139 @@
 # ============================================================
 
 """
-Define y normaliza el contrato de datos que conecta:
+Contrato formal entre:
 
+KWGT Component Hierarchy
+        ↓
 Layout Engine
-      ↓
+        ↓
 layout.json
-      ↓
-KWGT
+        ↓
+KWGT Renderer
 """
 
 
 # ============================================================
-# REQUIRED COMPONENT HIERARCHY
+# OFFICIAL KWGT HIERARCHY
 # ============================================================
 
-REQUIRED_COMPONENTS = {
-    "cover": [],
+REQUIRED_HIERARCHY = {
+    "background": {},
 
-    "header": [
-        "title",
-        "days"
-    ],
+    "cover": {
+        "image": {
+            "text": {}
+        }
+    },
 
-    "counter": [
-        "days"
-    ],
+    "header": {
+        "title": {
+            "text": {}
+        },
+        "days": {
+            "text": {}
+        }
+    },
 
-    "journey": [
-        "line",
-        "origin",
-        "plane",
-        "hearts"
-    ],
+    "gradient": {
+        "vertical": {},
+        "horizontal": {}
+    },
 
-    "footer": []
+    "counter": {
+        "days_remaining": {
+            "text": {}
+        }
+    },
+
+    "content": {
+        "journey": {
+            "line": {
+                "shape": {}
+            },
+
+            "origin": {
+                "shape": {}
+            },
+
+            "plane": {
+                "text": {}
+            },
+
+            "hearts": {
+                "destination": {
+                    "text": {}
+                },
+
+                "arrival": {
+                    "text": {}
+                }
+            }
+        }
+    },
+
+    "footer": {
+        "text": {}
+    },
+
+    "test": {}
 }
+
+
+# ============================================================
+# REQUIRED COMPONENTS
+# ============================================================
+
+def validate_hierarchy(
+    actual,
+    expected,
+    path=""
+):
+    """
+    Compara recursivamente la jerarquía generada
+    contra la jerarquía oficial de KWGT.
+
+    No comprueba todavía valores visuales.
+    Comprueba únicamente estructura.
+    """
+
+    if not isinstance(actual, dict):
+        raise TypeError(
+            f"Component '{path}' must be a dictionary."
+        )
+
+    for name, children in expected.items():
+
+        current_path = (
+            f"{path}.{name}"
+            if path
+            else name
+        )
+
+        if name not in actual:
+            raise ValueError(
+                f"Missing KWGT component: "
+                f"{current_path}"
+            )
+
+        actual_component = actual[name]
+
+        if not isinstance(
+            actual_component,
+            dict
+        ):
+            raise TypeError(
+                f"KWGT component '{current_path}' "
+                f"must be a dictionary."
+            )
+
+        validate_hierarchy(
+            actual_component,
+            children,
+            current_path
+        )
+
+    return True
 
 
 # ============================================================
@@ -47,18 +145,12 @@ REQUIRED_COMPONENTS = {
 
 def normalize_position(position):
     """
-    Normaliza una posición a:
-
-    {
-        "x": number,
-        "y": number
-    }
+    Garantiza que una posición tenga coordenadas numéricas.
     """
 
     if not isinstance(position, dict):
         raise TypeError(
-            f"Position must be a dict. "
-            f"Received: {position}"
+            "Position must be a dictionary."
         )
 
     if "x" not in position:
@@ -77,8 +169,8 @@ def normalize_position(position):
 
     except (TypeError, ValueError) as error:
         raise TypeError(
-            f"Position coordinates must be numeric. "
-            f"Received: {position}"
+            f"Position coordinates must be numeric: "
+            f"{position}"
         ) from error
 
     return {
@@ -88,73 +180,76 @@ def normalize_position(position):
 
 
 # ============================================================
-# COMPONENT VALIDATION
-# ============================================================
-
-def validate_component_hierarchy(components):
-    """
-    Comprueba que todos los componentes requeridos
-    existan en el Layout Contract.
-    """
-
-    if not isinstance(components, dict):
-        raise TypeError(
-            "Components must be a dictionary."
-        )
-
-    for component, children in REQUIRED_COMPONENTS.items():
-
-        if component not in components:
-            raise ValueError(
-                f"Missing required component: "
-                f"{component}"
-            )
-
-        component_data = components[component]
-
-        if not isinstance(component_data, dict):
-            raise TypeError(
-                f"Component '{component}' "
-                f"must be a dictionary."
-            )
-
-        for child in children:
-
-            if child not in component_data:
-                raise ValueError(
-                    f"Missing required child "
-                    f"'{component}.{child}'"
-                )
-
-    return True
-
-
-# ============================================================
 # COMPONENT NORMALIZATION
 # ============================================================
 
 def normalize_component(component):
     """
-    Normaliza un componente individual.
-
-    Si tiene position, garantiza que sus coordenadas
-    sean numéricas.
+    Normaliza un componente sin modificar
+    su contenido visual.
     """
 
     if not isinstance(component, dict):
         raise TypeError(
-            f"Component must be a dictionary. "
-            f"Received: {component}"
+            f"Component must be a dictionary: "
+            f"{component}"
         )
 
-    normalized = dict(component)
+    normalized = {}
 
-    if "position" in normalized:
-        normalized["position"] = normalize_position(
-            normalized["position"]
-        )
+    for key, value in component.items():
+
+        if key == "position":
+
+            normalized[key] = normalize_position(
+                value
+            )
+
+        elif isinstance(value, dict):
+
+            normalized[key] = (
+                normalize_component(value)
+            )
+
+        else:
+
+            normalized[key] = value
 
     return normalized
+
+
+# ============================================================
+# CANVAS
+# ============================================================
+
+def normalize_canvas(canvas):
+    """
+    Normaliza las dimensiones del canvas.
+    """
+
+    if not isinstance(canvas, dict):
+        raise TypeError(
+            "Canvas must be a dictionary."
+        )
+
+    try:
+        width = float(canvas["width"])
+        height = float(canvas["height"])
+
+    except (KeyError, TypeError, ValueError) as error:
+        raise ValueError(
+            "Canvas requires numeric width "
+            "and height."
+        ) from error
+
+    return {
+        "width": width,
+        "height": height,
+        "anchor": canvas.get(
+            "anchor",
+            "center"
+        )
+    }
 
 
 # ============================================================
@@ -163,8 +258,10 @@ def normalize_component(component):
 
 def build_layout_contract(layout):
     """
-    Convierte el resultado del Layout Engine
-    en el contrato público de layout.json.
+    Construye el contrato público de layout.json.
+
+    La jerarquía debe corresponder a la estructura
+    real documentada del widget en KWGT.
     """
 
     if not isinstance(layout, dict):
@@ -182,58 +279,30 @@ def build_layout_contract(layout):
             "Layout is missing 'components'."
         )
 
-    canvas = layout["canvas"]
+    canvas = normalize_canvas(
+        layout["canvas"]
+    )
+
     components = layout["components"]
 
     # --------------------------------------------------------
-    # Canvas
+    # Hierarchy validation
     # --------------------------------------------------------
 
-    if not isinstance(canvas, dict):
-        raise TypeError(
-            "Canvas must be a dictionary."
-        )
-
-    try:
-        canvas_width = float(canvas["width"])
-        canvas_height = float(canvas["height"])
-
-    except (KeyError, TypeError, ValueError) as error:
-        raise ValueError(
-            "Canvas must contain numeric "
-            "'width' and 'height'."
-        ) from error
-
-    canvas_contract = {
-        "width": canvas_width,
-        "height": canvas_height,
-        "anchor": canvas.get(
-            "anchor",
-            "center"
-        )
-    }
-
-    # --------------------------------------------------------
-    # Validate hierarchy
-    # --------------------------------------------------------
-
-    validate_component_hierarchy(
-        components
+    validate_hierarchy(
+        components,
+        REQUIRED_HIERARCHY
     )
 
     # --------------------------------------------------------
     # Normalize components
     # --------------------------------------------------------
 
-    components_contract = {}
-
-    for component_name, component_data in components.items():
-
-        components_contract[
-            component_name
-        ] = normalize_component(
-            component_data
+    normalized_components = (
+        normalize_component(
+            components
         )
+    )
 
     # --------------------------------------------------------
     # Public contract
@@ -241,7 +310,7 @@ def build_layout_contract(layout):
 
     return {
         "layout": {
-            "canvas": canvas_contract,
-            "components": components_contract
+            "canvas": canvas,
+            "components": normalized_components
         }
     }
