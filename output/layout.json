@@ -27,6 +27,12 @@
           "type": "rectangle",
           "width": 400,
           "height": 200
+        },
+        "kwgt_position": {
+          "x_right": 0.0,
+          "x_left": -0.0,
+          "y_down": 0.0,
+          "y_up": -0.0
         }
       }
     },
@@ -52,7 +58,19 @@
             "y": 0
           },
           "font_size": 240,
-          "value": "♡"
+          "value": "♡",
+          "kwgt_position": {
+            "x_right": 0.0,
+            "x_left": -0.0,
+            "y_down": 0.0,
+            "y_up": -0.0
+          }
+        },
+        "kwgt_position": {
+          "x_right": 0.0,
+          "x_left": -0.0,
+          "y_down": 0.0,
+          "y_up": -0.0
         }
       }
     },
@@ -242,6 +260,12 @@
             "DestinationText": {
               "font_size": 14,
               "value": ""
+            },
+            "kwgt_position": {
+              "x_right": 0.0,
+              "x_left": -0.0,
+              "y_down": 0.0,
+              "y_up": -0.0
             }
           },
           "Arrival": {
@@ -252,6 +276,12 @@
             "ArrivalText": {
               "font_size": 14,
               "value": ""
+            },
+            "kwgt_position": {
+              "x_right": 0.0,
+              "x_left": -0.0,
+              "y_down": 0.0,
+              "y_up": -0.0
             }
           }
         }
