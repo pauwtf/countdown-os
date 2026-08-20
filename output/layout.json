@@ -1,1 +1,194 @@
- 
+{
+  "version": "1.2",
+  "system": "Countdown OS Layout System",
+  "canvas": {
+    "width": 400,
+    "height": 200,
+    "anchor": "center"
+  },
+  "components": {
+    "Background": {
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "Background_shape": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "BackgroundShape": {
+          "type": "rectangle",
+          "width": 400,
+          "height": 200
+        }
+      }
+    },
+    "Cover": {
+      "position": {
+        "x": -300,
+        "y": 0
+      },
+      "coverImage": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "coverText": {
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "font_size": 240,
+          "value": "♡"
+        }
+      }
+    },
+    "Header": {
+      "Title": {
+        "position": {
+          "x": 175,
+          "y": -125
+        },
+        "TitleText": {
+          "font_size": 18,
+          "value": "UNTIL ALEX"
+        }
+      },
+      "Days": {
+        "position": {
+          "x": 50,
+          "y": 21
+        },
+        "DaysText": {
+          "font_size": 15,
+          "value": "days"
+        }
+      }
+    },
+    "Gradient": {
+      "Vertical": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "GradientVerticalShape": {
+          "type": "rectangle",
+          "width": 400,
+          "height": 200
+        }
+      },
+      "Horizontal": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "GradientHorizontalShape": {
+          "type": "rectangle",
+          "width": 400,
+          "height": 200
+        }
+      }
+    },
+    "Counter": {
+      "position": {
+        "x": 195,
+        "y": -20
+      },
+      "DaysRemaining": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "DaysRemainingText": {
+          "font_size": 100,
+          "value": "46"
+        }
+      }
+    },
+    "Content": {
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "journey": {
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "Line": {
+          "position": {
+            "x": 20.0,
+            "y": 100.0
+          },
+          "JourneyLineShape": {
+            "type": "rectangle",
+            "width": 258,
+            "height": 1
+          }
+        },
+        "Origin": {
+          "position": {
+            "x": 275.0,
+            "y": 100.0
+          },
+          "OriginShape": {
+            "type": "circle",
+            "size": 5
+          }
+        },
+        "Plane": {
+          "x_left": 349.1428571428571,
+          "x_right": 275,
+          "y": 93,
+          "PlaneText": {
+            "font_size": 30,
+            "value": "✈"
+          }
+        },
+        "Hearts": {
+          "position": {
+            "x": -245.0,
+            "y": 100.0
+          },
+          "Destination": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "DestinationText": {
+              "font_size": 14,
+              "value": ""
+            }
+          },
+          "Arrival": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "ArrivalText": {
+              "font_size": 14,
+              "value": ""
+            }
+          }
+        }
+      }
+    },
+    "Footer": {
+      "position": {
+        "x": 200,
+        "y": -125
+      },
+      "FooterText": {
+        "font_size": 10,
+        "value": "Comprar cacao"
+      }
+    },
+    "test": {
+      "TestText": {
+        "font_size": 10,
+        "value": ""
+      }
+    }
+  }
+}
