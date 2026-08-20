@@ -21,15 +21,11 @@ from layout_tokens import (
 # POSITION RESOLUTION
 # ============================================================
 
-def resolve_position(
-    parent_position,
-    local_position
-):
+def resolve_position(parent_position, local_position):
     """
-    Parent-relative positioning.
+    Resuelve una posición parent-relative.
 
-    Absolute position =
-    Parent position + Local position
+    absolute = parent + local
     """
 
     parent_x, parent_y = parent_position
@@ -38,7 +34,6 @@ def resolve_position(
     try:
         parent_x = float(parent_x)
         parent_y = float(parent_y)
-
         local_x = float(local_x)
         local_y = float(local_y)
 
@@ -86,21 +81,21 @@ def normalize_progress(progress):
 
 def resolve_plane_position(progress):
 
-    progress = normalize_progress(
-        progress
-    )
-
-    plane = JOURNEY["plane"]
+    progress = normalize_progress(progress)
 
     return {
         "x_left": (
-            plane["travel"] *
-            progress
+            JOURNEY["plane"]["travel"]
+            * progress
         ),
 
-        "x_right": plane["x_right"],
+        "x_right": (
+            JOURNEY["plane"]["x_right"]
+        ),
 
-        "y": plane["y"]
+        "y": (
+            JOURNEY["plane"]["y"]
+        )
     }
 
 
@@ -111,6 +106,7 @@ def resolve_plane_position(progress):
 def build_layout(event):
 
     layout = {
+
         "canvas": {
             "width": CANVAS["width"],
             "height": CANVAS["height"],
@@ -120,74 +116,88 @@ def build_layout(event):
         "components": {}
     }
 
+
     # ========================================================
     # BACKGROUND
     # ========================================================
 
-    layout["components"]["background"] = {
+    layout["components"]["Background"] = {
+
         "position": {
             "x": BACKGROUND["x"],
             "y": BACKGROUND["y"]
         },
 
-        "width": BACKGROUND["width"],
-        "height": BACKGROUND["height"]
+        "Background_shape": {
+
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+
+            "BackgroundShape": {
+
+                "type": "rectangle",
+                "width": BACKGROUND["width"],
+                "height": BACKGROUND["height"]
+            }
+        }
     }
+
 
     # ========================================================
     # COVER
     # ========================================================
 
-    cover_position = {
-        "x": COVER["x"],
-        "y": COVER["y"]
-    }
+    layout["components"]["Cover"] = {
 
-    layout["components"]["cover"] = {
+        "position": {
+            "x": COVER["x"],
+            "y": COVER["y"]
+        },
 
-        "position": cover_position,
-
-        "image": {
+        "coverImage": {
 
             "position": {
                 "x": COVER["image"]["x"],
                 "y": COVER["image"]["y"]
             },
 
-            "text": {
+            "coverText": {
+
                 "position": {
                     "x": COVER["image"]["text"]["x"],
                     "y": COVER["image"]["text"]["y"]
                 },
 
                 "font_size": (
-                    COVER["image"]["text"]
-                    ["font_size"]
+                    COVER["image"]["text"]["font_size"]
                 ),
 
-                "text": COVER["image"]["text"]
-                ["value"]
+                "value": (
+                    COVER["image"]["text"]["value"]
+                )
             }
         }
     }
+
 
     # ========================================================
     # HEADER
     # ========================================================
 
-    layout["components"]["header"] = {
+    layout["components"]["Header"] = {
 
-        "title": {
+        "Title": {
 
             "position": {
                 "x": HEADER["title"]["x"],
                 "y": HEADER["title"]["y"]
             },
 
-            "text": {
-                "font_size": (
-                    HEADER["title"]["font_size"]
-                ),
+            "TitleText": {
+
+                "font_size": HEADER["title"]["font_size"],
 
                 "value": event.get(
                     "titleDisplay",
@@ -196,69 +206,83 @@ def build_layout(event):
             }
         },
 
-        "days": {
+        "Days": {
 
             "position": {
                 "x": HEADER["days"]["x"],
                 "y": HEADER["days"]["y"]
             },
 
-            "text": {
-                "font_size": (
-                    HEADER["days"]["font_size"]
-                ),
+            "DaysText": {
+
+                "font_size": HEADER["days"]["font_size"],
 
                 "value": "days"
             }
         }
     }
 
+
     # ========================================================
     # GRADIENT
     # ========================================================
 
-    layout["components"]["gradient"] = {
+    layout["components"]["Gradient"] = {
 
-        "vertical": {
+        "Vertical": {
+
             "position": {
                 "x": GRADIENT["vertical"]["x"],
                 "y": GRADIENT["vertical"]["y"]
+            },
+
+            "GradientVerticalShape": {
+
+                "type": "rectangle",
+                "width": GRADIENT["vertical"]["width"],
+                "height": GRADIENT["vertical"]["height"]
             }
         },
 
-        "horizontal": {
+        "Horizontal": {
+
             "position": {
                 "x": GRADIENT["horizontal"]["x"],
                 "y": GRADIENT["horizontal"]["y"]
+            },
+
+            "GradientHorizontalShape": {
+
+                "type": "rectangle",
+                "width": GRADIENT["horizontal"]["width"],
+                "height": GRADIENT["horizontal"]["height"]
             }
         }
     }
+
 
     # ========================================================
     # COUNTER
     # ========================================================
 
-    counter_position = {
-        "x": COUNTER["x"],
-        "y": COUNTER["y"]
-    }
+    layout["components"]["Counter"] = {
 
-    layout["components"]["counter"] = {
+        "position": {
+            "x": COUNTER["x"],
+            "y": COUNTER["y"]
+        },
 
-        "position": counter_position,
-
-        "days_remaining": {
+        "DaysRemaining": {
 
             "position": {
                 "x": COUNTER["days_remaining"]["x"],
                 "y": COUNTER["days_remaining"]["y"]
             },
 
-            "text": {
+            "DaysRemainingText": {
 
                 "font_size": (
-                    COUNTER["days_remaining"]
-                    ["font_size"]
+                    COUNTER["days_remaining"]["font_size"]
                 ),
 
                 "value": event.get(
@@ -269,6 +293,7 @@ def build_layout(event):
         }
     }
 
+
     # ========================================================
     # CONTENT
     # ========================================================
@@ -278,181 +303,192 @@ def build_layout(event):
         "y": CONTENT["y"]
     }
 
-    # ========================================================
-    # JOURNEY
-    # ========================================================
 
     journey_position = resolve_position(
+
         (
             content_position["x"],
             content_position["y"]
         ),
+
         (
             JOURNEY["x"],
             JOURNEY["y"]
         )
     )
 
+
     # ========================================================
-    # LINE
+    # JOURNEY CHILDREN
     # ========================================================
 
     line_position = resolve_position(
+
         (
             journey_position["x"],
             journey_position["y"]
         ),
+
         (
             JOURNEY["line"]["x"],
             JOURNEY["line"]["y"]
         )
     )
 
-    # ========================================================
-    # ORIGIN
-    # ========================================================
 
     origin_position = resolve_position(
+
         (
             journey_position["x"],
             journey_position["y"]
         ),
+
         (
             JOURNEY["origin"]["x"],
             JOURNEY["origin"]["y"]
         )
     )
 
-    # ========================================================
-    # HEARTS
-    # ========================================================
 
     hearts_position = resolve_position(
+
         (
             journey_position["x"],
             journey_position["y"]
         ),
+
         (
             JOURNEY["hearts"]["x"],
             JOURNEY["hearts"]["y"]
         )
     )
 
+
+    plane_position = resolve_plane_position(
+        event.get("progress")
+    )
+
+
     # ========================================================
-    # JOURNEY COMPONENT
+    # JOURNEY
     # ========================================================
 
     journey = {
 
         "position": journey_position,
 
-        "line": {
+        "Line": {
 
             "position": line_position,
 
-            "shape": {
+            "JourneyLineShape": {
 
-                "width": (
-                    JOURNEY["line"]["width"]
-                ),
+                "type": "rectangle",
 
-                "height": (
-                    JOURNEY["line"]["height"]
-                )
+                "width": JOURNEY["line"]["width"],
+                "height": JOURNEY["line"]["height"]
             }
         },
 
-        "origin": {
+        "Origin": {
 
             "position": origin_position,
 
-            "shape": {
+            "OriginShape": {
 
-                "size": (
-                    JOURNEY["origin"]["size"]
-                )
+                "type": "circle",
+
+                "size": JOURNEY["origin"]["size"]
             }
         },
 
-        "plane": {
+        "Plane": {
 
-            **resolve_plane_position(
-                event.get("progress")
-            ),
+            "x_left": plane_position["x_left"],
+            "x_right": plane_position["x_right"],
+            "y": plane_position["y"],
 
-            "text": {
-                "value": "✈",
-                "font_size": (
-                    JOURNEY["plane"]["font_size"]
-                )
+            "PlaneText": {
+
+                "font_size": JOURNEY["plane"]["font_size"],
+
+                "value": "✈"
             }
         },
 
-        "hearts": {
+        "Hearts": {
 
             "position": hearts_position,
 
-            "destination": {
+            "Destination": {
 
                 "position": {
-                    "x": 0,
-                    "y": 0
+                    "x": JOURNEY["hearts"]["destination"]["x"],
+                    "y": JOURNEY["hearts"]["destination"]["y"]
                 },
 
-                "text": {
+                "DestinationText": {
+
                     "font_size": (
                         JOURNEY["hearts"]
                         ["destination"]
                         ["font_size"]
                     ),
 
-                    "value": ""
+                    "value": event.get(
+                        "destinationDisplay",
+                        ""
+                    )
                 }
             },
 
-            "arrival": {
+            "Arrival": {
 
                 "position": {
-                    "x": 0,
-                    "y": 0
+                    "x": JOURNEY["hearts"]["arrival"]["x"],
+                    "y": JOURNEY["hearts"]["arrival"]["y"]
                 },
 
-                "text": {
+                "ArrivalText": {
+
                     "font_size": (
                         JOURNEY["hearts"]
                         ["arrival"]
                         ["font_size"]
                     ),
 
-                    "value": ""
+                    "value": event.get(
+                        "arrivalDisplay",
+                        ""
+                    )
                 }
             }
         }
     }
 
-    layout["components"]["content"] = {
+
+    layout["components"]["Content"] = {
 
         "position": content_position,
 
         "journey": journey
     }
 
+
     # ========================================================
     # FOOTER
     # ========================================================
 
-    layout["components"]["footer"] = {
+    layout["components"]["Footer"] = {
 
         "position": {
             "x": FOOTER["x"],
             "y": FOOTER["y"]
         },
 
-        "text": {
+        "FooterText": {
 
-            "font_size": (
-                FOOTER["font_size"]
-            ),
+            "font_size": FOOTER["font_size"],
 
             "value": event.get(
                 "notesDisplay",
@@ -461,15 +497,20 @@ def build_layout(event):
         }
     }
 
+
     # ========================================================
     # TEST
     # ========================================================
 
     layout["components"]["test"] = {
-        "position": {
-            "x": TEST["x"],
-            "y": TEST["y"]
+
+        "TestText": {
+
+            "font_size": TEST["font_size"],
+
+            "value": ""
         }
     }
+
 
     return layout
