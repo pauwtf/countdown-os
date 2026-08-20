@@ -5,6 +5,7 @@ from notion import get_events
 from event_parser import parse_events
 from countdown import get_active_event, calculate_countdown
 from presentation import prepare_event
+from layout_output import generate_layout_file
 
 
 def main():
@@ -30,7 +31,9 @@ def main():
     # CALCULATE COUNTDOWN
     # ========================================================
 
-    countdown = calculate_countdown(active_event)
+    countdown = calculate_countdown(
+        active_event
+    )
 
     # ========================================================
     # PREPARE PRESENTATION DATA
@@ -42,26 +45,29 @@ def main():
     )
 
     # ========================================================
-    # OUTPUT PATH
+    # OUTPUT DIRECTORY
     # ========================================================
 
-    output_path = (
+    output_dir = (
         Path(__file__).parent.parent
         / "output"
-        / "countdown.json"
     )
 
-    output_path.parent.mkdir(
+    output_dir.mkdir(
         parents=True,
         exist_ok=True
     )
 
     # ========================================================
-    # WRITE JSON
+    # WRITE COUNTDOWN JSON
     # ========================================================
 
-    with open(
-        output_path,
+    countdown_path = (
+        output_dir
+        / "countdown.json"
+    )
+
+    with countdown_path.open(
         "w",
         encoding="utf-8"
     ) as file:
@@ -74,10 +80,38 @@ def main():
         )
 
     # ========================================================
+    # GENERATE LAYOUT JSON
+    # ========================================================
+
+    layout_path = generate_layout_file(
+        output
+    )
+
+    # ========================================================
     # LOG
     # ========================================================
 
-    print("✅ countdown.json generado")
+    print()
+    print("=" * 50)
+    print("       COUNTDOWN OS — UPDATE")
+    print("=" * 50)
+
+    print()
+
+    print(
+        f"✅ countdown.json generado: "
+        f"{countdown_path}"
+    )
+
+    print(
+        f"✅ layout.json generado: "
+        f"{layout_path}"
+    )
+
+    print()
+
+    print("COUNTDOWN DATA")
+    print("-" * 50)
 
     print(
         json.dumps(
@@ -86,6 +120,27 @@ def main():
             indent=2
         )
     )
+
+    print()
+
+    print("LAYOUT")
+    print("-" * 50)
+
+    print(
+        json.dumps(
+            json.loads(
+                layout_path.read_text(
+                    encoding="utf-8"
+                )
+            ),
+            ensure_ascii=False,
+            indent=2
+        )
+    )
+
+    print()
+    print("🟢 UPDATE COMPLETED")
+    print()
 
 
 if __name__ == "__main__":
