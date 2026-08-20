@@ -12,6 +12,12 @@
         "x": 0,
         "y": 0
       },
+      "kwgt_position": {
+        "x_right": 0.0,
+        "x_left": -0.0,
+        "y_down": 0.0,
+        "y_up": -0.0
+      },
       "Background_shape": {
         "position": {
           "x": 0,
@@ -28,6 +34,12 @@
       "position": {
         "x": -300,
         "y": 0
+      },
+      "kwgt_position": {
+        "x_right": 0,
+        "x_left": 300.0,
+        "y_down": 0.0,
+        "y_up": -0.0
       },
       "coverImage": {
         "position": {
@@ -50,6 +62,12 @@
           "x": 175,
           "y": -125
         },
+        "kwgt_position": {
+          "x_right": 175.0,
+          "x_left": 0,
+          "y_down": 0,
+          "y_up": 125.0
+        },
         "TitleText": {
           "font_size": 18,
           "value": "UNTIL ALEX"
@@ -59,6 +77,12 @@
         "position": {
           "x": 50,
           "y": 21
+        },
+        "kwgt_position": {
+          "x_right": 50.0,
+          "x_left": 0,
+          "y_down": 21.0,
+          "y_up": 0
         },
         "DaysText": {
           "font_size": 15,
@@ -72,6 +96,12 @@
           "x": 0,
           "y": 0
         },
+        "kwgt_position": {
+          "x_right": 0.0,
+          "x_left": -0.0,
+          "y_down": 0.0,
+          "y_up": -0.0
+        },
         "GradientVerticalShape": {
           "type": "rectangle",
           "width": 400,
@@ -82,6 +112,12 @@
         "position": {
           "x": 0,
           "y": 0
+        },
+        "kwgt_position": {
+          "x_right": 0.0,
+          "x_left": -0.0,
+          "y_down": 0.0,
+          "y_up": -0.0
         },
         "GradientHorizontalShape": {
           "type": "rectangle",
@@ -95,10 +131,22 @@
         "x": 195,
         "y": -20
       },
+      "kwgt_position": {
+        "x_right": 195.0,
+        "x_left": 0,
+        "y_down": 0,
+        "y_up": 20.0
+      },
       "DaysRemaining": {
         "position": {
           "x": 0,
           "y": 0
+        },
+        "kwgt_position": {
+          "x_right": 0.0,
+          "x_left": -0.0,
+          "y_down": 0.0,
+          "y_up": -0.0
         },
         "DaysRemainingText": {
           "font_size": 100,
@@ -111,15 +159,33 @@
         "x": 0,
         "y": 0
       },
+      "kwgt_position": {
+        "x_right": 0.0,
+        "x_left": -0.0,
+        "y_down": 0.0,
+        "y_up": -0.0
+      },
       "journey": {
         "position": {
           "x": 0.0,
           "y": 0.0
         },
+        "kwgt_position": {
+          "x_right": 0.0,
+          "x_left": -0.0,
+          "y_down": 0.0,
+          "y_up": -0.0
+        },
         "Line": {
           "position": {
             "x": 20.0,
             "y": 100.0
+          },
+          "kwgt_position": {
+            "x_right": 20.0,
+            "x_left": 0,
+            "y_down": 100.0,
+            "y_up": 0
           },
           "JourneyLineShape": {
             "type": "rectangle",
@@ -132,6 +198,12 @@
             "x": 275.0,
             "y": 100.0
           },
+          "kwgt_position": {
+            "x_right": 275.0,
+            "x_left": 0,
+            "y_down": 100.0,
+            "y_up": 0
+          },
           "OriginShape": {
             "type": "circle",
             "size": 5
@@ -141,6 +213,11 @@
           "x_left": 349.1428571428571,
           "x_right": 275,
           "y": 93,
+          "kwgt_position": {
+            "x_left": 349.1428571428571,
+            "x_right": 275.0,
+            "y": 93.0
+          },
           "PlaneText": {
             "font_size": 30,
             "value": "✈"
@@ -150,6 +227,12 @@
           "position": {
             "x": -245.0,
             "y": 100.0
+          },
+          "kwgt_position": {
+            "x_right": 0,
+            "x_left": 245.0,
+            "y_down": 100.0,
+            "y_up": 0
           },
           "Destination": {
             "position": {
@@ -178,6 +261,12 @@
       "position": {
         "x": 200,
         "y": -125
+      },
+      "kwgt_position": {
+        "x_right": 200.0,
+        "x_left": 0,
+        "y_down": 0,
+        "y_up": 125.0
       },
       "FooterText": {
         "font_size": 10,
