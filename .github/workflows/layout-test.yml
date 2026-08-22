@@ -71,7 +71,13 @@ jobs:
         run: |
           python python/layout_output_test.py
 
+      # ========================================================
+      # LAYOUT JSON CONTRACT TEST
+      # ========================================================
 
+      - name: Run Layout JSON Contract Test
+        run: |
+          python python/layout_json_contract_test.py
       # ========================================================
       # SUCCESS
       # ========================================================
