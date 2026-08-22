@@ -15,8 +15,8 @@
       "kwgt_position": {
         "x_right": 0.0,
         "x_left": 0.0,
-        "y_down": 0.0,
-        "y_up": 0.0
+        "y_up": 0.0,
+        "y_down": 0.0
       },
       "Background_shape": {
         "position": {
@@ -31,8 +31,8 @@
         "kwgt_position": {
           "x_right": 0.0,
           "x_left": 0.0,
-          "y_down": 0.0,
-          "y_up": 0.0
+          "y_up": 0.0,
+          "y_down": 0.0
         }
       }
     },
@@ -44,8 +44,8 @@
       "kwgt_position": {
         "x_right": 0.0,
         "x_left": 300.0,
-        "y_down": 0.0,
-        "y_up": 0.0
+        "y_up": 0.0,
+        "y_down": 0.0
       },
       "coverImage": {
         "position": {
@@ -62,15 +62,15 @@
           "kwgt_position": {
             "x_right": 0.0,
             "x_left": 0.0,
-            "y_down": 0.0,
-            "y_up": 0.0
+            "y_up": 0.0,
+            "y_down": 0.0
           }
         },
         "kwgt_position": {
           "x_right": 0.0,
           "x_left": 0.0,
-          "y_down": 0.0,
-          "y_up": 0.0
+          "y_up": 0.0,
+          "y_down": 0.0
         }
       }
     },
@@ -83,8 +83,8 @@
         "kwgt_position": {
           "x_right": 175.0,
           "x_left": 0.0,
-          "y_down": 0.0,
-          "y_up": 125.0
+          "y_up": 0.0,
+          "y_down": 125.0
         },
         "TitleText": {
           "font_size": 18,
@@ -99,8 +99,8 @@
         "kwgt_position": {
           "x_right": 50.0,
           "x_left": 0.0,
-          "y_down": 21.0,
-          "y_up": 0.0
+          "y_up": 21.0,
+          "y_down": 0.0
         },
         "DaysText": {
           "font_size": 15,
@@ -117,8 +117,8 @@
         "kwgt_position": {
           "x_right": 0.0,
           "x_left": 0.0,
-          "y_down": 0.0,
-          "y_up": 0.0
+          "y_up": 0.0,
+          "y_down": 0.0
         },
         "GradientVerticalShape": {
           "type": "rectangle",
@@ -134,8 +134,8 @@
         "kwgt_position": {
           "x_right": 0.0,
           "x_left": 0.0,
-          "y_down": 0.0,
-          "y_up": 0.0
+          "y_up": 0.0,
+          "y_down": 0.0
         },
         "GradientHorizontalShape": {
           "type": "rectangle",
@@ -152,8 +152,8 @@
       "kwgt_position": {
         "x_right": 195.0,
         "x_left": 0.0,
-        "y_down": 0.0,
-        "y_up": 20.0
+        "y_up": 0.0,
+        "y_down": 20.0
       },
       "DaysRemaining": {
         "position": {
@@ -163,8 +163,8 @@
         "kwgt_position": {
           "x_right": 0.0,
           "x_left": 0.0,
-          "y_down": 0.0,
-          "y_up": 0.0
+          "y_up": 0.0,
+          "y_down": 0.0
         },
         "DaysRemainingText": {
           "font_size": 100,
@@ -180,8 +180,8 @@
       "kwgt_position": {
         "x_right": 0.0,
         "x_left": 0.0,
-        "y_down": 0.0,
-        "y_up": 0.0
+        "y_up": 0.0,
+        "y_down": 0.0
       },
       "journey": {
         "position": {
@@ -191,8 +191,8 @@
         "kwgt_position": {
           "x_right": 0.0,
           "x_left": 0.0,
-          "y_down": 0.0,
-          "y_up": 0.0
+          "y_up": 0.0,
+          "y_down": 0.0
         },
         "Line": {
           "position": {
@@ -202,8 +202,8 @@
           "kwgt_position": {
             "x_right": 20.0,
             "x_left": 0.0,
-            "y_down": 100.0,
-            "y_up": 0.0
+            "y_up": 100.0,
+            "y_down": 0.0
           },
           "JourneyLineShape": {
             "type": "rectangle",
@@ -219,8 +219,8 @@
           "kwgt_position": {
             "x_right": 275.0,
             "x_left": 0.0,
-            "y_down": 100.0,
-            "y_up": 0.0
+            "y_up": 100.0,
+            "y_down": 0.0
           },
           "OriginShape": {
             "type": "circle",
@@ -249,8 +249,8 @@
           "kwgt_position": {
             "x_right": 0.0,
             "x_left": 245.0,
-            "y_down": 100.0,
-            "y_up": 0.0
+            "y_up": 100.0,
+            "y_down": 0.0
           },
           "Destination": {
             "position": {
@@ -264,8 +264,8 @@
             "kwgt_position": {
               "x_right": 0.0,
               "x_left": 0.0,
-              "y_down": 0.0,
-              "y_up": 0.0
+              "y_up": 0.0,
+              "y_down": 0.0
             }
           },
           "Arrival": {
@@ -280,8 +280,8 @@
             "kwgt_position": {
               "x_right": 0.0,
               "x_left": 0.0,
-              "y_down": 0.0,
-              "y_up": 0.0
+              "y_up": 0.0,
+              "y_down": 0.0
             }
           }
         }
@@ -295,8 +295,8 @@
       "kwgt_position": {
         "x_right": 200.0,
         "x_left": 0.0,
-        "y_down": 0.0,
-        "y_up": 125.0
+        "y_up": 0.0,
+        "y_down": 125.0
       },
       "FooterText": {
         "font_size": 10,
