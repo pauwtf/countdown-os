@@ -1,3 +1,8 @@
+# ============================================================
+# COUNTDOWN OS — KWGT COORDINATE ADAPTER TEST
+# Version: 1.2 Elegance
+# ============================================================
+
 from kwgt_coordinate_adapter import (
     adapt_directional_position,
     adapt_dual_x_position,
@@ -7,6 +12,27 @@ from kwgt_coordinate_adapter import (
 print("=" * 50)
 print("   COUNTDOWN OS — KWGT COORDINATE ADAPTER TEST")
 print("=" * 50)
+
+
+# ============================================================
+# COORDINATE CONVENTION
+# ============================================================
+#
+# COUNTDOWN OS:
+#
+#   +X = derecha
+#   -X = izquierda
+#   +Y = arriba
+#   -Y = abajo
+#
+# KWGT:
+#
+#   x_right = derecha
+#   x_left  = izquierda
+#   y_up    = arriba
+#   y_down  = abajo
+#
+# ============================================================
 
 
 # ============================================================
@@ -25,8 +51,10 @@ print(counter)
 
 assert counter["x_right"] == 195
 assert counter["x_left"] == 0
-assert counter["y_down"] == 0
-assert counter["y_up"] == 20
+
+# Countdown OS -20Y = KWGT 20Y Down
+assert counter["y_down"] == 20
+assert counter["y_up"] == 0
 
 
 # ============================================================
@@ -43,10 +71,13 @@ print("HEARTS")
 print("-" * 50)
 print(hearts)
 
+# Countdown OS -245X = KWGT 245X Left
 assert hearts["x_right"] == 0
 assert hearts["x_left"] == 245
-assert hearts["y_down"] == 100
-assert hearts["y_up"] == 0
+
+# Countdown OS +100Y = KWGT 100Y Up
+assert hearts["y_down"] == 0
+assert hearts["y_up"] == 100
 
 
 # ============================================================
@@ -65,8 +96,10 @@ print(origin)
 
 assert origin["x_right"] == 275
 assert origin["x_left"] == 0
-assert origin["y_down"] == 100
-assert origin["y_up"] == 0
+
+# Countdown OS +100Y = KWGT 100Y Up
+assert origin["y_down"] == 0
+assert origin["y_up"] == 100
 
 
 # ============================================================
@@ -90,7 +123,49 @@ assert zero["y_up"] == 0
 
 
 # ============================================================
-# TEST 5 — PLANE
+# TEST 5 — POSITIVE Y
+# ============================================================
+
+positive_y = adapt_directional_position(
+    0,
+    50,
+)
+
+print()
+print("POSITIVE Y")
+print("-" * 50)
+print(positive_y)
+
+# +Y = arriba
+assert positive_y["x_right"] == 0
+assert positive_y["x_left"] == 0
+assert positive_y["y_down"] == 0
+assert positive_y["y_up"] == 50
+
+
+# ============================================================
+# TEST 6 — NEGATIVE Y
+# ============================================================
+
+negative_y = adapt_directional_position(
+    0,
+    -50,
+)
+
+print()
+print("NEGATIVE Y")
+print("-" * 50)
+print(negative_y)
+
+# -Y = abajo
+assert negative_y["x_right"] == 0
+assert negative_y["x_left"] == 0
+assert negative_y["y_down"] == 50
+assert negative_y["y_up"] == 0
+
+
+# ============================================================
+# TEST 7 — PLANE
 # ============================================================
 
 plane = adapt_dual_x_position(
@@ -107,6 +182,26 @@ print(plane)
 assert plane["x_left"] == 349.1428571428571
 assert plane["x_right"] == 275
 assert plane["y"] == 93
+
+
+# ============================================================
+# TEST 8 — PLANE ZERO VALIDATION
+# ============================================================
+
+plane_zero = adapt_dual_x_position(
+    0,
+    0,
+    0,
+)
+
+print()
+print("PLANE ZERO")
+print("-" * 50)
+print(plane_zero)
+
+assert plane_zero["x_left"] == 0
+assert plane_zero["x_right"] == 0
+assert plane_zero["y"] == 0
 
 
 # ============================================================
