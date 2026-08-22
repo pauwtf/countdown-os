@@ -31,7 +31,8 @@ LAYOUT_FILE = OUTPUT_DIR / "layout.json"
 
 def add_kwgt_positions(node):
     """
-    Añade la representación de coordenadas KWGT.
+    Añade la representación de coordenadas KWGT
+    a los nodos que contienen posiciones.
 
     Countdown OS:
 
@@ -45,9 +46,22 @@ def add_kwgt_positions(node):
         y_down
         y_up
 
-    Los nodos ya procesados con `kwgt_position`
-    no vuelven a procesarse.
+    Plane:
+
+        x_left
+        x_right
+        y
+
+    IMPORTANTE:
+
+    - Nunca modifica `position`.
+    - Nunca procesa `kwgt_position`.
+    - Nunca crea coordenadas para nodos que no las tienen.
     """
+
+    # ========================================================
+    # DICT
+    # ========================================================
 
     if isinstance(node, dict):
 
@@ -55,22 +69,19 @@ def add_kwgt_positions(node):
         # STANDARD POSITION
         # ----------------------------------------------------
 
-        if (
-            "position" in node
-            and isinstance(node["position"], dict)
-        ):
+        position = node.get("position")
 
-            position = node["position"]
+        if isinstance(position, dict):
 
-            if (
-                "x" in position
-                and "y" in position
-            ):
+            x = position.get("x")
+            y = position.get("y")
+
+            if x is not None and y is not None:
 
                 node["kwgt_position"] = (
                     adapt_directional_position(
-                        position["x"],
-                        position["y"]
+                        x,
+                        y
                     )
                 )
 
@@ -93,12 +104,12 @@ def add_kwgt_positions(node):
             )
 
         # ----------------------------------------------------
-        # RECURSE THROUGH ORIGINAL CHILDREN ONLY
+        # RECURSION
         # ----------------------------------------------------
 
         for key, value in list(node.items()):
 
-            # Never recurse into the adapter output.
+            # Never recurse into generated adapter output.
             if key == "kwgt_position":
                 continue
 
@@ -106,7 +117,13 @@ def add_kwgt_positions(node):
 
                 add_kwgt_positions(value)
 
-    elif isinstance(node, list):
+        return node
+
+    # ========================================================
+    # LIST
+    # ========================================================
+
+    if isinstance(node, list):
 
         for item in node:
 
@@ -135,13 +152,113 @@ def generate_layout(event):
 
 def prepare_kwgt_layout(layout):
     """
-    Añade la representación de coordenadas KWGT
-    sin modificar el modelo abstracto.
+    Añade coordenadas KWGT al layout.
+
+    El modelo abstracto permanece intacto.
+
+    Ejemplo:
+
+        position:
+            x: 195
+            y: -20
+
+    se convierte adicionalmente en:
+
+        kwgt_position:
+            x_right: 195
+            x_left: 0
+            y_down: 0
+            y_up: 20
     """
+
+    if not isinstance(layout, dict):
+
+        raise TypeError(
+            "Layout must be a dictionary."
+        )
 
     add_kwgt_positions(layout)
 
     return layout
+
+
+# ============================================================
+# VALIDATE LAYOUT
+# ============================================================
+
+def validate_layout_output(layout):
+    """
+    Validaciones mínimas antes de escribir layout.json.
+    """
+
+    if not isinstance(layout, dict):
+
+        raise TypeError(
+            "Layout output must be a dictionary."
+        )
+
+    if "canvas" not in layout:
+
+        raise ValueError(
+            "Layout is missing canvas."
+        )
+
+    if "components" not in layout:
+
+        raise ValueError(
+            "Layout is missing components."
+        )
+
+    canvas = layout["canvas"]
+
+    if not isinstance(canvas, dict):
+
+        raise TypeError(
+            "Canvas must be a dictionary."
+        )
+
+    required_canvas = (
+        "width",
+        "height",
+        "anchor"
+    )
+
+    for key in required_canvas:
+
+        if key not in canvas:
+
+            raise ValueError(
+                f"Canvas is missing '{key}'."
+            )
+
+    components = layout["components"]
+
+    if not isinstance(components, dict):
+
+        raise TypeError(
+            "Components must be a dictionary."
+        )
+
+    required_components = [
+        "Background",
+        "Cover",
+        "Header",
+        "Gradient",
+        "Counter",
+        "Content",
+        "Footer",
+        "test",
+    ]
+
+    for component in required_components:
+
+        if component not in components:
+
+            raise ValueError(
+                f"Missing component: {component}"
+            )
+
+    return True
 
 
 # ============================================================
@@ -154,10 +271,11 @@ def write_layout(layout):
     en output/layout.json.
     """
 
-    OUTPUT_DIR.mkdir(
-        parents=True,
-        exist_ok=True
-    )
+    # --------------------------------------------------------
+    # VALIDATE INPUT
+    # --------------------------------------------------------
+
+    validate_layout_output(layout)
 
     # --------------------------------------------------------
     # PREPARE KWGT DATA
@@ -165,6 +283,23 @@ def write_layout(layout):
 
     output_layout = prepare_kwgt_layout(
         layout
+    )
+
+    # --------------------------------------------------------
+    # VALIDATE PREPARED OUTPUT
+    # --------------------------------------------------------
+
+    validate_layout_output(
+        output_layout
+    )
+
+    # --------------------------------------------------------
+    # OUTPUT DIRECTORY
+    # --------------------------------------------------------
+
+    OUTPUT_DIR.mkdir(
+        parents=True,
+        exist_ok=True
     )
 
     # --------------------------------------------------------
@@ -227,7 +362,9 @@ if __name__ == "__main__":
         "progress": 0.6571428571428571
     }
 
-    path = generate_layout_file(event)
+    path = generate_layout_file(
+        event
+    )
 
     print()
     print("=" * 50)
