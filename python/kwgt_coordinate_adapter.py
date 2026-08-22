@@ -35,8 +35,8 @@ def adapt_directional_position(x, y):
     Countdown OS:
         +X = derecha
         -X = izquierda
-        +Y = abajo
-        -Y = arriba
+        +Y = arriba
+        -Y = abajo
 
     KWGT:
         x_right
@@ -49,10 +49,31 @@ def adapt_directional_position(x, y):
     y = clean_zero(y or 0)
 
     return {
-        "x_right": clean_zero(max(x, 0)),
-        "x_left": clean_zero(max(-x, 0)),
-        "y_down": clean_zero(max(y, 0)),
-        "y_up": clean_zero(max(-y, 0)),
+        # ----------------------------------------------------
+        # X
+        # ----------------------------------------------------
+
+        "x_right": clean_zero(
+            max(x, 0)
+        ),
+
+        "x_left": clean_zero(
+            max(-x, 0)
+        ),
+
+        # ----------------------------------------------------
+        # Y
+        # ----------------------------------------------------
+
+        # Countdown OS +Y = KWGT UP
+        "y_up": clean_zero(
+            max(y, 0)
+        ),
+
+        # Countdown OS -Y = KWGT DOWN
+        "y_down": clean_zero(
+            max(-y, 0)
+        ),
     }
 
 
@@ -66,21 +87,51 @@ def adapt_dual_x_position(x_left, x_right, y):
     simultáneamente X izquierda y X derecha.
 
     Usado por componentes como Plane.
+
+    Plane mantiene sus dos coordenadas X
+    independientes.
+
+    Y mantiene la convención de Countdown OS:
+
+        +Y = arriba
+        -Y = abajo
     """
 
-    x_left = clean_zero(x_left or 0)
-    x_right = clean_zero(x_right or 0)
-    y = clean_zero(y or 0)
+    x_left = clean_zero(
+        x_left or 0
+    )
+
+    x_right = clean_zero(
+        x_right or 0
+    )
+
+    y = clean_zero(
+        y or 0
+    )
+
+    # --------------------------------------------------------
+    # VALIDATE X LEFT
+    # --------------------------------------------------------
 
     if x_left < 0:
+
         raise ValueError(
             f"x_left cannot be negative: {x_left}"
         )
 
+    # --------------------------------------------------------
+    # VALIDATE X RIGHT
+    # --------------------------------------------------------
+
     if x_right < 0:
+
         raise ValueError(
             f"x_right cannot be negative: {x_right}"
         )
+
+    # --------------------------------------------------------
+    # RETURN
+    # --------------------------------------------------------
 
     return {
         "x_left": x_left,
