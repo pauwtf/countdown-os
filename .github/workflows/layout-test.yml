@@ -71,6 +71,7 @@ jobs:
         run: |
           python python/layout_output_test.py
 
+
       # ========================================================
       # LAYOUT JSON CONTRACT TEST
       # ========================================================
@@ -78,20 +79,33 @@ jobs:
       - name: Run Layout JSON Contract Test
         run: |
           python python/layout_json_contract_test.py
+
+
+      # ========================================================
+      # PROGRESS → POSITION INTEGRATION TEST
+      # ========================================================
+
+      - name: Run Progress Position Integration Test
+        run: |
+          python python/layout_progress_position_test.py
+
+
       # ========================================================
       # SUCCESS
       # ========================================================
 
       - name: All Layout Tests Passed
         run: |
-          echo "=============================================="
+          echo "=================================================="
           echo "     🟢 COUNTDOWN OS — LAYOUT TESTS PASSED"
-          echo "=============================================="
+          echo "=================================================="
           echo ""
           echo "✓ Layout Engine"
           echo "✓ Progress Boundaries"
           echo "✓ Layout Contract"
           echo "✓ KWGT Coordinate Adapter"
           echo "✓ Layout Output"
+          echo "✓ Layout JSON Contract"
+          echo "✓ Progress → Position Integration"
           echo ""
           echo "Layout pipeline validated successfully."
