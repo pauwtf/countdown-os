@@ -168,7 +168,7 @@
         },
         "DaysRemainingText": {
           "font_size": 100,
-          "value": "43"
+          "value": "42"
         }
       }
     },
@@ -228,11 +228,11 @@
           }
         },
         "Plane": {
-          "x_left": 360.2857142857143,
+          "x_left": 364.0,
           "x_right": 275,
           "y": 93,
           "kwgt_position": {
-            "x_left": 360.2857142857143,
+            "x_left": 364.0,
             "x_right": 275.0,
             "y": 93.0
           },
