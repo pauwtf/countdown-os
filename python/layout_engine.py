@@ -16,6 +16,11 @@ from layout_tokens import (
     TEST
 )
 
+from component import (
+    build_countdown_tree,
+    build_component_tree,
+)
+
 from kwgt_coordinate_adapter import (
     adapt_directional_position,
     adapt_dual_x_position
@@ -63,10 +68,14 @@ def resolve_position(parent_position, local_position):
 def resolve_kwgt_position(position):
     """
     Convierte una posición interna del Layout Engine
-    a una posición direccional de KWGT.
+    a coordenadas direccionales de KWGT.
 
-    IMPORTANTE:
-    La posición interna se conserva intacta.
+    Countdown OS:
+
+        +X = derecha
+        -X = izquierda
+        +Y = arriba
+        -Y = abajo
     """
 
     return adapt_directional_position(
@@ -80,6 +89,9 @@ def resolve_kwgt_position(position):
 # ============================================================
 
 def normalize_progress(progress):
+    """
+    Normaliza progress al rango 0..1.
+    """
 
     if progress is None:
         return 0.0
@@ -104,6 +116,15 @@ def normalize_progress(progress):
 # ============================================================
 
 def resolve_plane_position(progress):
+    """
+    Calcula la posición dinámica del Plane.
+
+    El Plane utiliza dos coordenadas X:
+        x_left
+        x_right
+
+    y permanece independiente.
+    """
 
     progress = normalize_progress(progress)
 
@@ -124,501 +145,116 @@ def resolve_plane_position(progress):
 
 
 # ============================================================
+# COMPONENT DATA
+# ============================================================
+
+def build_component_data(event):
+    """
+    Construye los datos visuales que alimentan
+    el Component System.
+
+    Esta función NO cambia el modelo de componentes.
+    Solo prepara los valores dinámicos del evento.
+    """
+
+    progress = normalize_progress(
+        event.get("progress")
+    )
+
+    plane = resolve_plane_position(
+        progress
+    )
+
+    return {
+
+        "title": event.get(
+            "titleDisplay",
+            ""
+        ),
+
+        "days": event.get(
+            "daysDisplay",
+            ""
+        ),
+
+        "notes": event.get(
+            "notesDisplay",
+            ""
+        ),
+
+        "destination": event.get(
+            "destinationDisplay",
+            ""
+        ),
+
+        "arrival": event.get(
+            "arrivalDisplay",
+            ""
+        ),
+
+        "progress": progress,
+
+        "plane": plane
+    }
+
+
+# ============================================================
+# COMPONENT TREE
+# ============================================================
+
+def build_layout_components(event):
+    """
+    Construye el árbol de componentes de Countdown OS.
+
+    El Component System controla la jerarquía.
+    El Layout Engine controla los datos y posiciones.
+    """
+
+    data = build_component_data(event)
+
+    tree = build_countdown_tree(
+        data=data
+    )
+
+    return tree
+
+
+# ============================================================
 # BUILD LAYOUT
 # ============================================================
 
 def build_layout(event):
 
+    # --------------------------------------------------------
+    # COMPONENT TREE
+    # --------------------------------------------------------
+
+    components = build_layout_components(
+        event
+    )
+
+    # --------------------------------------------------------
+    # LAYOUT CONTRACT
+    # --------------------------------------------------------
+
     layout = {
 
         "version": "1.2",
 
-        "system": "Countdown OS Layout System",
+        "system": (
+            "Countdown OS Layout System"
+        ),
 
         "canvas": {
+
             "width": CANVAS["width"],
+
             "height": CANVAS["height"],
+
             "anchor": CANVAS["anchor"]
         },
 
-        "components": {}
+        "components": components
     }
-
-
-    # ========================================================
-    # BACKGROUND
-    # ========================================================
-
-    background_position = {
-        "x": BACKGROUND["x"],
-        "y": BACKGROUND["y"]
-    }
-
-    layout["components"]["Background"] = {
-
-        "position": background_position,
-
-        "kwgt_position": resolve_kwgt_position(
-            background_position
-        ),
-
-        "Background_shape": {
-
-            "position": {
-                "x": 0,
-                "y": 0
-            },
-
-            "BackgroundShape": {
-
-                "type": "rectangle",
-                "width": BACKGROUND["width"],
-                "height": BACKGROUND["height"]
-            }
-        }
-    }
-
-
-    # ========================================================
-    # COVER
-    # ========================================================
-
-    cover_position = {
-        "x": COVER["x"],
-        "y": COVER["y"]
-    }
-
-    layout["components"]["Cover"] = {
-
-        "position": cover_position,
-
-        "kwgt_position": resolve_kwgt_position(
-            cover_position
-        ),
-
-        "coverImage": {
-
-            "position": {
-                "x": COVER["image"]["x"],
-                "y": COVER["image"]["y"]
-            },
-
-            "coverText": {
-
-                "position": {
-                    "x": COVER["image"]["text"]["x"],
-                    "y": COVER["image"]["text"]["y"]
-                },
-
-                "font_size": (
-                    COVER["image"]["text"]["font_size"]
-                ),
-
-                "value": (
-                    COVER["image"]["text"]["value"]
-                )
-            }
-        }
-    }
-
-
-    # ========================================================
-    # HEADER
-    # ========================================================
-
-    title_position = {
-        "x": HEADER["title"]["x"],
-        "y": HEADER["title"]["y"]
-    }
-
-    days_position = {
-        "x": HEADER["days"]["x"],
-        "y": HEADER["days"]["y"]
-    }
-
-    layout["components"]["Header"] = {
-
-        "Title": {
-
-            "position": title_position,
-
-            "kwgt_position": resolve_kwgt_position(
-                title_position
-            ),
-
-            "TitleText": {
-
-                "font_size": HEADER["title"]["font_size"],
-
-                "value": event.get(
-                    "titleDisplay",
-                    ""
-                )
-            }
-        },
-
-        "Days": {
-
-            "position": days_position,
-
-            "kwgt_position": resolve_kwgt_position(
-                days_position
-            ),
-
-            "DaysText": {
-
-                "font_size": HEADER["days"]["font_size"],
-
-                "value": "days"
-            }
-        }
-    }
-
-
-    # ========================================================
-    # GRADIENT
-    # ========================================================
-
-    vertical_position = {
-        "x": GRADIENT["vertical"]["x"],
-        "y": GRADIENT["vertical"]["y"]
-    }
-
-    horizontal_position = {
-        "x": GRADIENT["horizontal"]["x"],
-        "y": GRADIENT["horizontal"]["y"]
-    }
-
-    layout["components"]["Gradient"] = {
-
-        "Vertical": {
-
-            "position": vertical_position,
-
-            "kwgt_position": resolve_kwgt_position(
-                vertical_position
-            ),
-
-            "GradientVerticalShape": {
-
-                "type": "rectangle",
-                "width": GRADIENT["vertical"]["width"],
-                "height": GRADIENT["vertical"]["height"]
-            }
-        },
-
-        "Horizontal": {
-
-            "position": horizontal_position,
-
-            "kwgt_position": resolve_kwgt_position(
-                horizontal_position
-            ),
-
-            "GradientHorizontalShape": {
-
-                "type": "rectangle",
-                "width": GRADIENT["horizontal"]["width"],
-                "height": GRADIENT["horizontal"]["height"]
-            }
-        }
-    }
-
-
-    # ========================================================
-    # COUNTER
-    # ========================================================
-
-    counter_position = {
-        "x": COUNTER["x"],
-        "y": COUNTER["y"]
-    }
-
-    days_remaining_position = {
-        "x": COUNTER["days_remaining"]["x"],
-        "y": COUNTER["days_remaining"]["y"]
-    }
-
-    layout["components"]["Counter"] = {
-
-        "position": counter_position,
-
-        "kwgt_position": resolve_kwgt_position(
-            counter_position
-        ),
-
-        "DaysRemaining": {
-
-            "position": days_remaining_position,
-
-            "kwgt_position": resolve_kwgt_position(
-                days_remaining_position
-            ),
-
-            "DaysRemainingText": {
-
-                "font_size": (
-                    COUNTER["days_remaining"]["font_size"]
-                ),
-
-                "value": event.get(
-                    "daysDisplay",
-                    ""
-                )
-            }
-        }
-    }
-
-
-    # ========================================================
-    # CONTENT
-    # ========================================================
-
-    content_position = {
-        "x": CONTENT["x"],
-        "y": CONTENT["y"]
-    }
-
-
-    journey_position = resolve_position(
-
-        (
-            content_position["x"],
-            content_position["y"]
-        ),
-
-        (
-            JOURNEY["x"],
-            JOURNEY["y"]
-        )
-    )
-
-
-    # ========================================================
-    # JOURNEY CHILDREN
-    # ========================================================
-
-    line_position = resolve_position(
-
-        (
-            journey_position["x"],
-            journey_position["y"]
-        ),
-
-        (
-            JOURNEY["line"]["x"],
-            JOURNEY["line"]["y"]
-        )
-    )
-
-
-    origin_position = resolve_position(
-
-        (
-            journey_position["x"],
-            journey_position["y"]
-        ),
-
-        (
-            JOURNEY["origin"]["x"],
-            JOURNEY["origin"]["y"]
-        )
-    )
-
-
-    hearts_position = resolve_position(
-
-        (
-            journey_position["x"],
-            journey_position["y"]
-        ),
-
-        (
-            JOURNEY["hearts"]["x"],
-            JOURNEY["hearts"]["y"]
-        )
-    )
-
-
-    plane_position = resolve_plane_position(
-        event.get("progress")
-    )
-
-
-    # ========================================================
-    # JOURNEY
-    # ========================================================
-
-    journey = {
-
-        "position": journey_position,
-
-        "kwgt_position": resolve_kwgt_position(
-            journey_position
-        ),
-
-        "Line": {
-
-            "position": line_position,
-
-            "kwgt_position": resolve_kwgt_position(
-                line_position
-            ),
-
-            "JourneyLineShape": {
-
-                "type": "rectangle",
-
-                "width": JOURNEY["line"]["width"],
-                "height": JOURNEY["line"]["height"]
-            }
-        },
-
-        "Origin": {
-
-            "position": origin_position,
-
-            "kwgt_position": resolve_kwgt_position(
-                origin_position
-            ),
-
-            "OriginShape": {
-
-                "type": "circle",
-
-                "size": JOURNEY["origin"]["size"]
-            }
-        },
-
-        "Plane": {
-
-            "x_left": plane_position["x_left"],
-            "x_right": plane_position["x_right"],
-            "y": plane_position["y"],
-
-            "kwgt_position": adapt_dual_x_position(
-                plane_position["x_left"],
-                plane_position["x_right"],
-                plane_position["y"]
-            ),
-
-            "PlaneText": {
-
-                "font_size": JOURNEY["plane"]["font_size"],
-
-                "value": "✈"
-            }
-        },
-
-        "Hearts": {
-
-            "position": hearts_position,
-
-            "kwgt_position": resolve_kwgt_position(
-                hearts_position
-            ),
-
-            "Destination": {
-
-                "position": {
-                    "x": JOURNEY["hearts"]["destination"]["x"],
-                    "y": JOURNEY["hearts"]["destination"]["y"]
-                },
-
-                "DestinationText": {
-
-                    "font_size": (
-                        JOURNEY["hearts"]
-                        ["destination"]
-                        ["font_size"]
-                    ),
-
-                    "value": event.get(
-                        "destinationDisplay",
-                        ""
-                    )
-                }
-            },
-
-            "Arrival": {
-
-                "position": {
-                    "x": JOURNEY["hearts"]["arrival"]["x"],
-                    "y": JOURNEY["hearts"]["arrival"]["y"]
-                },
-
-                "ArrivalText": {
-
-                    "font_size": (
-                        JOURNEY["hearts"]
-                        ["arrival"]
-                        ["font_size"]
-                    ),
-
-                    "value": event.get(
-                        "arrivalDisplay",
-                        ""
-                    )
-                }
-            }
-        }
-    }
-
-
-    layout["components"]["Content"] = {
-
-        "position": content_position,
-
-        "kwgt_position": resolve_kwgt_position(
-            content_position
-        ),
-
-        "journey": journey
-    }
-
-
-    # ========================================================
-    # FOOTER
-    # ========================================================
-
-    footer_position = {
-        "x": FOOTER["x"],
-        "y": FOOTER["y"]
-    }
-
-    layout["components"]["Footer"] = {
-
-        "position": footer_position,
-
-        "kwgt_position": resolve_kwgt_position(
-            footer_position
-        ),
-
-        "FooterText": {
-
-            "font_size": FOOTER["font_size"],
-
-            "value": event.get(
-                "notesDisplay",
-                ""
-            )
-        }
-    }
-
-
-    # ========================================================
-    # TEST
-    # ========================================================
-
-    layout["components"]["test"] = {
-
-        "TestText": {
-
-            "font_size": TEST["font_size"],
-
-            "value": ""
-        }
-    }
-
 
     return layout
