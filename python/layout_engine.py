@@ -17,8 +17,7 @@ from layout_tokens import (
 )
 
 from component import (
-    build_countdown_tree,
-    build_component_tree,
+    build_countdown_tree
 )
 
 from kwgt_coordinate_adapter import (
@@ -42,8 +41,10 @@ def resolve_position(parent_position, local_position):
     local_x, local_y = local_position
 
     try:
+
         parent_x = float(parent_x)
         parent_y = float(parent_y)
+
         local_x = float(local_x)
         local_y = float(local_y)
 
@@ -62,7 +63,7 @@ def resolve_position(parent_position, local_position):
 
 
 # ============================================================
-# KWGT POSITION HELPERS
+# KWGT POSITION
 # ============================================================
 
 def resolve_kwgt_position(position):
@@ -76,6 +77,8 @@ def resolve_kwgt_position(position):
         -X = izquierda
         +Y = arriba
         -Y = abajo
+
+    La posición abstracta original permanece intacta.
     """
 
     return adapt_directional_position(
@@ -97,6 +100,7 @@ def normalize_progress(progress):
         return 0.0
 
     try:
+
         progress = float(progress)
 
     except (TypeError, ValueError) as error:
@@ -118,17 +122,14 @@ def normalize_progress(progress):
 def resolve_plane_position(progress):
     """
     Calcula la posición dinámica del Plane.
-
-    El Plane utiliza dos coordenadas X:
-        x_left
-        x_right
-
-    y permanece independiente.
     """
 
-    progress = normalize_progress(progress)
+    progress = normalize_progress(
+        progress
+    )
 
     return {
+
         "x_left": (
             JOURNEY["plane"]["travel"]
             * progress
@@ -145,78 +146,18 @@ def resolve_plane_position(progress):
 
 
 # ============================================================
-# COMPONENT DATA
-# ============================================================
-
-def build_component_data(event):
-    """
-    Construye los datos visuales que alimentan
-    el Component System.
-
-    Esta función NO cambia el modelo de componentes.
-    Solo prepara los valores dinámicos del evento.
-    """
-
-    progress = normalize_progress(
-        event.get("progress")
-    )
-
-    plane = resolve_plane_position(
-        progress
-    )
-
-    return {
-
-        "title": event.get(
-            "titleDisplay",
-            ""
-        ),
-
-        "days": event.get(
-            "daysDisplay",
-            ""
-        ),
-
-        "notes": event.get(
-            "notesDisplay",
-            ""
-        ),
-
-        "destination": event.get(
-            "destinationDisplay",
-            ""
-        ),
-
-        "arrival": event.get(
-            "arrivalDisplay",
-            ""
-        ),
-
-        "progress": progress,
-
-        "plane": plane
-    }
-
-
-# ============================================================
 # COMPONENT TREE
 # ============================================================
 
-def build_layout_components(event):
+def get_component_tree():
     """
-    Construye el árbol de componentes de Countdown OS.
+    Devuelve el árbol estructural de Countdown OS.
 
-    El Component System controla la jerarquía.
-    El Layout Engine controla los datos y posiciones.
+    El Component System define únicamente
+    la jerarquía visual.
     """
 
-    data = build_component_data(event)
-
-    tree = build_countdown_tree(
-        data=data
-    )
-
-    return tree
+    return build_countdown_tree()
 
 
 # ============================================================
@@ -225,17 +166,15 @@ def build_layout_components(event):
 
 def build_layout(event):
 
-    # --------------------------------------------------------
-    # COMPONENT TREE
-    # --------------------------------------------------------
+    # ========================================================
+    # COMPONENT SYSTEM
+    # ========================================================
 
-    components = build_layout_components(
-        event
-    )
+    component_tree = get_component_tree()
 
-    # --------------------------------------------------------
-    # LAYOUT CONTRACT
-    # --------------------------------------------------------
+    # ========================================================
+    # ROOT LAYOUT
+    # ========================================================
 
     layout = {
 
@@ -254,7 +193,615 @@ def build_layout(event):
             "anchor": CANVAS["anchor"]
         },
 
-        "components": components
+        "components": {}
     }
+
+
+    # ========================================================
+    # BACKGROUND
+    # ========================================================
+
+    background_position = {
+
+        "x": BACKGROUND["x"],
+
+        "y": BACKGROUND["y"]
+    }
+
+    layout["components"]["Background"] = {
+
+        "position": background_position,
+
+        "kwgt_position": resolve_kwgt_position(
+            background_position
+        ),
+
+        "Background_shape": {
+
+            "position": {
+
+                "x": 0,
+
+                "y": 0
+            },
+
+            "BackgroundShape": {
+
+                "type": "rectangle",
+
+                "width": BACKGROUND["width"],
+
+                "height": BACKGROUND["height"]
+            }
+        }
+    }
+
+
+    # ========================================================
+    # COVER
+    # ========================================================
+
+    cover_position = {
+
+        "x": COVER["x"],
+
+        "y": COVER["y"]
+    }
+
+    layout["components"]["Cover"] = {
+
+        "position": cover_position,
+
+        "kwgt_position": resolve_kwgt_position(
+            cover_position
+        ),
+
+        "coverImage": {
+
+            "position": {
+
+                "x": COVER["image"]["x"],
+
+                "y": COVER["image"]["y"]
+            },
+
+            "coverText": {
+
+                "position": {
+
+                    "x": COVER["image"]["text"]["x"],
+
+                    "y": COVER["image"]["text"]["y"]
+                },
+
+                "font_size": (
+                    COVER["image"]["text"]["font_size"]
+                ),
+
+                "value": (
+                    COVER["image"]["text"]["value"]
+                )
+            }
+        }
+    }
+
+
+    # ========================================================
+    # HEADER
+    # ========================================================
+
+    title_position = {
+
+        "x": HEADER["title"]["x"],
+
+        "y": HEADER["title"]["y"]
+    }
+
+    days_position = {
+
+        "x": HEADER["days"]["x"],
+
+        "y": HEADER["days"]["y"]
+    }
+
+    layout["components"]["Header"] = {
+
+        "Title": {
+
+            "position": title_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                title_position
+            ),
+
+            "TitleText": {
+
+                "font_size": (
+                    HEADER["title"]["font_size"]
+                ),
+
+                "value": event.get(
+                    "titleDisplay",
+                    ""
+                )
+            }
+        },
+
+        "Days": {
+
+            "position": days_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                days_position
+            ),
+
+            "DaysText": {
+
+                "font_size": (
+                    HEADER["days"]["font_size"]
+                ),
+
+                "value": "days"
+            }
+        }
+    }
+
+
+    # ========================================================
+    # GRADIENT
+    # ========================================================
+
+    vertical_position = {
+
+        "x": GRADIENT["vertical"]["x"],
+
+        "y": GRADIENT["vertical"]["y"]
+    }
+
+    horizontal_position = {
+
+        "x": GRADIENT["horizontal"]["x"],
+
+        "y": GRADIENT["horizontal"]["y"]
+    }
+
+    layout["components"]["Gradient"] = {
+
+        "Vertical": {
+
+            "position": vertical_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                vertical_position
+            ),
+
+            "GradientVerticalShape": {
+
+                "type": "rectangle",
+
+                "width": (
+                    GRADIENT["vertical"]["width"]
+                ),
+
+                "height": (
+                    GRADIENT["vertical"]["height"]
+                )
+            }
+        },
+
+        "Horizontal": {
+
+            "position": horizontal_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                horizontal_position
+            ),
+
+            "GradientHorizontalShape": {
+
+                "type": "rectangle",
+
+                "width": (
+                    GRADIENT["horizontal"]["width"]
+                ),
+
+                "height": (
+                    GRADIENT["horizontal"]["height"]
+                )
+            }
+        }
+    }
+
+
+    # ========================================================
+    # COUNTER
+    # ========================================================
+
+    counter_position = {
+
+        "x": COUNTER["x"],
+
+        "y": COUNTER["y"]
+    }
+
+    days_remaining_position = {
+
+        "x": COUNTER["days_remaining"]["x"],
+
+        "y": COUNTER["days_remaining"]["y"]
+    }
+
+    layout["components"]["Counter"] = {
+
+        "position": counter_position,
+
+        "kwgt_position": resolve_kwgt_position(
+            counter_position
+        ),
+
+        "DaysRemaining": {
+
+            "position": days_remaining_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                days_remaining_position
+            ),
+
+            "DaysRemainingText": {
+
+                "font_size": (
+                    COUNTER[
+                        "days_remaining"
+                    ][
+                        "font_size"
+                    ]
+                ),
+
+                "value": event.get(
+                    "daysDisplay",
+                    ""
+                )
+            }
+        }
+    }
+
+
+    # ========================================================
+    # CONTENT
+    # ========================================================
+
+    content_position = {
+
+        "x": CONTENT["x"],
+
+        "y": CONTENT["y"]
+    }
+
+    journey_position = resolve_position(
+
+        (
+            content_position["x"],
+            content_position["y"]
+        ),
+
+        (
+            JOURNEY["x"],
+            JOURNEY["y"]
+        )
+    )
+
+
+    # ========================================================
+    # JOURNEY CHILDREN
+    # ========================================================
+
+    line_position = resolve_position(
+
+        (
+            journey_position["x"],
+            journey_position["y"]
+        ),
+
+        (
+            JOURNEY["line"]["x"],
+            JOURNEY["line"]["y"]
+        )
+    )
+
+    origin_position = resolve_position(
+
+        (
+            journey_position["x"],
+            journey_position["y"]
+        ),
+
+        (
+            JOURNEY["origin"]["x"],
+            JOURNEY["origin"]["y"]
+        )
+    )
+
+    hearts_position = resolve_position(
+
+        (
+            journey_position["x"],
+            journey_position["y"]
+        ),
+
+        (
+            JOURNEY["hearts"]["x"],
+            JOURNEY["hearts"]["y"]
+        )
+    )
+
+    plane_position = resolve_plane_position(
+        event.get("progress")
+    )
+
+
+    # ========================================================
+    # JOURNEY
+    # ========================================================
+
+    journey = {
+
+        "position": journey_position,
+
+        "kwgt_position": resolve_kwgt_position(
+            journey_position
+        ),
+
+        "Line": {
+
+            "position": line_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                line_position
+            ),
+
+            "JourneyLineShape": {
+
+                "type": "rectangle",
+
+                "width": (
+                    JOURNEY["line"]["width"]
+                ),
+
+                "height": (
+                    JOURNEY["line"]["height"]
+                )
+            }
+        },
+
+        "Origin": {
+
+            "position": origin_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                origin_position
+            ),
+
+            "OriginShape": {
+
+                "type": "circle",
+
+                "size": JOURNEY["origin"]["size"]
+            }
+        },
+
+        "Plane": {
+
+            "x_left": (
+                plane_position["x_left"]
+            ),
+
+            "x_right": (
+                plane_position["x_right"]
+            ),
+
+            "y": (
+                plane_position["y"]
+            ),
+
+            "kwgt_position": (
+                adapt_dual_x_position(
+                    plane_position["x_left"],
+                    plane_position["x_right"],
+                    plane_position["y"]
+                )
+            ),
+
+            "PlaneText": {
+
+                "font_size": (
+                    JOURNEY["plane"]["font_size"]
+                ),
+
+                "value": "✈"
+            }
+        },
+
+        "Hearts": {
+
+            "position": hearts_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                hearts_position
+            ),
+
+            "Destination": {
+
+                "position": {
+
+                    "x": (
+                        JOURNEY[
+                            "hearts"
+                        ][
+                            "destination"
+                        ][
+                            "x"
+                        ]
+                    ),
+
+                    "y": (
+                        JOURNEY[
+                            "hearts"
+                        ][
+                            "destination"
+                        ][
+                            "y"
+                        ]
+                    )
+                },
+
+                "DestinationText": {
+
+                    "font_size": (
+                        JOURNEY[
+                            "hearts"
+                        ][
+                            "destination"
+                        ][
+                            "font_size"
+                        ]
+                    ),
+
+                    "value": event.get(
+                        "destinationDisplay",
+                        ""
+                    )
+                }
+            },
+
+            "Arrival": {
+
+                "position": {
+
+                    "x": (
+                        JOURNEY[
+                            "hearts"
+                        ][
+                            "arrival"
+                        ][
+                            "x"
+                        ]
+                    ),
+
+                    "y": (
+                        JOURNEY[
+                            "hearts"
+                        ][
+                            "arrival"
+                        ][
+                            "y"
+                        ]
+                    )
+                },
+
+                "ArrivalText": {
+
+                    "font_size": (
+                        JOURNEY[
+                            "hearts"
+                        ][
+                            "arrival"
+                        ][
+                            "font_size"
+                        ]
+                    ),
+
+                    "value": event.get(
+                        "arrivalDisplay",
+                        ""
+                    )
+                }
+            }
+        }
+    }
+
+
+    layout["components"]["Content"] = {
+
+        "position": content_position,
+
+        "kwgt_position": resolve_kwgt_position(
+            content_position
+        ),
+
+        "journey": journey
+    }
+
+
+    # ========================================================
+    # FOOTER
+    # ========================================================
+
+    footer_position = {
+
+        "x": FOOTER["x"],
+
+        "y": FOOTER["y"]
+    }
+
+    layout["components"]["Footer"] = {
+
+        "position": footer_position,
+
+        "kwgt_position": resolve_kwgt_position(
+            footer_position
+        ),
+
+        "FooterText": {
+
+            "font_size": FOOTER["font_size"],
+
+            "value": event.get(
+                "notesDisplay",
+                ""
+            )
+        }
+    }
+
+
+    # ========================================================
+    # TEST
+    # ========================================================
+
+    layout["components"]["test"] = {
+
+        "TestText": {
+
+            "font_size": TEST["font_size"],
+
+            "value": ""
+        }
+    }
+
+
+    # ========================================================
+    # COMPONENT TREE VALIDATION
+    # ========================================================
+
+    expected_components = [
+        "Background",
+        "Cover",
+        "Header",
+        "Gradient",
+        "Counter",
+        "Content",
+        "Footer"
+    ]
+
+    for component_name in expected_components:
+
+        if component_tree.find(
+            component_name
+        ) is None:
+
+            raise ValueError(
+                "Component System is missing "
+                f"component: {component_name}"
+            )
+
 
     return layout
