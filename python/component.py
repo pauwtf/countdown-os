@@ -3,7 +3,10 @@
 # Version: 1.2 Elegance
 # ============================================================
 
-from component_schema import validate_properties
+from component_schema import (
+    validate_properties,
+    ComponentSchemaError,
+)
 
 
 # ============================================================
@@ -20,16 +23,19 @@ class Component:
         - properties
         - children
 
-    Las properties representan características visuales
-    abstractas del componente.
+    El Component System define la estructura visual
+    abstracta del sistema.
 
-    El Component System NO conoce:
+    NO conoce:
 
         - KWGT
         - coordenadas KWGT
         - Web Get
         - fórmulas KWGT
-        - lógica de rendering
+        - rendering
+
+    La validación de propiedades pertenece al
+    Component Schema.
     """
 
     def __init__(
@@ -38,17 +44,27 @@ class Component:
         properties=None,
     ):
 
+        # ====================================================
+        # NAME VALIDATION
+        # ====================================================
+
         if not isinstance(name, str):
+
             raise TypeError(
                 "Component name must be a string"
             )
 
         if not name.strip():
+
             raise ValueError(
                 "Component name cannot be empty"
             )
 
         self.name = name
+
+        # ====================================================
+        # PROPERTIES
+        # ====================================================
 
         self.properties = (
             properties.copy()
@@ -56,7 +72,15 @@ class Component:
             else {}
         )
 
+        # ====================================================
+        # CHILDREN
+        # ====================================================
+
         self.children = []
+
+        # ====================================================
+        # SCHEMA VALIDATION
+        # ====================================================
 
         self.validate()
 
@@ -67,11 +91,15 @@ class Component:
 
     def validate(self):
         """
-        Valida las properties del componente
-        contra Component Schema.
+        Valida las propiedades actuales contra
+        Component Schema.
+
+        El Component System no implementa las reglas
+        del schema; únicamente las ejecuta.
         """
 
         validate_properties(
+            self.name,
             self.properties
         )
 
@@ -90,37 +118,56 @@ class Component:
         """
         Define o actualiza una propiedad.
 
-        Si el nuevo estado es inválido,
-        el cambio se revierte.
+        La propiedad se valida inmediatamente
+        contra Component Schema.
         """
 
         if not isinstance(key, str):
+
             raise TypeError(
                 "Property key must be a string"
             )
 
         if not key.strip():
+
             raise ValueError(
                 "Property key cannot be empty"
             )
 
-        had_previous = (
-            key in self.properties
+        # ----------------------------------------------------
+        # Store previous state
+        # ----------------------------------------------------
+
+        previous_value = self.properties.get(
+            key,
+            None
         )
 
-        previous_value = (
-            self.properties.get(key)
-        )
+        property_existed = key in self.properties
+
+        # ----------------------------------------------------
+        # Apply change
+        # ----------------------------------------------------
 
         self.properties[key] = value
+
+        # ----------------------------------------------------
+        # Validate
+        # ----------------------------------------------------
 
         try:
 
             self.validate()
 
-        except Exception:
+        except (
+            TypeError,
+            ValueError,
+            ComponentSchemaError,
+        ):
 
-            if had_previous:
+            # Restore previous state
+
+            if property_existed:
 
                 self.properties[key] = (
                     previous_value
@@ -134,6 +181,10 @@ class Component:
 
         return value
 
+
+    # ========================================================
+    # GET PROPERTY
+    # ========================================================
 
     def get_property(
         self,
@@ -152,16 +203,25 @@ class Component:
         )
 
 
+    # ========================================================
+    # HAS PROPERTY
+    # ========================================================
+
     def has_property(
         self,
         key,
     ):
         """
-        Comprueba si existe una propiedad.
+        Comprueba si el componente posee
+        una propiedad.
         """
 
         return key in self.properties
 
+
+    # ========================================================
+    # REMOVE PROPERTY
+    # ========================================================
 
     def remove_property(
         self,
@@ -170,16 +230,17 @@ class Component:
         """
         Elimina una propiedad.
 
-        Si el resultado es inválido,
-        restaura la propiedad.
+        La operación se valida después
+        de eliminarla.
+
+        Devuelve True si existía.
         """
 
         if key not in self.properties:
+
             return False
 
-        previous_value = (
-            self.properties[key]
-        )
+        previous_value = self.properties[key]
 
         del self.properties[key]
 
@@ -187,11 +248,13 @@ class Component:
 
             self.validate()
 
-        except Exception:
+        except (
+            TypeError,
+            ValueError,
+            ComponentSchemaError,
+        ):
 
-            self.properties[key] = (
-                previous_value
-            )
+            self.properties[key] = previous_value
 
             raise
 
@@ -214,6 +277,7 @@ class Component:
             component,
             Component
         ):
+
             raise TypeError(
                 "component must be an instance of Component"
             )
@@ -239,6 +303,7 @@ class Component:
         """
 
         if self.name == name:
+
             return self
 
         for child in self.children:
@@ -248,6 +313,7 @@ class Component:
             )
 
             if result is not None:
+
                 return result
 
         return None
@@ -259,10 +325,14 @@ class Component:
 
     def to_dict(self):
         """
-        Serializa el componente y sus hijos.
-        """
+        Convierte el componente y sus hijos
+        en una estructura de diccionario.
 
-        self.validate()
+        Las properties pertenecen directamente
+        al componente.
+
+        Los hijos aparecen bajo su propio nombre.
+        """
 
         result = {}
 
@@ -288,11 +358,10 @@ def build_countdown_tree():
     Construye la jerarquía visual base
     de Countdown OS.
 
-    Las propiedades pertenecen al
-    Component System.
+    Las coordenadas pertenecen al Layout Engine.
 
-    Las coordenadas pertenecen al
-    Layout Engine.
+    Las propiedades visuales pertenecen
+    al Component System.
     """
 
     # ========================================================
@@ -562,25 +631,6 @@ def build_countdown_tree():
 
 
     # ========================================================
-    # VALIDATE COMPLETE TREE
-    # ========================================================
-
-    def validate_tree(component):
-
-        component.validate()
-
-        for child in component.children:
-
-            validate_tree(
-                child
-            )
-
-    validate_tree(
-        countdown
-    )
-
-
-    # ========================================================
     # RETURN TREE
     # ========================================================
 
@@ -593,8 +643,8 @@ def build_countdown_tree():
 
 def build_component_tree():
     """
-    Construye el árbol y devuelve
-    una representación serializable.
+    Construye el árbol y devuelve su representación
+    serializable.
     """
 
     tree = build_countdown_tree()
@@ -618,18 +668,28 @@ if __name__ == "__main__":
     print("=" * 50)
 
     print()
+
     print(
         f"Root: {tree.name}"
     )
 
+    print(
+        f"Root type: "
+        f"{tree.get_property('type')}"
+    )
+
     print()
+
     print("Children:")
 
     for child in tree.children:
 
         print(
             f"  └── {child.name}"
+            f" [{child.get_property('type')}]"
         )
+
+    print()
 
     plane = tree.find(
         "Plane"
@@ -639,47 +699,33 @@ if __name__ == "__main__":
         "Header"
     )
 
-    print()
     print(
         f"Found Plane: "
         f"{plane is not None}"
     )
 
-    print()
     print(
         f"Plane type: "
         f"{plane.get_property('type')}"
     )
 
-    print()
     print(
         f"Header type: "
         f"{header.get_property('type')}"
     )
 
     print()
-    print(
-        "Validating complete tree..."
-    )
 
-    tree.validate()
+    # ========================================================
+    # VALIDATE ENTIRE TREE
+    # ========================================================
 
-    print()
-    print(
-        "✓ Root component valid"
-    )
+    for component in tree.children:
+
+        component.validate()
 
     print(
-        "✓ Component properties validated"
-    )
-
-    print(
-        "✓ Component tree validated"
-    )
-
-    print()
-    print(
-        "🟢 Component System ready"
+        "🟢 Component schema validation passed"
     )
 
     print()
