@@ -78,12 +78,47 @@ def resolve_kwgt_position(position):
         +Y = arriba
         -Y = abajo
 
+    KWGT:
+
+        x_right
+        x_left
+        y_up
+        y_down
+
     La posición abstracta original permanece intacta.
     """
 
     return adapt_directional_position(
         position["x"],
         position["y"]
+    )
+
+
+# ============================================================
+# COMPONENT PROPERTY
+# ============================================================
+
+def get_component_property(
+    component,
+    key,
+    fallback=None
+):
+    """
+    Obtiene una propiedad visual desde un Component.
+
+    Si la propiedad todavía no existe,
+    devuelve el valor fallback.
+
+    Esto permite una migración gradual desde
+    layout_tokens.py hacia Component System.
+    """
+
+    if component is None:
+        return fallback
+
+    return component.get_property(
+        key,
+        fallback
     )
 
 
@@ -122,6 +157,10 @@ def normalize_progress(progress):
 def resolve_plane_position(progress):
     """
     Calcula la posición dinámica del Plane.
+
+    La posición continúa dependiendo de progress.
+    Las propiedades visuales del Plane pertenecen
+    al Component System.
     """
 
     progress = normalize_progress(
@@ -153,8 +192,8 @@ def get_component_tree():
     """
     Devuelve el árbol estructural de Countdown OS.
 
-    El Component System define únicamente
-    la jerarquía visual.
+    El Component System define la jerarquía
+    y las propiedades visuales abstractas.
     """
 
     return build_countdown_tree()
@@ -171,6 +210,68 @@ def build_layout(event):
     # ========================================================
 
     component_tree = get_component_tree()
+
+
+    # ========================================================
+    # COMPONENT REFERENCES
+    # ========================================================
+
+    background_component = component_tree.find(
+        "Background"
+    )
+
+    cover_component = component_tree.find(
+        "Cover"
+    )
+
+    title_component = component_tree.find(
+        "Title"
+    )
+
+    days_component = component_tree.find(
+        "Days"
+    )
+
+    vertical_component = component_tree.find(
+        "Vertical"
+    )
+
+    horizontal_component = component_tree.find(
+        "Horizontal"
+    )
+
+    counter_component = component_tree.find(
+        "Counter"
+    )
+
+    days_remaining_component = component_tree.find(
+        "DaysRemaining"
+    )
+
+    line_component = component_tree.find(
+        "Line"
+    )
+
+    origin_component = component_tree.find(
+        "Origin"
+    )
+
+    plane_component = component_tree.find(
+        "Plane"
+    )
+
+    destination_component = component_tree.find(
+        "Destination"
+    )
+
+    arrival_component = component_tree.find(
+        "Arrival"
+    )
+
+    footer_component = component_tree.find(
+        "Footer"
+    )
+
 
     # ========================================================
     # ROOT LAYOUT
@@ -208,6 +309,18 @@ def build_layout(event):
         "y": BACKGROUND["y"]
     }
 
+    background_type = get_component_property(
+        background_component,
+        "type",
+        "container"
+    )
+
+    background_shape_type = get_component_property(
+        background_component,
+        "shape_type",
+        "rectangle"
+    )
+
     layout["components"]["Background"] = {
 
         "position": background_position,
@@ -227,7 +340,7 @@ def build_layout(event):
 
             "BackgroundShape": {
 
-                "type": "rectangle",
+                "type": background_shape_type,
 
                 "width": BACKGROUND["width"],
 
@@ -247,6 +360,18 @@ def build_layout(event):
 
         "y": COVER["y"]
     }
+
+    cover_value = get_component_property(
+        cover_component,
+        "value",
+        COVER["image"]["text"]["value"]
+    )
+
+    cover_font_size = get_component_property(
+        cover_component,
+        "font_size",
+        COVER["image"]["text"]["font_size"]
+    )
 
     layout["components"]["Cover"] = {
 
@@ -274,13 +399,9 @@ def build_layout(event):
                     "y": COVER["image"]["text"]["y"]
                 },
 
-                "font_size": (
-                    COVER["image"]["text"]["font_size"]
-                ),
+                "font_size": cover_font_size,
 
-                "value": (
-                    COVER["image"]["text"]["value"]
-                )
+                "value": cover_value
             }
         }
     }
@@ -304,6 +425,24 @@ def build_layout(event):
         "y": HEADER["days"]["y"]
     }
 
+    title_font_size = get_component_property(
+        title_component,
+        "font_size",
+        HEADER["title"]["font_size"]
+    )
+
+    days_font_size = get_component_property(
+        days_component,
+        "font_size",
+        HEADER["days"]["font_size"]
+    )
+
+    days_value = get_component_property(
+        days_component,
+        "value",
+        "days"
+    )
+
     layout["components"]["Header"] = {
 
         "Title": {
@@ -316,9 +455,7 @@ def build_layout(event):
 
             "TitleText": {
 
-                "font_size": (
-                    HEADER["title"]["font_size"]
-                ),
+                "font_size": title_font_size,
 
                 "value": event.get(
                     "titleDisplay",
@@ -337,11 +474,9 @@ def build_layout(event):
 
             "DaysText": {
 
-                "font_size": (
-                    HEADER["days"]["font_size"]
-                ),
+                "font_size": days_font_size,
 
-                "value": "days"
+                "value": days_value
             }
         }
     }
@@ -365,6 +500,18 @@ def build_layout(event):
         "y": GRADIENT["horizontal"]["y"]
     }
 
+    vertical_type = get_component_property(
+        vertical_component,
+        "shape_type",
+        "rectangle"
+    )
+
+    horizontal_type = get_component_property(
+        horizontal_component,
+        "shape_type",
+        "rectangle"
+    )
+
     layout["components"]["Gradient"] = {
 
         "Vertical": {
@@ -377,7 +524,7 @@ def build_layout(event):
 
             "GradientVerticalShape": {
 
-                "type": "rectangle",
+                "type": vertical_type,
 
                 "width": (
                     GRADIENT["vertical"]["width"]
@@ -399,7 +546,7 @@ def build_layout(event):
 
             "GradientHorizontalShape": {
 
-                "type": "rectangle",
+                "type": horizontal_type,
 
                 "width": (
                     GRADIENT["horizontal"]["width"]
@@ -431,6 +578,16 @@ def build_layout(event):
         "y": COUNTER["days_remaining"]["y"]
     }
 
+    days_remaining_font_size = get_component_property(
+        days_remaining_component,
+        "font_size",
+        COUNTER[
+            "days_remaining"
+        ][
+            "font_size"
+        ]
+    )
+
     layout["components"]["Counter"] = {
 
         "position": counter_position,
@@ -449,13 +606,7 @@ def build_layout(event):
 
             "DaysRemainingText": {
 
-                "font_size": (
-                    COUNTER[
-                        "days_remaining"
-                    ][
-                        "font_size"
-                    ]
-                ),
+                "font_size": days_remaining_font_size,
 
                 "value": event.get(
                     "daysDisplay",
@@ -540,6 +691,83 @@ def build_layout(event):
 
 
     # ========================================================
+    # JOURNEY PROPERTIES
+    # ========================================================
+
+    line_type = get_component_property(
+        line_component,
+        "shape_type",
+        "rectangle"
+    )
+
+    line_width = get_component_property(
+        line_component,
+        "width",
+        JOURNEY["line"]["width"]
+    )
+
+    line_height = get_component_property(
+        line_component,
+        "height",
+        JOURNEY["line"]["height"]
+    )
+
+    origin_type = get_component_property(
+        origin_component,
+        "shape_type",
+        "circle"
+    )
+
+    origin_size = get_component_property(
+        origin_component,
+        "size",
+        JOURNEY["origin"]["size"]
+    )
+
+    plane_font_size = get_component_property(
+        plane_component,
+        "font_size",
+        JOURNEY["plane"]["font_size"]
+    )
+
+    plane_value = get_component_property(
+        plane_component,
+        "value",
+        "✈"
+    )
+
+    destination_font_size = get_component_property(
+        destination_component,
+        "font_size",
+        JOURNEY[
+            "hearts"
+        ][
+            "destination"
+        ][
+            "font_size"
+        ]
+    )
+
+    arrival_font_size = get_component_property(
+        arrival_component,
+        "font_size",
+        JOURNEY[
+            "hearts"
+        ][
+            "arrival"
+        ][
+            "font_size"
+        ]
+    )
+
+    footer_font_size = get_component_property(
+        footer_component,
+        "font_size",
+        FOOTER["font_size"]
+    )
+
+
+    # ========================================================
     # JOURNEY
     # ========================================================
 
@@ -561,15 +789,11 @@ def build_layout(event):
 
             "JourneyLineShape": {
 
-                "type": "rectangle",
+                "type": line_type,
 
-                "width": (
-                    JOURNEY["line"]["width"]
-                ),
+                "width": line_width,
 
-                "height": (
-                    JOURNEY["line"]["height"]
-                )
+                "height": line_height
             }
         },
 
@@ -583,9 +807,9 @@ def build_layout(event):
 
             "OriginShape": {
 
-                "type": "circle",
+                "type": origin_type,
 
-                "size": JOURNEY["origin"]["size"]
+                "size": origin_size
             }
         },
 
@@ -613,11 +837,9 @@ def build_layout(event):
 
             "PlaneText": {
 
-                "font_size": (
-                    JOURNEY["plane"]["font_size"]
-                ),
+                "font_size": plane_font_size,
 
-                "value": "✈"
+                "value": plane_value
             }
         },
 
@@ -656,15 +878,7 @@ def build_layout(event):
 
                 "DestinationText": {
 
-                    "font_size": (
-                        JOURNEY[
-                            "hearts"
-                        ][
-                            "destination"
-                        ][
-                            "font_size"
-                        ]
-                    ),
+                    "font_size": destination_font_size,
 
                     "value": event.get(
                         "destinationDisplay",
@@ -700,15 +914,7 @@ def build_layout(event):
 
                 "ArrivalText": {
 
-                    "font_size": (
-                        JOURNEY[
-                            "hearts"
-                        ][
-                            "arrival"
-                        ][
-                            "font_size"
-                        ]
-                    ),
+                    "font_size": arrival_font_size,
 
                     "value": event.get(
                         "arrivalDisplay",
@@ -753,7 +959,7 @@ def build_layout(event):
 
         "FooterText": {
 
-            "font_size": FOOTER["font_size"],
+            "font_size": footer_font_size,
 
             "value": event.get(
                 "notesDisplay",
@@ -783,6 +989,7 @@ def build_layout(event):
     # ========================================================
 
     expected_components = [
+
         "Background",
         "Cover",
         "Header",
@@ -790,6 +997,7 @@ def build_layout(event):
         "Counter",
         "Content",
         "Footer"
+
     ]
 
     for component_name in expected_components:
