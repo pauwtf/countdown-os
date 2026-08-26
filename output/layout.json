@@ -87,7 +87,7 @@
           "y_down": 125.0
         },
         "TitleText": {
-          "font_size": 40,
+          "font_size": 18,
           "value": "UNTIL ALEX"
         }
       },
@@ -103,7 +103,7 @@
           "y_down": 0.0
         },
         "DaysText": {
-          "font_size": 18,
+          "font_size": 15,
           "value": "days"
         }
       }
@@ -167,7 +167,7 @@
           "y_down": 0.0
         },
         "DaysRemainingText": {
-          "font_size": 20,
+          "font_size": 100,
           "value": "40"
         }
       }
@@ -207,8 +207,8 @@
           },
           "JourneyLineShape": {
             "type": "rectangle",
-            "width": 520,
-            "height": 5
+            "width": 258,
+            "height": 1
           }
         },
         "Origin": {
@@ -224,7 +224,7 @@
           },
           "OriginShape": {
             "type": "circle",
-            "size": 10
+            "size": 5
           }
         },
         "Plane": {
@@ -237,7 +237,7 @@
             "y": 93.0
           },
           "PlaneText": {
-            "font_size": 18,
+            "font_size": 30,
             "value": "✈"
           }
         },
@@ -258,7 +258,7 @@
               "y": 0
             },
             "DestinationText": {
-              "font_size": 15,
+              "font_size": 14,
               "value": ""
             },
             "kwgt_position": {
@@ -274,7 +274,7 @@
               "y": 0
             },
             "ArrivalText": {
-              "font_size": 15,
+              "font_size": 14,
               "value": ""
             },
             "kwgt_position": {
@@ -299,7 +299,7 @@
         "y_down": 125.0
       },
       "FooterText": {
-        "font_size": 14,
+        "font_size": 10,
         "value": "Comprar cacao"
       }
     },
