@@ -4,16 +4,20 @@
 # ============================================================
 
 
+# ============================================================
+# SCHEMA ERROR
+# ============================================================
+
 class ComponentSchemaError(Exception):
     """
     Error producido cuando un componente
-    no cumple el schema definido.
+    no cumple el Component Property Schema.
     """
     pass
 
 
 # ============================================================
-# PROPERTY DEFINITIONS
+# PROPERTY SCHEMA
 # ============================================================
 
 PROPERTY_SCHEMA = {
@@ -27,8 +31,9 @@ PROPERTY_SCHEMA = {
         "allowed": {
 
             "type",
+            "visible",
 
-            "visible"
+            "opacity"
         }
     },
 
@@ -86,13 +91,13 @@ PROPERTY_SCHEMA = {
 
             "size",
 
+            "radius",
+
             "color",
 
             "opacity",
 
-            "visible",
-
-            "radius"
+            "visible"
         }
     },
 
@@ -113,13 +118,13 @@ PROPERTY_SCHEMA = {
 
             "height",
 
+            "direction",
+
             "color_start",
 
             "color_end",
 
             "opacity",
-
-            "angle",
 
             "visible"
         }
@@ -133,7 +138,10 @@ PROPERTY_SCHEMA = {
 
 def get_component_type(properties):
 
-    if not isinstance(properties, dict):
+    if not isinstance(
+        properties,
+        dict
+    ):
 
         raise ComponentSchemaError(
             "Component properties must be a dictionary"
@@ -152,7 +160,7 @@ def get_component_type(properties):
     if component_type not in PROPERTY_SCHEMA:
 
         raise ComponentSchemaError(
-            f"Unknown component type: "
+            "Unknown component type: "
             f"'{component_type}'"
         )
 
@@ -165,7 +173,10 @@ def get_component_type(properties):
 
 def validate_properties(properties):
 
-    if not isinstance(properties, dict):
+    if not isinstance(
+        properties,
+        dict
+    ):
 
         raise ComponentSchemaError(
             "Component properties must be a dictionary"
@@ -206,10 +217,17 @@ def validate_component(component):
             "Component cannot be None"
         )
 
-    properties = component.properties
+    if not hasattr(
+        component,
+        "properties"
+    ):
+
+        raise ComponentSchemaError(
+            "Object is not a valid Component"
+        )
 
     validate_properties(
-        properties
+        component.properties
     )
 
     return True
