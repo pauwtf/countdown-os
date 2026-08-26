@@ -3,7 +3,6 @@
 # Version: 1.2 Elegance
 # ============================================================
 
-
 from component_schema import (
     validate_properties
 )
@@ -23,8 +22,11 @@ class Component:
         - properties
         - children
 
-    El Component System define la estructura
-    y las propiedades visuales abstractas.
+    El Component System define:
+
+        - jerarquía visual
+        - tipo de componente
+        - propiedades visuales
 
     NO conoce:
 
@@ -32,6 +34,7 @@ class Component:
         - coordenadas KWGT
         - Web Get
         - fórmulas KWGT
+        - lógica de layout
         - rendering
     """
 
@@ -42,13 +45,11 @@ class Component:
     ):
 
         if not isinstance(name, str):
-
             raise TypeError(
                 "Component name must be a string"
             )
 
         if not name.strip():
-
             raise ValueError(
                 "Component name cannot be empty"
             )
@@ -72,8 +73,8 @@ class Component:
 
     def validate(self):
         """
-        Valida las propiedades del componente
-        utilizando Component Property Schema.
+        Valida las propiedades utilizando
+        Component Property Schema.
         """
 
         validate_properties(
@@ -95,17 +96,16 @@ class Component:
         """
         Define o actualiza una propiedad.
 
-        La propiedad se valida inmediatamente.
+        La nueva configuración se valida
+        antes de modificar el componente.
         """
 
         if not isinstance(key, str):
-
             raise TypeError(
                 "Property key must be a string"
             )
 
         if not key.strip():
-
             raise ValueError(
                 "Property key cannot be empty"
             )
@@ -158,13 +158,12 @@ class Component:
         """
         Elimina una propiedad.
 
-        No permite eliminar 'type',
-        porque todos los componentes necesitan
+        'type' no puede eliminarse porque
+        todos los componentes necesitan
         conservar su tipo.
         """
 
         if key == "type":
-
             raise ValueError(
                 "Component type cannot be removed"
             )
@@ -194,7 +193,6 @@ class Component:
             component,
             Component
         ):
-
             raise TypeError(
                 "component must be an instance of Component"
             )
@@ -215,11 +213,11 @@ class Component:
         name,
     ):
         """
-        Busca recursivamente un componente.
+        Busca recursivamente un componente
+        por nombre.
         """
 
         if self.name == name:
-
             return self
 
         for child in self.children:
@@ -229,7 +227,6 @@ class Component:
             )
 
             if result is not None:
-
                 return result
 
         return None
@@ -241,7 +238,8 @@ class Component:
 
     def to_dict(self):
         """
-        Convierte el árbol en diccionario.
+        Convierte el componente y sus hijos
+        en una estructura de diccionario.
         """
 
         result = {}
@@ -265,13 +263,14 @@ class Component:
 
 def build_countdown_tree():
     """
-    Construye el árbol visual de Countdown OS.
+    Construye la jerarquía visual de Countdown OS.
 
     Las propiedades visuales pertenecen al
     Component System.
 
     Las coordenadas pertenecen al Layout Engine.
     """
+
 
     # ========================================================
     # ROOT
@@ -419,7 +418,6 @@ def build_countdown_tree():
         }
     )
 
-
     vertical = Component(
         "Vertical",
         properties={
@@ -428,7 +426,6 @@ def build_countdown_tree():
         }
     )
 
-
     horizontal = Component(
         "Horizontal",
         properties={
@@ -436,7 +433,6 @@ def build_countdown_tree():
             "direction": "horizontal"
         }
     )
-
 
     gradient.add_child(
         vertical
@@ -462,7 +458,6 @@ def build_countdown_tree():
         }
     )
 
-
     days_remaining = Component(
         "DaysRemaining",
         properties={
@@ -471,7 +466,6 @@ def build_countdown_tree():
             "font_size": 100
         }
     )
-
 
     counter.add_child(
         days_remaining
@@ -493,14 +487,12 @@ def build_countdown_tree():
         }
     )
 
-
     journey = Component(
         "Journey",
         properties={
             "type": "container"
         }
     )
-
 
     content.add_child(
         journey
@@ -536,12 +528,20 @@ def build_countdown_tree():
     )
 
 
+    # ========================================================
+    # PLANE — VISUAL PROFILE
+    # ========================================================
+
     plane = Component(
         "Plane",
         properties={
             "type": "text",
+
             "value": "✈",
-            "font_size": 30
+
+            "font_size": 30,
+
+            "visible": True
         }
     )
 
@@ -616,7 +616,6 @@ def build_countdown_tree():
             "font_size": 10
         }
     )
-
 
     countdown.add_child(
         footer
@@ -708,6 +707,10 @@ if __name__ == "__main__":
 
     print()
 
+    # --------------------------------------------------------
+    # PLANE TEST
+    # --------------------------------------------------------
+
     plane = tree.find(
         "Plane"
     )
@@ -727,7 +730,16 @@ if __name__ == "__main__":
         f"{plane.get_property('font_size')}"
     )
 
+    print(
+        f"Plane visible: "
+        f"{plane.get_property('visible')}"
+    )
+
     print()
+
+    # --------------------------------------------------------
+    # TITLE TEST
+    # --------------------------------------------------------
 
     title = tree.find(
         "Title"
@@ -739,6 +751,10 @@ if __name__ == "__main__":
     )
 
     print()
+
+    # --------------------------------------------------------
+    # LINE TEST
+    # --------------------------------------------------------
 
     line = tree.find(
         "Line"
@@ -757,7 +773,7 @@ if __name__ == "__main__":
     print()
 
     print(
-        "🟢 Component properties configured"
+        "🟢 Component visual profile initialized"
     )
 
     print()
