@@ -4,14 +4,10 @@
 # ============================================================
 
 
-# ============================================================
-# SCHEMA ERROR
-# ============================================================
-
-class ComponentSchemaError(ValueError):
+class ComponentSchemaError(Exception):
     """
     Error producido cuando un componente
-    no cumple el Property Schema.
+    no cumple el schema definido.
     """
     pass
 
@@ -28,11 +24,11 @@ PROPERTY_SCHEMA = {
 
     "container": {
 
-        "required": [],
+        "allowed": {
 
-        "optional": {
+            "type",
 
-            "type": str,
+            "visible"
         }
     },
 
@@ -43,29 +39,31 @@ PROPERTY_SCHEMA = {
 
     "text": {
 
-        "required": [],
+        "allowed": {
 
-        "optional": {
+            "type",
 
-            "type": str,
+            "value",
 
-            "value": str,
+            "font_size",
 
-            "font_size": (int, float),
+            "font_family",
 
-            "font_family": str,
+            "font_weight",
 
-            "font_weight": str,
+            "font_style",
 
-            "alignment": str,
+            "color",
 
-            "line_height": (int, float),
+            "opacity",
 
-            "max_lines": int,
+            "visible",
 
-            "letter_spacing": (int, float),
+            "align",
 
-            "opacity": (int, float),
+            "max_width",
+
+            "max_lines"
         }
     },
 
@@ -76,23 +74,25 @@ PROPERTY_SCHEMA = {
 
     "shape": {
 
-        "required": [],
+        "allowed": {
 
-        "optional": {
+            "type",
 
-            "type": str,
+            "shape_type",
 
-            "shape_type": str,
+            "width",
 
-            "width": (int, float),
+            "height",
 
-            "height": (int, float),
+            "size",
 
-            "size": (int, float),
+            "color",
 
-            "radius": (int, float),
+            "opacity",
 
-            "opacity": (int, float),
+            "visible",
+
+            "radius"
         }
     },
 
@@ -103,522 +103,113 @@ PROPERTY_SCHEMA = {
 
     "gradient": {
 
-        "required": [],
+        "allowed": {
 
-        "optional": {
+            "type",
 
-            "type": str,
+            "shape_type",
 
-            "direction": str,
+            "width",
 
-            "start": str,
+            "height",
 
-            "end": str,
+            "color_start",
 
-            "start_opacity": (int, float),
+            "color_end",
 
-            "end_opacity": (int, float),
+            "opacity",
 
-            "opacity": (int, float),
+            "angle",
+
+            "visible"
         }
-    },
+    }
 }
 
 
 # ============================================================
-# VALID COMPONENT TYPES
+# COMPONENT TYPE
 # ============================================================
 
-COMPONENT_TYPES = set(
-    PROPERTY_SCHEMA.keys()
-)
+def get_component_type(properties):
 
+    if not isinstance(properties, dict):
 
-# ============================================================
-# TYPE VALIDATION
-# ============================================================
-
-def validate_component_type(
-    component_type
-):
-    """
-    Valida que el tipo del componente
-    exista en el schema.
-    """
-
-    if not isinstance(
-        component_type,
-        str
-    ):
         raise ComponentSchemaError(
-            "Component type must be a string"
+            "Component properties must be a dictionary"
         )
 
-    if component_type not in COMPONENT_TYPES:
+    component_type = properties.get(
+        "type"
+    )
+
+    if component_type is None:
+
+        raise ComponentSchemaError(
+            "Component properties require 'type'"
+        )
+
+    if component_type not in PROPERTY_SCHEMA:
 
         raise ComponentSchemaError(
             f"Unknown component type: "
-            f"{component_type}"
+            f"'{component_type}'"
         )
-
-    return True
-
-
-# ============================================================
-# PROPERTY TYPE VALIDATION
-# ============================================================
-
-def validate_property_type(
-    property_name,
-    value,
-    expected_type
-):
-    """
-    Valida el tipo de una propiedad.
-    """
-
-    # --------------------------------------------------------
-    # Boolean
-    # --------------------------------------------------------
-
-    if expected_type is bool:
-
-        if not isinstance(
-            value,
-            bool
-        ):
-
-            raise ComponentSchemaError(
-                f"Property '{property_name}' "
-                f"must be bool"
-            )
-
-        return
-
-
-    # --------------------------------------------------------
-    # Numeric
-    # --------------------------------------------------------
-
-    if expected_type in (
-        int,
-        float,
-        (int, float)
-    ):
-
-        if (
-            not isinstance(
-                value,
-                (int, float)
-            )
-            or isinstance(
-                value,
-                bool
-            )
-        ):
-
-            raise ComponentSchemaError(
-                f"Property '{property_name}' "
-                f"must be numeric"
-            )
-
-        return
-
-
-    # --------------------------------------------------------
-    # Generic isinstance
-    # --------------------------------------------------------
-
-    if not isinstance(
-        value,
-        expected_type
-    ):
-
-        if isinstance(
-            expected_type,
-            tuple
-        ):
-
-            expected_name = " or ".join(
-                item.__name__
-                for item in expected_type
-            )
-
-        else:
-
-            expected_name = (
-                expected_type.__name__
-            )
-
-        raise ComponentSchemaError(
-            f"Property '{property_name}' "
-            f"must be {expected_name}"
-        )
-
-
-# ============================================================
-# COMPONENT TYPE FROM PROPERTIES
-# ============================================================
-
-def get_component_type(
-    properties
-):
-    """
-    Obtiene el tipo del componente
-    desde sus propiedades.
-    """
-
-    if not isinstance(
-        properties,
-        dict
-    ):
-
-        raise ComponentSchemaError(
-            "Component properties "
-            "must be a dictionary"
-        )
-
-    if "type" not in properties:
-
-        raise ComponentSchemaError(
-            "Component properties "
-            "require 'type'"
-        )
-
-    component_type = (
-        properties["type"]
-    )
-
-    validate_component_type(
-        component_type
-    )
 
     return component_type
 
 
 # ============================================================
-# VALIDATE PROPERTIES
+# PROPERTY VALIDATION
 # ============================================================
 
-def validate_properties(
-    properties
-):
-    """
-    Valida todas las propiedades de un componente.
+def validate_properties(properties):
 
-    El tipo del componente se obtiene
-    desde properties['type'].
-    """
+    if not isinstance(properties, dict):
 
-    component_type = (
-        get_component_type(
-            properties
+        raise ComponentSchemaError(
+            "Component properties must be a dictionary"
         )
+
+    component_type = get_component_type(
+        properties
     )
 
-    schema = PROPERTY_SCHEMA[
+    allowed_properties = PROPERTY_SCHEMA[
         component_type
+    ][
+        "allowed"
     ]
 
-    required = schema[
-        "required"
-    ]
+    for key in properties:
 
-    optional = schema[
-        "optional"
-    ]
-
-
-    # ========================================================
-    # REQUIRED PROPERTIES
-    # ========================================================
-
-    for property_name in required:
-
-        if property_name not in properties:
+        if key not in allowed_properties:
 
             raise ComponentSchemaError(
-                f"Component type "
-                f"'{component_type}' "
-                f"requires property "
-                f"'{property_name}'"
-            )
-
-
-    # ========================================================
-    # PROPERTY VALIDATION
-    # ========================================================
-
-    allowed_properties = set(
-        optional.keys()
-    )
-
-    allowed_properties.update(
-        required
-    )
-
-    for property_name, value in (
-        properties.items()
-    ):
-
-        # ----------------------------------------------------
-        # Unknown property
-        # ----------------------------------------------------
-
-        if (
-            property_name
-            not in allowed_properties
-        ):
-
-            raise ComponentSchemaError(
-                f"Property "
-                f"'{property_name}' "
-                f"is not allowed for "
-                f"component type "
+                f"Property '{key}' is not allowed "
+                f"for component type "
                 f"'{component_type}'"
             )
-
-
-        # ----------------------------------------------------
-        # Type validation
-        # ----------------------------------------------------
-
-        if property_name in optional:
-
-            expected_type = optional[
-                property_name
-            ]
-
-        else:
-
-            # Required properties
-            # should also have a schema.
-            expected_type = optional.get(
-                property_name
-            )
-
-            if expected_type is None:
-
-                raise ComponentSchemaError(
-                    f"No type definition "
-                    f"for required property "
-                    f"'{property_name}'"
-                )
-
-        validate_property_type(
-            property_name,
-            value,
-            expected_type
-        )
-
 
     return True
 
 
 # ============================================================
-# PROPERTY ACCESS
+# COMPONENT VALIDATION
 # ============================================================
 
-def get_property_schema(
-    component_type
-):
-    """
-    Devuelve el schema completo
-    de un tipo de componente.
-    """
+def validate_component(component):
 
-    validate_component_type(
-        component_type
-    )
+    if component is None:
 
-    return PROPERTY_SCHEMA[
-        component_type
-    ]
-
-
-# ============================================================
-# ALLOWED PROPERTIES
-# ============================================================
-
-def get_allowed_properties(
-    component_type
-):
-    """
-    Devuelve las propiedades permitidas
-    para un tipo de componente.
-    """
-
-    schema = get_property_schema(
-        component_type
-    )
-
-    return set(
-        schema["required"]
-    ) | set(
-        schema["optional"].keys()
-    )
-
-
-# ============================================================
-# MANUAL TEST
-# ============================================================
-
-if __name__ == "__main__":
-
-    print()
-    print("=" * 55)
-    print(
-        "       COUNTDOWN OS — PROPERTY SCHEMA"
-    )
-    print("=" * 55)
-
-    print()
-
-    # ========================================================
-    # VALID CONTAINER
-    # ========================================================
-
-    validate_properties({
-        "type": "container"
-    })
-
-    print(
-        "✓ Container schema"
-    )
-
-
-    # ========================================================
-    # VALID TEXT
-    # ========================================================
-
-    validate_properties({
-
-        "type": "text",
-
-        "value": "UNTIL ALEX",
-
-        "font_size": 18,
-
-        "alignment": "center"
-    })
-
-    print(
-        "✓ Text schema"
-    )
-
-
-    # ========================================================
-    # VALID SHAPE
-    # ========================================================
-
-    validate_properties({
-
-        "type": "shape",
-
-        "shape_type": "rectangle",
-
-        "width": 400,
-
-        "height": 200
-    })
-
-    print(
-        "✓ Shape schema"
-    )
-
-
-    # ========================================================
-    # VALID GRADIENT
-    # ========================================================
-
-    validate_properties({
-
-        "type": "gradient",
-
-        "direction": "vertical",
-
-        "start": "#000000",
-
-        "end": "#FFFFFF"
-    })
-
-    print(
-        "✓ Gradient schema"
-    )
-
-
-    # ========================================================
-    # INVALID PROPERTY
-    # ========================================================
-
-    try:
-
-        validate_properties({
-
-            "type": "text",
-
-            "banana": "invalid"
-        })
-
-        raise AssertionError(
-            "Invalid property was accepted"
+        raise ComponentSchemaError(
+            "Component cannot be None"
         )
 
-    except ComponentSchemaError:
+    properties = component.properties
 
-        print(
-            "✓ Unknown property rejected"
-        )
-
-
-    # ========================================================
-    # INVALID TYPE
-    # ========================================================
-
-    try:
-
-        validate_properties({
-
-            "type": "unknown"
-        })
-
-        raise AssertionError(
-            "Unknown component type was accepted"
-        )
-
-    except ComponentSchemaError:
-
-        print(
-            "✓ Unknown component type rejected"
-        )
-
-
-    # ========================================================
-    # INVALID VALUE TYPE
-    # ========================================================
-
-    try:
-
-        validate_properties({
-
-            "type": "text",
-
-            "font_size": "large"
-        })
-
-        raise AssertionError(
-            "Invalid property type was accepted"
-        )
-
-    except ComponentSchemaError:
-
-        print(
-            "✓ Invalid property type rejected"
-        )
-
-
-    print()
-    print(
-        "🟢 Property Schema validation passed"
+    validate_properties(
+        properties
     )
-    print()
+
+    return True
