@@ -16,13 +16,17 @@ from layout_tokens import (
     TEST
 )
 
+
 from component import (
     build_countdown_tree
 )
 
-from component_property_resolver import (
-    resolve_component_property
+
+from property_resolver import (
+    resolve_component_property,
+    resolve_font_size
 )
+
 
 from kwgt_coordinate_adapter import (
     adapt_directional_position,
@@ -100,6 +104,53 @@ def resolve_kwgt_position(
     return adapt_directional_position(
         position["x"],
         position["y"]
+    )
+
+
+# ============================================================
+# COMPONENT PROPERTY
+# ============================================================
+
+def get_component_property(
+    component,
+    key,
+    fallback=None
+):
+    """
+    Compatibilidad con propiedades generales.
+
+    La resolución se delega al Property Resolver.
+    """
+
+    return resolve_component_property(
+        component,
+        key,
+        fallback
+    )
+
+
+# ============================================================
+# FONT SIZE
+# ============================================================
+
+def get_component_font_size(
+    component,
+    fallback=None
+):
+    """
+    Resuelve font_size utilizando
+    el Property Resolver.
+
+    Component System:
+        fuente primaria.
+
+    layout_tokens:
+        fallback de compatibilidad.
+    """
+
+    return resolve_font_size(
+        component,
+        fallback
     )
 
 
@@ -296,15 +347,16 @@ def build_layout(
         "y": BACKGROUND["y"]
     }
 
-    background_shape_type = (
-        resolve_component_property(
-            background_component,
-            "shape_type",
-            BACKGROUND.get(
-                "shape_type",
-                "rectangle"
-            )
-        )
+    background_type = get_component_property(
+        background_component,
+        "type",
+        "container"
+    )
+
+    background_shape_type = get_component_property(
+        background_component,
+        "shape_type",
+        "rectangle"
     )
 
     layout["components"]["Background"] = {
@@ -347,16 +399,10 @@ def build_layout(
         "y": COVER["y"]
     }
 
-    cover_value = resolve_component_property(
+    cover_value = get_component_property(
         cover_component,
         "value",
         COVER["image"]["text"]["value"]
-    )
-
-    cover_font_size = resolve_component_property(
-        cover_component,
-        "font_size",
-        COVER["image"]["text"]["font_size"]
     )
 
     layout["components"]["Cover"] = {
@@ -385,7 +431,15 @@ def build_layout(
                     "y": COVER["image"]["text"]["y"]
                 },
 
-                "font_size": cover_font_size,
+                "font_size": (
+                    COVER[
+                        "image"
+                    ][
+                        "text"
+                    ][
+                        "font_size"
+                    ]
+                ),
 
                 "value": cover_value
             }
@@ -411,23 +465,33 @@ def build_layout(
         "y": HEADER["days"]["y"]
     }
 
-    title_font_size = resolve_component_property(
+
+    title_font_size = get_component_font_size(
         title_component,
-        "font_size",
-        HEADER["title"]["font_size"]
+        HEADER[
+            "title"
+        ][
+            "font_size"
+        ]
     )
 
-    days_font_size = resolve_component_property(
+
+    days_font_size = get_component_font_size(
         days_component,
-        "font_size",
-        HEADER["days"]["font_size"]
+        HEADER[
+            "days"
+        ][
+            "font_size"
+        ]
     )
 
-    days_value = resolve_component_property(
+
+    days_value = get_component_property(
         days_component,
         "value",
         "days"
     )
+
 
     layout["components"]["Header"] = {
 
@@ -486,17 +550,19 @@ def build_layout(
         "y": GRADIENT["horizontal"]["y"]
     }
 
-    vertical_type = resolve_component_property(
+
+    vertical_type = get_component_property(
         vertical_component,
         "shape_type",
         "rectangle"
     )
 
-    horizontal_type = resolve_component_property(
+    horizontal_type = get_component_property(
         horizontal_component,
         "shape_type",
         "rectangle"
     )
+
 
     layout["components"]["Gradient"] = {
 
@@ -513,11 +579,19 @@ def build_layout(
                 "type": vertical_type,
 
                 "width": (
-                    GRADIENT["vertical"]["width"]
+                    GRADIENT[
+                        "vertical"
+                    ][
+                        "width"
+                    ]
                 ),
 
                 "height": (
-                    GRADIENT["vertical"]["height"]
+                    GRADIENT[
+                        "vertical"
+                    ][
+                        "height"
+                    ]
                 )
             }
         },
@@ -535,11 +609,19 @@ def build_layout(
                 "type": horizontal_type,
 
                 "width": (
-                    GRADIENT["horizontal"]["width"]
+                    GRADIENT[
+                        "horizontal"
+                    ][
+                        "width"
+                    ]
                 ),
 
                 "height": (
-                    GRADIENT["horizontal"]["height"]
+                    GRADIENT[
+                        "horizontal"
+                    ][
+                        "height"
+                    ]
                 )
             }
         }
@@ -559,22 +641,29 @@ def build_layout(
 
     days_remaining_position = {
 
-        "x": COUNTER["days_remaining"]["x"],
+        "x": COUNTER[
+            "days_remaining"
+        ][
+            "x"
+        ],
 
-        "y": COUNTER["days_remaining"]["y"]
+        "y": COUNTER[
+            "days_remaining"
+        ][
+            "y"
+        ]
     }
 
-    days_remaining_font_size = (
-        resolve_component_property(
-            days_remaining_component,
-            "font_size",
-            COUNTER[
-                "days_remaining"
-            ][
-                "font_size"
-            ]
-        )
+
+    days_remaining_font_size = get_component_font_size(
+        days_remaining_component,
+        COUNTER[
+            "days_remaining"
+        ][
+            "font_size"
+        ]
     )
+
 
     layout["components"]["Counter"] = {
 
@@ -594,7 +683,9 @@ def build_layout(
 
             "DaysRemainingText": {
 
-                "font_size": days_remaining_font_size,
+                "font_size": (
+                    days_remaining_font_size
+                ),
 
                 "value": event.get(
                     "daysDisplay",
@@ -615,6 +706,7 @@ def build_layout(
 
         "y": CONTENT["y"]
     }
+
 
     journey_position = resolve_position(
 
@@ -647,6 +739,7 @@ def build_layout(
         )
     )
 
+
     origin_position = resolve_position(
 
         (
@@ -659,6 +752,7 @@ def build_layout(
             JOURNEY["origin"]["y"]
         )
     )
+
 
     hearts_position = resolve_position(
 
@@ -673,6 +767,7 @@ def build_layout(
         )
     )
 
+
     plane_position = resolve_plane_position(
         event.get("progress")
     )
@@ -682,80 +777,99 @@ def build_layout(
     # JOURNEY PROPERTIES
     # ========================================================
 
-    line_type = resolve_component_property(
+    line_type = get_component_property(
         line_component,
         "shape_type",
         "rectangle"
     )
 
-    line_width = resolve_component_property(
+
+    line_width = get_component_property(
         line_component,
         "width",
-        JOURNEY["line"]["width"]
+        JOURNEY[
+            "line"
+        ][
+            "width"
+        ]
     )
 
-    line_height = resolve_component_property(
+
+    line_height = get_component_property(
         line_component,
         "height",
-        JOURNEY["line"]["height"]
+        JOURNEY[
+            "line"
+        ][
+            "height"
+        ]
     )
 
-    origin_type = resolve_component_property(
+
+    origin_type = get_component_property(
         origin_component,
         "shape_type",
         "circle"
     )
 
-    origin_size = resolve_component_property(
+
+    origin_size = get_component_property(
         origin_component,
         "size",
-        JOURNEY["origin"]["size"]
+        JOURNEY[
+            "origin"
+        ][
+            "size"
+        ]
     )
 
-    plane_font_size = resolve_component_property(
+
+    plane_font_size = get_component_font_size(
         plane_component,
-        "font_size",
-        JOURNEY["plane"]["font_size"]
+        JOURNEY[
+            "plane"
+        ][
+            "font_size"
+        ]
     )
 
-    plane_value = resolve_component_property(
+
+    plane_value = get_component_property(
         plane_component,
         "value",
         "✈"
     )
 
-    destination_font_size = (
-        resolve_component_property(
-            destination_component,
-            "font_size",
-            JOURNEY[
-                "hearts"
-            ][
-                "destination"
-            ][
-                "font_size"
-            ]
-        )
+
+    destination_font_size = get_component_font_size(
+        destination_component,
+        JOURNEY[
+            "hearts"
+        ][
+            "destination"
+        ][
+            "font_size"
+        ]
     )
 
-    arrival_font_size = (
-        resolve_component_property(
-            arrival_component,
-            "font_size",
-            JOURNEY[
-                "hearts"
-            ][
-                "arrival"
-            ][
-                "font_size"
-            ]
-        )
+
+    arrival_font_size = get_component_font_size(
+        arrival_component,
+        JOURNEY[
+            "hearts"
+        ][
+            "arrival"
+        ][
+            "font_size"
+        ]
     )
 
-    footer_font_size = resolve_component_property(
+
+    footer_font_size = get_component_font_size(
         footer_component,
-        "font_size",
-        FOOTER["font_size"]
+        FOOTER[
+            "font_size"
+        ]
     )
 
 
@@ -789,6 +903,7 @@ def build_layout(
             }
         },
 
+
         "Origin": {
 
             "position": origin_position,
@@ -805,25 +920,38 @@ def build_layout(
             }
         },
 
+
         "Plane": {
 
             "x_left": (
-                plane_position["x_left"]
+                plane_position[
+                    "x_left"
+                ]
             ),
 
             "x_right": (
-                plane_position["x_right"]
+                plane_position[
+                    "x_right"
+                ]
             ),
 
             "y": (
-                plane_position["y"]
+                plane_position[
+                    "y"
+                ]
             ),
 
             "kwgt_position": (
                 adapt_dual_x_position(
-                    plane_position["x_left"],
-                    plane_position["x_right"],
-                    plane_position["y"]
+                    plane_position[
+                        "x_left"
+                    ],
+                    plane_position[
+                        "x_right"
+                    ],
+                    plane_position[
+                        "y"
+                    ]
                 )
             ),
 
@@ -834,6 +962,7 @@ def build_layout(
                 "value": plane_value
             }
         },
+
 
         "Hearts": {
 
@@ -870,7 +999,9 @@ def build_layout(
 
                 "DestinationText": {
 
-                    "font_size": destination_font_size,
+                    "font_size": (
+                        destination_font_size
+                    ),
 
                     "value": event.get(
                         "destinationDisplay",
@@ -878,6 +1009,7 @@ def build_layout(
                     )
                 }
             },
+
 
             "Arrival": {
 
@@ -906,7 +1038,9 @@ def build_layout(
 
                 "ArrivalText": {
 
-                    "font_size": arrival_font_size,
+                    "font_size": (
+                        arrival_font_size
+                    ),
 
                     "value": event.get(
                         "arrivalDisplay",
@@ -940,6 +1074,7 @@ def build_layout(
 
         "y": FOOTER["y"]
     }
+
 
     layout["components"]["Footer"] = {
 
@@ -991,6 +1126,7 @@ def build_layout(
         "Footer"
 
     ]
+
 
     for component_name in expected_components:
 
