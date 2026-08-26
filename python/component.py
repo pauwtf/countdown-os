@@ -1,10 +1,12 @@
-
 # ============================================================
 # COUNTDOWN OS — COMPONENT SYSTEM
 # Version: 1.2 Elegance
 # ============================================================
 
-from component_schema import validate_properties
+
+from component_schema import (
+    validate_properties
+)
 
 
 # ============================================================
@@ -21,8 +23,8 @@ class Component:
         - properties
         - children
 
-    El Component System define la estructura visual
-    abstracta del sistema.
+    El Component System define la estructura
+    y las propiedades visuales abstractas.
 
     NO conoce:
 
@@ -40,11 +42,13 @@ class Component:
     ):
 
         if not isinstance(name, str):
+
             raise TypeError(
                 "Component name must be a string"
             )
 
         if not name.strip():
+
             raise ValueError(
                 "Component name cannot be empty"
             )
@@ -68,11 +72,8 @@ class Component:
 
     def validate(self):
         """
-        Valida las propiedades actuales
-        utilizando Component Schema.
-
-        El schema recibe únicamente el diccionario
-        de propiedades.
+        Valida las propiedades del componente
+        utilizando Component Property Schema.
         """
 
         validate_properties(
@@ -95,54 +96,34 @@ class Component:
         Define o actualiza una propiedad.
 
         La propiedad se valida inmediatamente.
-        Si la validación falla, se restaura
-        el estado anterior.
         """
 
         if not isinstance(key, str):
+
             raise TypeError(
                 "Property key must be a string"
             )
 
         if not key.strip():
+
             raise ValueError(
                 "Property key cannot be empty"
             )
 
-        property_existed = (
-            key in self.properties
+        updated_properties = (
+            self.properties.copy()
         )
 
-        previous_value = (
-            self.properties.get(key)
+        updated_properties[key] = value
+
+        validate_properties(
+            updated_properties
         )
 
         self.properties[key] = value
 
-        try:
-
-            self.validate()
-
-        except Exception:
-
-            if property_existed:
-
-                self.properties[key] = (
-                    previous_value
-                )
-
-            else:
-
-                del self.properties[key]
-
-            raise
-
         return value
 
-
-    # ========================================================
-    # GET PROPERTY
-    # ========================================================
 
     def get_property(
         self,
@@ -151,8 +132,6 @@ class Component:
     ):
         """
         Obtiene una propiedad.
-
-        Si no existe, devuelve default.
         """
 
         return self.properties.get(
@@ -161,25 +140,16 @@ class Component:
         )
 
 
-    # ========================================================
-    # HAS PROPERTY
-    # ========================================================
-
     def has_property(
         self,
         key,
     ):
         """
-        Comprueba si el componente posee
-        una propiedad.
+        Comprueba si existe una propiedad.
         """
 
         return key in self.properties
 
-
-    # ========================================================
-    # REMOVE PROPERTY
-    # ========================================================
 
     def remove_property(
         self,
@@ -188,34 +158,24 @@ class Component:
         """
         Elimina una propiedad.
 
-        Si la eliminación produce un estado
-        inválido, restaura automáticamente
-        la propiedad.
+        No permite eliminar 'type',
+        porque todos los componentes necesitan
+        conservar su tipo.
         """
 
-        if key not in self.properties:
+        if key == "type":
 
-            return False
-
-        previous_value = (
-            self.properties[key]
-        )
-
-        del self.properties[key]
-
-        try:
-
-            self.validate()
-
-        except Exception:
-
-            self.properties[key] = (
-                previous_value
+            raise ValueError(
+                "Component type cannot be removed"
             )
 
-            raise
+        if key in self.properties:
 
-        return True
+            del self.properties[key]
+
+            return True
+
+        return False
 
 
     # ========================================================
@@ -234,6 +194,7 @@ class Component:
             component,
             Component
         ):
+
             raise TypeError(
                 "component must be an instance of Component"
             )
@@ -254,8 +215,7 @@ class Component:
         name,
     ):
         """
-        Busca recursivamente un componente
-        por nombre.
+        Busca recursivamente un componente.
         """
 
         if self.name == name:
@@ -281,16 +241,8 @@ class Component:
 
     def to_dict(self):
         """
-        Convierte el componente y sus hijos
-        en una estructura de diccionario.
-
-        Las properties pertenecen directamente
-        al componente.
-
-        Los hijos aparecen bajo su propio nombre.
+        Convierte el árbol en diccionario.
         """
-
-        self.validate()
 
         result = {}
 
@@ -313,14 +265,12 @@ class Component:
 
 def build_countdown_tree():
     """
-    Construye la jerarquía visual base
-    de Countdown OS.
+    Construye el árbol visual de Countdown OS.
 
-    Las propiedades visuales pertenecen
-    al Component System.
+    Las propiedades visuales pertenecen al
+    Component System.
 
-    Las coordenadas pertenecen
-    al Layout Engine.
+    Las coordenadas pertenecen al Layout Engine.
     """
 
     # ========================================================
@@ -346,6 +296,20 @@ def build_countdown_tree():
         }
     )
 
+    background_shape = Component(
+        "BackgroundShape",
+        properties={
+            "type": "shape",
+            "shape_type": "rectangle",
+            "width": 400,
+            "height": 200
+        }
+    )
+
+    background.add_child(
+        background_shape
+    )
+
     countdown.add_child(
         background
     )
@@ -360,6 +324,30 @@ def build_countdown_tree():
         properties={
             "type": "container"
         }
+    )
+
+    cover_image = Component(
+        "CoverImage",
+        properties={
+            "type": "container"
+        }
+    )
+
+    cover_text = Component(
+        "CoverText",
+        properties={
+            "type": "text",
+            "value": "♡",
+            "font_size": 240
+        }
+    )
+
+    cover_image.add_child(
+        cover_text
+    )
+
+    cover.add_child(
+        cover_image
     )
 
     countdown.add_child(
@@ -378,19 +366,34 @@ def build_countdown_tree():
         }
     )
 
+
+    # --------------------------------------------------------
+    # TITLE
+    # --------------------------------------------------------
+
     title = Component(
         "Title",
         properties={
-            "type": "text"
+            "type": "text",
+            "value": "UNTIL ALEX",
+            "font_size": 18
         }
     )
+
+
+    # --------------------------------------------------------
+    # DAYS
+    # --------------------------------------------------------
 
     days = Component(
         "Days",
         properties={
-            "type": "text"
+            "type": "text",
+            "value": "days",
+            "font_size": 15
         }
     )
+
 
     header.add_child(
         title
@@ -416,19 +419,24 @@ def build_countdown_tree():
         }
     )
 
+
     vertical = Component(
         "Vertical",
         properties={
-            "type": "gradient"
+            "type": "gradient",
+            "direction": "vertical"
         }
     )
+
 
     horizontal = Component(
         "Horizontal",
         properties={
-            "type": "gradient"
+            "type": "gradient",
+            "direction": "horizontal"
         }
     )
+
 
     gradient.add_child(
         vertical
@@ -454,12 +462,16 @@ def build_countdown_tree():
         }
     )
 
+
     days_remaining = Component(
         "DaysRemaining",
         properties={
-            "type": "text"
+            "type": "text",
+            "value": "44",
+            "font_size": 100
         }
     )
+
 
     counter.add_child(
         days_remaining
@@ -481,12 +493,14 @@ def build_countdown_tree():
         }
     )
 
+
     journey = Component(
         "Journey",
         properties={
             "type": "container"
         }
     )
+
 
     content.add_child(
         journey
@@ -504,23 +518,33 @@ def build_countdown_tree():
     line = Component(
         "Line",
         properties={
-            "type": "shape"
+            "type": "shape",
+            "shape_type": "rectangle",
+            "width": 258,
+            "height": 1
         }
     )
+
 
     origin = Component(
         "Origin",
         properties={
-            "type": "shape"
+            "type": "shape",
+            "shape_type": "circle",
+            "size": 5
         }
     )
+
 
     plane = Component(
         "Plane",
         properties={
-            "type": "text"
+            "type": "text",
+            "value": "✈",
+            "font_size": 30
         }
     )
+
 
     hearts = Component(
         "Hearts",
@@ -528,6 +552,7 @@ def build_countdown_tree():
             "type": "container"
         }
     )
+
 
     journey.add_child(
         line
@@ -553,16 +578,22 @@ def build_countdown_tree():
     destination = Component(
         "Destination",
         properties={
-            "type": "text"
+            "type": "text",
+            "value": "",
+            "font_size": 14
         }
     )
+
 
     arrival = Component(
         "Arrival",
         properties={
-            "type": "text"
+            "type": "text",
+            "value": "",
+            "font_size": 14
         }
     )
+
 
     hearts.add_child(
         destination
@@ -580,9 +611,12 @@ def build_countdown_tree():
     footer = Component(
         "Footer",
         properties={
-            "type": "text"
+            "type": "text",
+            "value": "",
+            "font_size": 10
         }
     )
+
 
     countdown.add_child(
         footer
@@ -603,13 +637,14 @@ def build_countdown_tree():
                 child
             )
 
+
     validate_tree(
         countdown
     )
 
 
     # ========================================================
-    # RETURN TREE
+    # RETURN
     # ========================================================
 
     return countdown
@@ -622,7 +657,7 @@ def build_countdown_tree():
 def build_component_tree():
     """
     Construye el árbol y devuelve
-    una representación serializable.
+    su representación serializable.
     """
 
     tree = build_countdown_tree()
@@ -641,9 +676,11 @@ if __name__ == "__main__":
     tree = build_countdown_tree()
 
     print()
-    print("=" * 50)
-    print("       COUNTDOWN OS — COMPONENT SYSTEM")
-    print("=" * 50)
+    print("=" * 60)
+    print(
+        "       COUNTDOWN OS — COMPONENT SYSTEM"
+    )
+    print("=" * 60)
 
     print()
 
@@ -651,20 +688,22 @@ if __name__ == "__main__":
         f"Root: {tree.name}"
     )
 
+    print()
+
+    print("Root properties:")
+
     print(
-        f"Root type: "
-        f"{tree.get_property('type')}"
+        tree.properties
     )
 
     print()
 
-    print("Children:")
+    print("Components:")
 
     for child in tree.children:
 
         print(
             f"  └── {child.name}"
-            f" [{child.get_property('type')}]"
         )
 
     print()
@@ -673,47 +712,52 @@ if __name__ == "__main__":
         "Plane"
     )
 
-    header = tree.find(
-        "Header"
-    )
-
-    print(
-        f"Found Plane: "
-        f"{plane is not None}"
-    )
-
     print(
         f"Plane type: "
         f"{plane.get_property('type')}"
     )
 
     print(
-        f"Header type: "
-        f"{header.get_property('type')}"
+        f"Plane value: "
+        f"{plane.get_property('value')}"
+    )
+
+    print(
+        f"Plane font size: "
+        f"{plane.get_property('font_size')}"
     )
 
     print()
 
-    # ========================================================
-    # COMPLETE VALIDATION
-    # ========================================================
-
-    tree.validate()
-
-    for child in tree.children:
-
-        child.validate()
-
-    print(
-        "✓ Component Schema validation passed"
+    title = tree.find(
+        "Title"
     )
 
     print(
-        "✓ Component tree validation passed"
+        f"Title font size: "
+        f"{title.get_property('font_size')}"
     )
 
     print()
-    print(
-        "🟢 Component System ready"
+
+    line = tree.find(
+        "Line"
     )
+
+    print(
+        f"Line width: "
+        f"{line.get_property('width')}"
+    )
+
+    print(
+        f"Line height: "
+        f"{line.get_property('height')}"
+    )
+
+    print()
+
+    print(
+        "🟢 Component properties configured"
+    )
+
     print()
