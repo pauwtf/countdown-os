@@ -1,12 +1,10 @@
+
 # ============================================================
 # COUNTDOWN OS — COMPONENT SYSTEM
 # Version: 1.2 Elegance
 # ============================================================
 
-from component_schema import (
-    validate_properties,
-    ComponentSchemaError,
-)
+from component_schema import validate_properties
 
 
 # ============================================================
@@ -33,9 +31,6 @@ class Component:
         - Web Get
         - fórmulas KWGT
         - rendering
-
-    La validación de propiedades pertenece al
-    Component Schema.
     """
 
     def __init__(
@@ -44,27 +39,17 @@ class Component:
         properties=None,
     ):
 
-        # ====================================================
-        # NAME VALIDATION
-        # ====================================================
-
         if not isinstance(name, str):
-
             raise TypeError(
                 "Component name must be a string"
             )
 
         if not name.strip():
-
             raise ValueError(
                 "Component name cannot be empty"
             )
 
         self.name = name
-
-        # ====================================================
-        # PROPERTIES
-        # ====================================================
 
         self.properties = (
             properties.copy()
@@ -72,15 +57,7 @@ class Component:
             else {}
         )
 
-        # ====================================================
-        # CHILDREN
-        # ====================================================
-
         self.children = []
-
-        # ====================================================
-        # SCHEMA VALIDATION
-        # ====================================================
 
         self.validate()
 
@@ -91,15 +68,14 @@ class Component:
 
     def validate(self):
         """
-        Valida las propiedades actuales contra
-        Component Schema.
+        Valida las propiedades actuales
+        utilizando Component Schema.
 
-        El Component System no implementa las reglas
-        del schema; únicamente las ejecuta.
+        El schema recibe únicamente el diccionario
+        de propiedades.
         """
 
         validate_properties(
-            self.name,
             self.properties
         )
 
@@ -118,54 +94,36 @@ class Component:
         """
         Define o actualiza una propiedad.
 
-        La propiedad se valida inmediatamente
-        contra Component Schema.
+        La propiedad se valida inmediatamente.
+        Si la validación falla, se restaura
+        el estado anterior.
         """
 
         if not isinstance(key, str):
-
             raise TypeError(
                 "Property key must be a string"
             )
 
         if not key.strip():
-
             raise ValueError(
                 "Property key cannot be empty"
             )
 
-        # ----------------------------------------------------
-        # Store previous state
-        # ----------------------------------------------------
-
-        previous_value = self.properties.get(
-            key,
-            None
+        property_existed = (
+            key in self.properties
         )
 
-        property_existed = key in self.properties
-
-        # ----------------------------------------------------
-        # Apply change
-        # ----------------------------------------------------
+        previous_value = (
+            self.properties.get(key)
+        )
 
         self.properties[key] = value
-
-        # ----------------------------------------------------
-        # Validate
-        # ----------------------------------------------------
 
         try:
 
             self.validate()
 
-        except (
-            TypeError,
-            ValueError,
-            ComponentSchemaError,
-        ):
-
-            # Restore previous state
+        except Exception:
 
             if property_existed:
 
@@ -230,17 +188,18 @@ class Component:
         """
         Elimina una propiedad.
 
-        La operación se valida después
-        de eliminarla.
-
-        Devuelve True si existía.
+        Si la eliminación produce un estado
+        inválido, restaura automáticamente
+        la propiedad.
         """
 
         if key not in self.properties:
 
             return False
 
-        previous_value = self.properties[key]
+        previous_value = (
+            self.properties[key]
+        )
 
         del self.properties[key]
 
@@ -248,13 +207,11 @@ class Component:
 
             self.validate()
 
-        except (
-            TypeError,
-            ValueError,
-            ComponentSchemaError,
-        ):
+        except Exception:
 
-            self.properties[key] = previous_value
+            self.properties[key] = (
+                previous_value
+            )
 
             raise
 
@@ -277,7 +234,6 @@ class Component:
             component,
             Component
         ):
-
             raise TypeError(
                 "component must be an instance of Component"
             )
@@ -334,6 +290,8 @@ class Component:
         Los hijos aparecen bajo su propio nombre.
         """
 
+        self.validate()
+
         result = {}
 
         result.update(
@@ -358,10 +316,11 @@ def build_countdown_tree():
     Construye la jerarquía visual base
     de Countdown OS.
 
-    Las coordenadas pertenecen al Layout Engine.
-
     Las propiedades visuales pertenecen
     al Component System.
+
+    Las coordenadas pertenecen
+    al Layout Engine.
     """
 
     # ========================================================
@@ -631,6 +590,25 @@ def build_countdown_tree():
 
 
     # ========================================================
+    # VALIDATE COMPLETE TREE
+    # ========================================================
+
+    def validate_tree(component):
+
+        component.validate()
+
+        for child in component.children:
+
+            validate_tree(
+                child
+            )
+
+    validate_tree(
+        countdown
+    )
+
+
+    # ========================================================
     # RETURN TREE
     # ========================================================
 
@@ -643,8 +621,8 @@ def build_countdown_tree():
 
 def build_component_tree():
     """
-    Construye el árbol y devuelve su representación
-    serializable.
+    Construye el árbol y devuelve
+    una representación serializable.
     """
 
     tree = build_countdown_tree()
@@ -717,15 +695,25 @@ if __name__ == "__main__":
     print()
 
     # ========================================================
-    # VALIDATE ENTIRE TREE
+    # COMPLETE VALIDATION
     # ========================================================
 
-    for component in tree.children:
+    tree.validate()
 
-        component.validate()
+    for child in tree.children:
+
+        child.validate()
 
     print(
-        "🟢 Component schema validation passed"
+        "✓ Component Schema validation passed"
     )
 
+    print(
+        "✓ Component tree validation passed"
+    )
+
+    print()
+    print(
+        "🟢 Component System ready"
+    )
     print()
