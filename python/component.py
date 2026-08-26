@@ -3,10 +3,7 @@
 # Version: 1.2 Elegance
 # ============================================================
 
-from component_schema import (
-    validate_properties,
-    ComponentSchemaError
-)
+from component_schema import validate_properties
 
 
 # ============================================================
@@ -26,8 +23,6 @@ class Component:
     Las properties representan características visuales
     abstractas del componente.
 
-    IMPORTANTE:
-
     El Component System NO conoce:
 
         - KWGT
@@ -35,8 +30,6 @@ class Component:
         - Web Get
         - fórmulas KWGT
         - lógica de rendering
-
-    Es independiente del sistema de coordenadas.
     """
 
     def __init__(
@@ -65,8 +58,7 @@ class Component:
 
         self.children = []
 
-        if self.properties:
-            self.validate()
+        self.validate()
 
 
     # ========================================================
@@ -75,8 +67,8 @@ class Component:
 
     def validate(self):
         """
-        Valida las properties actuales
-        contra el Component Schema.
+        Valida las properties del componente
+        contra Component Schema.
         """
 
         validate_properties(
@@ -98,8 +90,8 @@ class Component:
         """
         Define o actualiza una propiedad.
 
-        Si la nueva propiedad produce un estado inválido,
-        el cambio se revierte automáticamente.
+        Si el nuevo estado es inválido,
+        el cambio se revierte.
         """
 
         if not isinstance(key, str):
@@ -112,12 +104,10 @@ class Component:
                 "Property key cannot be empty"
             )
 
+        had_previous = key in self.properties
+
         previous_value = self.properties.get(
             key
-        )
-
-        had_previous_value = (
-            key in self.properties
         )
 
         self.properties[key] = value
@@ -128,7 +118,7 @@ class Component:
 
         except Exception:
 
-            if had_previous_value:
+            if had_previous:
 
                 self.properties[key] = (
                     previous_value
@@ -150,8 +140,6 @@ class Component:
     ):
         """
         Obtiene una propiedad.
-
-        Si no existe, devuelve default.
         """
 
         return self.properties.get(
@@ -165,8 +153,7 @@ class Component:
         key,
     ):
         """
-        Comprueba si el componente posee
-        una propiedad.
+        Comprueba si existe una propiedad.
         """
 
         return key in self.properties
@@ -179,8 +166,8 @@ class Component:
         """
         Elimina una propiedad.
 
-        Si la eliminación produce un estado inválido,
-        la propiedad se restaura.
+        Si el resultado es inválido,
+        restaura la propiedad.
         """
 
         if key not in self.properties:
@@ -266,13 +253,7 @@ class Component:
 
     def to_dict(self):
         """
-        Convierte el componente y sus hijos
-        en una estructura de diccionario.
-
-        Las propiedades pertenecen directamente
-        al componente.
-
-        Los hijos aparecen bajo su propio nombre.
+        Serializa el componente y sus hijos.
         """
 
         self.validate()
@@ -301,11 +282,11 @@ def build_countdown_tree():
     Construye la jerarquía visual base
     de Countdown OS.
 
-    Las propiedades visuales abstractas
-    pertenecen al Component System.
+    Las propiedades pertenecen al
+    Component System.
 
-    Las coordenadas pertenecen
-    al Layout Engine.
+    Las coordenadas pertenecen al
+    Layout Engine.
     """
 
     # ========================================================
@@ -470,9 +451,6 @@ def build_countdown_tree():
         }
     )
 
-    # IMPORTANT:
-    # Component children must always be added
-    # through add_child().
     content.add_child(
         journey
     )
@@ -575,7 +553,7 @@ def build_countdown_tree():
 
 
     # ========================================================
-    # VALIDATE COMPLETE TREE
+    # VALIDATE TREE
     # ========================================================
 
     def validate_tree(component):
@@ -592,11 +570,6 @@ def build_countdown_tree():
         countdown
     )
 
-
-    # ========================================================
-    # RETURN TREE
-    # ========================================================
-
     return countdown
 
 
@@ -606,8 +579,8 @@ def build_countdown_tree():
 
 def build_component_tree():
     """
-    Construye el árbol y devuelve su representación
-    serializable.
+    Construye el árbol y devuelve
+    una representación serializable.
     """
 
     tree = build_countdown_tree()
@@ -644,43 +617,42 @@ if __name__ == "__main__":
             f"  └── {child.name}"
         )
 
+    plane = tree.find(
+        "Plane"
+    )
+
+    header = tree.find(
+        "Header"
+    )
+
     print()
     print(
         f"Found Plane: "
-        f"{tree.find('Plane') is not None}"
+        f"{plane is not None}"
     )
 
     print()
     print(
         f"Plane type: "
-        f"{tree.find('Plane').get_property('type')}"
+        f"{plane.get_property('type')}"
     )
 
     print()
     print(
         f"Header type: "
-        f"{tree.find('Header').get_property('type')}"
+        f"{header.get_property('type')}"
     )
 
     print()
-    print(
-        "Validating complete tree..."
-    )
+    print("Validating complete tree...")
 
     tree.validate()
 
     print()
-    print(
-        "✓ Root component valid"
-    )
-
-    print(
-        "✓ Component properties validated"
-    )
-
-    print(
-        "✓ Component tree validated"
-    )
+    print("✓ Root component valid")
+    print("✓ Component properties validated")
+    print("✓ Component tree validated")
 
     print()
-    print(
+    print("🟢 Component System ready")
+    print()
