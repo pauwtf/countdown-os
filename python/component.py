@@ -3,8 +3,13 @@
 # Version: 1.2 Elegance
 # ============================================================
 
+
+# ============================================================
+# IMPORTS
+# ============================================================
+
 from component_schema import (
-    validate_properties
+    validate_properties,
 )
 
 
@@ -21,9 +26,6 @@ class Component:
         - name
         - properties
         - children
-
-    Las properties representan características
-    visuales abstractas del componente.
 
     IMPORTANTE:
 
@@ -45,13 +47,11 @@ class Component:
     ):
 
         if not isinstance(name, str):
-
             raise TypeError(
                 "Component name must be a string"
             )
 
         if not name.strip():
-
             raise ValueError(
                 "Component name cannot be empty"
             )
@@ -74,6 +74,10 @@ class Component:
     # ========================================================
 
     def validate(self):
+        """
+        Valida las propiedades actuales
+        contra el Component Property Schema.
+        """
 
         validate_properties(
             self.properties
@@ -94,25 +98,31 @@ class Component:
         """
         Define o actualiza una propiedad.
 
-        La propiedad se valida inmediatamente
-        contra el Component Property Schema.
+        La propiedad debe estar permitida
+        por el Component Property Schema.
         """
 
         if not isinstance(key, str):
-
             raise TypeError(
                 "Property key must be a string"
             )
 
         if not key.strip():
-
             raise ValueError(
                 "Property key cannot be empty"
             )
 
-        self.properties[key] = value
+        new_properties = (
+            self.properties.copy()
+        )
 
-        self.validate()
+        new_properties[key] = value
+
+        validate_properties(
+            new_properties
+        )
+
+        self.properties[key] = value
 
         return value
 
@@ -181,7 +191,6 @@ class Component:
             component,
             Component
         ):
-
             raise TypeError(
                 "component must be an instance of Component"
             )
@@ -207,7 +216,6 @@ class Component:
         """
 
         if self.name == name:
-
             return self
 
         for child in self.children:
@@ -217,7 +225,6 @@ class Component:
             )
 
             if result is not None:
-
                 return result
 
         return None
@@ -259,13 +266,31 @@ class Component:
 
 def build_countdown_tree():
     """
-    Construye la jerarquía visual de Countdown OS.
+    Construye la jerarquía visual base
+    de Countdown OS.
 
-    Las propiedades visuales abstractas pertenecen
-    al Component System.
+    IMPORTANTE:
 
-    Las coordenadas continúan perteneciendo
-    al Layout Engine.
+    Este árbol define únicamente:
+
+        - jerarquía
+        - identidad
+        - tipo de componente
+
+    Los valores visuales actuales continúan
+    perteneciendo al Layout Engine / layout_tokens.
+
+    No se duplican valores como:
+
+        - font_size
+        - width
+        - height
+        - position
+        - color
+        - opacity
+
+    Esto evita romper el contrato visual
+    validado de v1.0.
     """
 
     # ========================================================
@@ -287,9 +312,7 @@ def build_countdown_tree():
     background = Component(
         "Background",
         properties={
-            "type": "container",
-            "visible": True,
-            "opacity": 1.0
+            "type": "container"
         }
     )
 
@@ -305,9 +328,7 @@ def build_countdown_tree():
     cover = Component(
         "Cover",
         properties={
-            "type": "container",
-            "visible": True,
-            "opacity": 1.0
+            "type": "container"
         }
     )
 
@@ -323,54 +344,23 @@ def build_countdown_tree():
     header = Component(
         "Header",
         properties={
-            "type": "container",
-            "visible": True,
-            "opacity": 1.0
+            "type": "container"
         }
     )
-
 
     title = Component(
         "Title",
         properties={
-            "type": "text",
-
-            "font_size": 40,
-
-            "font_weight": "regular",
-
-            "color": "white",
-
-            "align": "left",
-
-            "visible": True,
-
-            "opacity": 1.0
+            "type": "text"
         }
     )
-
 
     days = Component(
         "Days",
         properties={
-            "type": "text",
-
-            "font_size": 18,
-
-            "font_weight": "regular",
-
-            "color": "white",
-
-            "align": "left",
-
-            "value": "days",
-
-            "visible": True,
-
-            "opacity": 1.0
+            "type": "text"
         }
     )
-
 
     header.add_child(
         title
@@ -392,52 +382,23 @@ def build_countdown_tree():
     gradient = Component(
         "Gradient",
         properties={
-            "type": "container",
-            "visible": True,
-            "opacity": 1.0
+            "type": "container"
         }
     )
-
 
     vertical = Component(
         "Vertical",
         properties={
-            "type": "gradient",
-
-            "shape_type": "rectangle",
-
-            "direction": "vertical",
-
-            "color_start": "transparent",
-
-            "color_end": "black",
-
-            "opacity": 1.0,
-
-            "visible": True
+            "type": "gradient"
         }
     )
-
 
     horizontal = Component(
         "Horizontal",
         properties={
-            "type": "gradient",
-
-            "shape_type": "rectangle",
-
-            "direction": "horizontal",
-
-            "color_start": "transparent",
-
-            "color_end": "black",
-
-            "opacity": 1.0,
-
-            "visible": True
+            "type": "gradient"
         }
     )
-
 
     gradient.add_child(
         vertical
@@ -459,32 +420,16 @@ def build_countdown_tree():
     counter = Component(
         "Counter",
         properties={
-            "type": "container",
-            "visible": True,
-            "opacity": 1.0
+            "type": "container"
         }
     )
-
 
     days_remaining = Component(
         "DaysRemaining",
         properties={
-            "type": "text",
-
-            "font_size": 20,
-
-            "font_weight": "regular",
-
-            "color": "white",
-
-            "align": "left",
-
-            "visible": True,
-
-            "opacity": 1.0
+            "type": "text"
         }
     )
-
 
     counter.add_child(
         days_remaining
@@ -502,22 +447,16 @@ def build_countdown_tree():
     content = Component(
         "Content",
         properties={
-            "type": "container",
-            "visible": True,
-            "opacity": 1.0
+            "type": "container"
         }
     )
-
 
     journey = Component(
         "Journey",
         properties={
-            "type": "container",
-            "visible": True,
-            "opacity": 1.0
+            "type": "container"
         }
     )
-
 
     content.add_child(
         journey
@@ -535,72 +474,30 @@ def build_countdown_tree():
     line = Component(
         "Line",
         properties={
-            "type": "shape",
-
-            "shape_type": "rectangle",
-
-            "width": 520,
-
-            "height": 5,
-
-            "color": "white",
-
-            "opacity": 1.0,
-
-            "visible": True
+            "type": "shape"
         }
     )
-
 
     origin = Component(
         "Origin",
         properties={
-            "type": "shape",
-
-            "shape_type": "circle",
-
-            "size": 10,
-
-            "color": "white",
-
-            "opacity": 1.0,
-
-            "visible": True
+            "type": "shape"
         }
     )
-
 
     plane = Component(
         "Plane",
         properties={
-            "type": "text",
-
-            "font_size": 18,
-
-            "font_weight": "regular",
-
-            "color": "white",
-
-            "value": "✈",
-
-            "visible": True,
-
-            "opacity": 1.0
+            "type": "text"
         }
     )
-
 
     hearts = Component(
         "Hearts",
         properties={
-            "type": "container",
-
-            "visible": True,
-
-            "opacity": 1.0
+            "type": "container"
         }
     )
-
 
     journey.add_child(
         line
@@ -626,42 +523,16 @@ def build_countdown_tree():
     destination = Component(
         "Destination",
         properties={
-            "type": "text",
-
-            "font_size": 15,
-
-            "font_weight": "regular",
-
-            "color": "white",
-
-            "align": "center",
-
-            "visible": True,
-
-            "opacity": 1.0
+            "type": "text"
         }
     )
-
 
     arrival = Component(
         "Arrival",
         properties={
-            "type": "text",
-
-            "font_size": 15,
-
-            "font_weight": "regular",
-
-            "color": "white",
-
-            "align": "center",
-
-            "visible": True,
-
-            "opacity": 1.0
+            "type": "text"
         }
     )
-
 
     hearts.add_child(
         destination
@@ -679,22 +550,9 @@ def build_countdown_tree():
     footer = Component(
         "Footer",
         properties={
-            "type": "text",
-
-            "font_size": 14,
-
-            "font_weight": "regular",
-
-            "color": "white",
-
-            "align": "left",
-
-            "visible": True,
-
-            "opacity": 1.0
+            "type": "text"
         }
     )
-
 
     countdown.add_child(
         footer
@@ -713,10 +571,9 @@ def build_countdown_tree():
 # ============================================================
 
 def build_component_tree():
-
     """
-    Construye el árbol y devuelve su representación
-    serializable.
+    Construye el árbol y devuelve
+    su representación serializable.
     """
 
     tree = build_countdown_tree()
@@ -734,29 +591,16 @@ if __name__ == "__main__":
 
     tree = build_countdown_tree()
 
-
     print()
-
+    print("=" * 50)
+    print("       COUNTDOWN OS — COMPONENT SYSTEM")
     print("=" * 50)
 
-    print(
-        "       COUNTDOWN OS — COMPONENT SYSTEM"
-    )
-
-    print("=" * 50)
-
+    print()
+    print(f"Root: {tree.name}")
 
     print()
-
-    print(
-        f"Root: {tree.name}"
-    )
-
-
-    print()
-
     print("Children:")
-
 
     for child in tree.children:
 
@@ -764,63 +608,24 @@ if __name__ == "__main__":
             f"  └── {child.name}"
         )
 
-
     print()
-
     print(
         f"Found Plane: "
         f"{tree.find('Plane') is not None}"
     )
 
-
-    plane = tree.find(
-        "Plane"
-    )
-
     print()
-
     print(
         f"Plane type: "
-        f"{plane.get_property('type')}"
+        f"{tree.find('Plane').get_property('type')}"
     )
 
-
     print()
-
-    print(
-        f"Plane font size: "
-        f"{plane.get_property('font_size')}"
-    )
-
-
-    print()
-
-    print(
-        f"Plane visible: "
-        f"{plane.get_property('visible')}"
-    )
-
-
-    print()
-
-    print(
-        f"Vertical gradient direction: "
-        f"{tree.find('Vertical').get_property('direction')}"
-    )
-
-
-    print()
-
     print(
         f"Header type: "
         f"{tree.find('Header').get_property('type')}"
     )
 
-
     print()
-
-    print(
-        "🟢 Component visual properties initialized"
-    )
-
+    print("🟢 Component System initialized")
     print()
