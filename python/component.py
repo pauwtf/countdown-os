@@ -104,10 +104,12 @@ class Component:
                 "Property key cannot be empty"
             )
 
-        had_previous = key in self.properties
+        had_previous = (
+            key in self.properties
+        )
 
-        previous_value = self.properties.get(
-            key
+        previous_value = (
+            self.properties.get(key)
         )
 
         self.properties[key] = value
@@ -140,6 +142,8 @@ class Component:
     ):
         """
         Obtiene una propiedad.
+
+        Si no existe, devuelve default.
         """
 
         return self.properties.get(
@@ -173,7 +177,9 @@ class Component:
         if key not in self.properties:
             return False
 
-        previous_value = self.properties[key]
+        previous_value = (
+            self.properties[key]
+        )
 
         del self.properties[key]
 
@@ -294,7 +300,10 @@ def build_countdown_tree():
     # ========================================================
 
     countdown = Component(
-        "Countdown"
+        "Countdown",
+        properties={
+            "type": "container"
+        }
     )
 
 
@@ -553,7 +562,7 @@ def build_countdown_tree():
 
 
     # ========================================================
-    # VALIDATE TREE
+    # VALIDATE COMPLETE TREE
     # ========================================================
 
     def validate_tree(component):
@@ -569,6 +578,11 @@ def build_countdown_tree():
     validate_tree(
         countdown
     )
+
+
+    # ========================================================
+    # RETURN TREE
+    # ========================================================
 
     return countdown
 
@@ -644,15 +658,28 @@ if __name__ == "__main__":
     )
 
     print()
-    print("Validating complete tree...")
+    print(
+        "Validating complete tree..."
+    )
 
     tree.validate()
 
     print()
-    print("✓ Root component valid")
-    print("✓ Component properties validated")
-    print("✓ Component tree validated")
+    print(
+        "✓ Root component valid"
+    )
+
+    print(
+        "✓ Component properties validated"
+    )
+
+    print(
+        "✓ Component tree validated"
+    )
 
     print()
-    print("🟢 Component System ready")
+    print(
+        "🟢 Component System ready"
+    )
+
     print()
