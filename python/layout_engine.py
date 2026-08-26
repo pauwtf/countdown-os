@@ -20,6 +20,10 @@ from component import (
     build_countdown_tree
 )
 
+from component_property_resolver import (
+    resolve_component_property
+)
+
 from kwgt_coordinate_adapter import (
     adapt_directional_position,
     adapt_dual_x_position
@@ -30,7 +34,10 @@ from kwgt_coordinate_adapter import (
 # POSITION RESOLUTION
 # ============================================================
 
-def resolve_position(parent_position, local_position):
+def resolve_position(
+    parent_position,
+    local_position
+):
     """
     Resuelve una posición parent-relative.
 
@@ -66,7 +73,9 @@ def resolve_position(parent_position, local_position):
 # KWGT POSITION
 # ============================================================
 
-def resolve_kwgt_position(position):
+def resolve_kwgt_position(
+    position
+):
     """
     Convierte una posición interna del Layout Engine
     a coordenadas direccionales de KWGT.
@@ -95,38 +104,12 @@ def resolve_kwgt_position(position):
 
 
 # ============================================================
-# COMPONENT PROPERTY
-# ============================================================
-
-def get_component_property(
-    component,
-    key,
-    fallback=None
-):
-    """
-    Obtiene una propiedad visual desde un Component.
-
-    Si la propiedad todavía no existe,
-    devuelve el valor fallback.
-
-    Esto permite una migración gradual desde
-    layout_tokens.py hacia Component System.
-    """
-
-    if component is None:
-        return fallback
-
-    return component.get_property(
-        key,
-        fallback
-    )
-
-
-# ============================================================
 # PROGRESS
 # ============================================================
 
-def normalize_progress(progress):
+def normalize_progress(
+    progress
+):
     """
     Normaliza progress al rango 0..1.
     """
@@ -154,7 +137,9 @@ def normalize_progress(progress):
 # PLANE
 # ============================================================
 
-def resolve_plane_position(progress):
+def resolve_plane_position(
+    progress
+):
     """
     Calcula la posición dinámica del Plane.
 
@@ -203,7 +188,9 @@ def get_component_tree():
 # BUILD LAYOUT
 # ============================================================
 
-def build_layout(event):
+def build_layout(
+    event
+):
 
     # ========================================================
     # COMPONENT SYSTEM
@@ -309,16 +296,15 @@ def build_layout(event):
         "y": BACKGROUND["y"]
     }
 
-    background_type = get_component_property(
-        background_component,
-        "type",
-        "container"
-    )
-
-    background_shape_type = get_component_property(
-        background_component,
-        "shape_type",
-        "rectangle"
+    background_shape_type = (
+        resolve_component_property(
+            background_component,
+            "shape_type",
+            BACKGROUND.get(
+                "shape_type",
+                "rectangle"
+            )
+        )
     )
 
     layout["components"]["Background"] = {
@@ -361,13 +347,13 @@ def build_layout(event):
         "y": COVER["y"]
     }
 
-    cover_value = get_component_property(
+    cover_value = resolve_component_property(
         cover_component,
         "value",
         COVER["image"]["text"]["value"]
     )
 
-    cover_font_size = get_component_property(
+    cover_font_size = resolve_component_property(
         cover_component,
         "font_size",
         COVER["image"]["text"]["font_size"]
@@ -425,19 +411,19 @@ def build_layout(event):
         "y": HEADER["days"]["y"]
     }
 
-    title_font_size = get_component_property(
+    title_font_size = resolve_component_property(
         title_component,
         "font_size",
         HEADER["title"]["font_size"]
     )
 
-    days_font_size = get_component_property(
+    days_font_size = resolve_component_property(
         days_component,
         "font_size",
         HEADER["days"]["font_size"]
     )
 
-    days_value = get_component_property(
+    days_value = resolve_component_property(
         days_component,
         "value",
         "days"
@@ -500,13 +486,13 @@ def build_layout(event):
         "y": GRADIENT["horizontal"]["y"]
     }
 
-    vertical_type = get_component_property(
+    vertical_type = resolve_component_property(
         vertical_component,
         "shape_type",
         "rectangle"
     )
 
-    horizontal_type = get_component_property(
+    horizontal_type = resolve_component_property(
         horizontal_component,
         "shape_type",
         "rectangle"
@@ -578,14 +564,16 @@ def build_layout(event):
         "y": COUNTER["days_remaining"]["y"]
     }
 
-    days_remaining_font_size = get_component_property(
-        days_remaining_component,
-        "font_size",
-        COUNTER[
-            "days_remaining"
-        ][
-            "font_size"
-        ]
+    days_remaining_font_size = (
+        resolve_component_property(
+            days_remaining_component,
+            "font_size",
+            COUNTER[
+                "days_remaining"
+            ][
+                "font_size"
+            ]
+        )
     )
 
     layout["components"]["Counter"] = {
@@ -694,73 +682,77 @@ def build_layout(event):
     # JOURNEY PROPERTIES
     # ========================================================
 
-    line_type = get_component_property(
+    line_type = resolve_component_property(
         line_component,
         "shape_type",
         "rectangle"
     )
 
-    line_width = get_component_property(
+    line_width = resolve_component_property(
         line_component,
         "width",
         JOURNEY["line"]["width"]
     )
 
-    line_height = get_component_property(
+    line_height = resolve_component_property(
         line_component,
         "height",
         JOURNEY["line"]["height"]
     )
 
-    origin_type = get_component_property(
+    origin_type = resolve_component_property(
         origin_component,
         "shape_type",
         "circle"
     )
 
-    origin_size = get_component_property(
+    origin_size = resolve_component_property(
         origin_component,
         "size",
         JOURNEY["origin"]["size"]
     )
 
-    plane_font_size = get_component_property(
+    plane_font_size = resolve_component_property(
         plane_component,
         "font_size",
         JOURNEY["plane"]["font_size"]
     )
 
-    plane_value = get_component_property(
+    plane_value = resolve_component_property(
         plane_component,
         "value",
         "✈"
     )
 
-    destination_font_size = get_component_property(
-        destination_component,
-        "font_size",
-        JOURNEY[
-            "hearts"
-        ][
-            "destination"
-        ][
-            "font_size"
-        ]
+    destination_font_size = (
+        resolve_component_property(
+            destination_component,
+            "font_size",
+            JOURNEY[
+                "hearts"
+            ][
+                "destination"
+            ][
+                "font_size"
+            ]
+        )
     )
 
-    arrival_font_size = get_component_property(
-        arrival_component,
-        "font_size",
-        JOURNEY[
-            "hearts"
-        ][
-            "arrival"
-        ][
-            "font_size"
-        ]
+    arrival_font_size = (
+        resolve_component_property(
+            arrival_component,
+            "font_size",
+            JOURNEY[
+                "hearts"
+            ][
+                "arrival"
+            ][
+                "font_size"
+            ]
+        )
     )
 
-    footer_font_size = get_component_property(
+    footer_font_size = resolve_component_property(
         footer_component,
         "font_size",
         FOOTER["font_size"]
