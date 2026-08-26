@@ -8,6 +8,14 @@
 # IMPORTS
 # ============================================================
 
+from layout_tokens import (
+    HEADER,
+    COUNTER,
+    JOURNEY,
+    FOOTER,
+)
+
+
 from component_schema import (
     validate_properties,
 )
@@ -26,6 +34,9 @@ class Component:
         - name
         - properties
         - children
+
+    Las properties representan características visuales
+    abstractas del componente.
 
     IMPORTANTE:
 
@@ -75,8 +86,8 @@ class Component:
 
     def validate(self):
         """
-        Valida las propiedades actuales
-        contra el Component Property Schema.
+        Valida las propiedades del componente
+        utilizando el Component Property Schema.
         """
 
         validate_properties(
@@ -98,8 +109,8 @@ class Component:
         """
         Define o actualiza una propiedad.
 
-        La propiedad debe estar permitida
-        por el Component Property Schema.
+        La propiedad se valida después
+        de ser modificada.
         """
 
         if not isinstance(key, str):
@@ -112,17 +123,30 @@ class Component:
                 "Property key cannot be empty"
             )
 
-        new_properties = (
-            self.properties.copy()
-        )
-
-        new_properties[key] = value
-
-        validate_properties(
-            new_properties
+        previous_value = self.properties.get(
+            key
         )
 
         self.properties[key] = value
+
+        try:
+
+            self.validate()
+
+        except Exception:
+
+            if previous_value is None:
+                self.properties.pop(
+                    key,
+                    None
+                )
+
+            else:
+                self.properties[key] = (
+                    previous_value
+                )
+
+            raise
 
         return value
 
@@ -168,7 +192,23 @@ class Component:
 
         if key in self.properties:
 
+            previous_value = (
+                self.properties[key]
+            )
+
             del self.properties[key]
+
+            try:
+
+                self.validate()
+
+            except Exception:
+
+                self.properties[key] = (
+                    previous_value
+                )
+
+                raise
 
             return True
 
@@ -269,29 +309,23 @@ def build_countdown_tree():
     Construye la jerarquía visual base
     de Countdown OS.
 
-    IMPORTANTE:
+    Las propiedades visuales abstractas
+    pertenecen ahora a los componentes.
 
-    Este árbol define únicamente:
+    Las coordenadas continúan perteneciendo
+    al Layout Engine.
 
-        - jerarquía
-        - identidad
-        - tipo de componente
+    FONT SIZE MIGRATION
+    -------------------
 
-    Los valores visuales actuales continúan
-    perteneciendo al Layout Engine / layout_tokens.
+    Los componentes de tipo text contienen
+    ahora su propio font_size.
 
-    No se duplican valores como:
-
-        - font_size
-        - width
-        - height
-        - position
-        - color
-        - opacity
-
-    Esto evita romper el contrato visual
-    validado de v1.0.
+    layout_tokens.py continúa siendo utilizado
+    únicamente como fuente de valores iniciales
+    mientras termina la migración.
     """
+
 
     # ========================================================
     # ROOT
@@ -348,19 +382,48 @@ def build_countdown_tree():
         }
     )
 
+
+    # --------------------------------------------------------
+    # TITLE
+    # --------------------------------------------------------
+
     title = Component(
         "Title",
         properties={
-            "type": "text"
+            "type": "text",
+
+            "font_size": (
+                HEADER[
+                    "title"
+                ][
+                    "font_size"
+                ]
+            )
         }
     )
+
+
+    # --------------------------------------------------------
+    # DAYS
+    # --------------------------------------------------------
 
     days = Component(
         "Days",
         properties={
-            "type": "text"
+            "type": "text",
+
+            "font_size": (
+                HEADER[
+                    "days"
+                ][
+                    "font_size"
+                ]
+            ),
+
+            "value": "days"
         }
     )
+
 
     header.add_child(
         title
@@ -386,6 +449,11 @@ def build_countdown_tree():
         }
     )
 
+
+    # --------------------------------------------------------
+    # VERTICAL
+    # --------------------------------------------------------
+
     vertical = Component(
         "Vertical",
         properties={
@@ -393,12 +461,18 @@ def build_countdown_tree():
         }
     )
 
+
+    # --------------------------------------------------------
+    # HORIZONTAL
+    # --------------------------------------------------------
+
     horizontal = Component(
         "Horizontal",
         properties={
             "type": "gradient"
         }
     )
+
 
     gradient.add_child(
         vertical
@@ -424,12 +498,26 @@ def build_countdown_tree():
         }
     )
 
+
+    # --------------------------------------------------------
+    # DAYS REMAINING
+    # --------------------------------------------------------
+
     days_remaining = Component(
         "DaysRemaining",
         properties={
-            "type": "text"
+            "type": "text",
+
+            "font_size": (
+                COUNTER[
+                    "days_remaining"
+                ][
+                    "font_size"
+                ]
+            )
         }
     )
+
 
     counter.add_child(
         days_remaining
@@ -451,12 +539,14 @@ def build_countdown_tree():
         }
     )
 
+
     journey = Component(
         "Journey",
         properties={
             "type": "container"
         }
     )
+
 
     content.add_child(
         journey
@@ -471,12 +561,21 @@ def build_countdown_tree():
     # JOURNEY
     # ========================================================
 
+    # --------------------------------------------------------
+    # LINE
+    # --------------------------------------------------------
+
     line = Component(
         "Line",
         properties={
             "type": "shape"
         }
     )
+
+
+    # --------------------------------------------------------
+    # ORIGIN
+    # --------------------------------------------------------
 
     origin = Component(
         "Origin",
@@ -485,12 +584,32 @@ def build_countdown_tree():
         }
     )
 
+
+    # --------------------------------------------------------
+    # PLANE
+    # --------------------------------------------------------
+
     plane = Component(
         "Plane",
         properties={
-            "type": "text"
+            "type": "text",
+
+            "font_size": (
+                JOURNEY[
+                    "plane"
+                ][
+                    "font_size"
+                ]
+            ),
+
+            "value": "✈"
         }
     )
+
+
+    # --------------------------------------------------------
+    # HEARTS
+    # --------------------------------------------------------
 
     hearts = Component(
         "Hearts",
@@ -498,6 +617,7 @@ def build_countdown_tree():
             "type": "container"
         }
     )
+
 
     journey.add_child(
         line
@@ -520,19 +640,49 @@ def build_countdown_tree():
     # HEARTS
     # ========================================================
 
+    # --------------------------------------------------------
+    # DESTINATION
+    # --------------------------------------------------------
+
     destination = Component(
         "Destination",
         properties={
-            "type": "text"
+            "type": "text",
+
+            "font_size": (
+                JOURNEY[
+                    "hearts"
+                ][
+                    "destination"
+                ][
+                    "font_size"
+                ]
+            )
         }
     )
+
+
+    # --------------------------------------------------------
+    # ARRIVAL
+    # --------------------------------------------------------
 
     arrival = Component(
         "Arrival",
         properties={
-            "type": "text"
+            "type": "text",
+
+            "font_size": (
+                JOURNEY[
+                    "hearts"
+                ][
+                    "arrival"
+                ][
+                    "font_size"
+                ]
+            )
         }
     )
+
 
     hearts.add_child(
         destination
@@ -550,9 +700,16 @@ def build_countdown_tree():
     footer = Component(
         "Footer",
         properties={
-            "type": "text"
+            "type": "text",
+
+            "font_size": (
+                FOOTER[
+                    "font_size"
+                ]
+            )
         }
     )
+
 
     countdown.add_child(
         footer
@@ -572,8 +729,8 @@ def build_countdown_tree():
 
 def build_component_tree():
     """
-    Construye el árbol y devuelve
-    su representación serializable.
+    Construye el árbol y devuelve su representación
+    serializable.
     """
 
     tree = build_countdown_tree()
@@ -597,9 +754,13 @@ if __name__ == "__main__":
     print("=" * 50)
 
     print()
-    print(f"Root: {tree.name}")
+
+    print(
+        f"Root: {tree.name}"
+    )
 
     print()
+
     print("Children:")
 
     for child in tree.children:
@@ -609,23 +770,59 @@ if __name__ == "__main__":
         )
 
     print()
+
+    plane_component = tree.find(
+        "Plane"
+    )
+
+    title_component = tree.find(
+        "Title"
+    )
+
+    days_remaining_component = tree.find(
+        "DaysRemaining"
+    )
+
+    footer_component = tree.find(
+        "Footer"
+    )
+
     print(
         f"Found Plane: "
-        f"{tree.find('Plane') is not None}"
+        f"{plane_component is not None}"
     )
 
-    print()
     print(
         f"Plane type: "
-        f"{tree.find('Plane').get_property('type')}"
+        f"{plane_component.get_property('type')}"
     )
 
-    print()
     print(
-        f"Header type: "
-        f"{tree.find('Header').get_property('type')}"
+        f"Plane font_size: "
+        f"{plane_component.get_property('font_size')}"
     )
 
     print()
-    print("🟢 Component System initialized")
+
+    print(
+        f"Title font_size: "
+        f"{title_component.get_property('font_size')}"
+    )
+
+    print(
+        f"DaysRemaining font_size: "
+        f"{days_remaining_component.get_property('font_size')}"
+    )
+
+    print(
+        f"Footer font_size: "
+        f"{footer_component.get_property('font_size')}"
+    )
+
+    print()
+
+    print(
+        "🟢 Component font_size properties initialized"
+    )
+
     print()
