@@ -3,6 +3,11 @@
 # Version: 1.2 Elegance
 # ============================================================
 
+from component_schema import (
+    validate_properties,
+    ComponentSchemaError
+)
+
 
 # ============================================================
 # COMPONENT
@@ -60,6 +65,30 @@ class Component:
 
         self.children = []
 
+        # ----------------------------------------------------
+        # Validate initial properties
+        # ----------------------------------------------------
+
+        if self.properties:
+            self.validate()
+
+
+    # ========================================================
+    # VALIDATION
+    # ========================================================
+
+    def validate(self):
+        """
+        Valida todas las properties actuales
+        contra el Component Schema.
+        """
+
+        validate_properties(
+            self.properties
+        )
+
+        return True
+
 
     # ========================================================
     # PROPERTIES
@@ -73,8 +102,11 @@ class Component:
         """
         Define o actualiza una propiedad.
 
-        Las propiedades pueden contener cualquier
-        dato visual abstracto.
+        La propiedad se valida inmediatamente
+        contra el Component Schema.
+
+        Si el nuevo estado completo del componente
+        es inválido, la modificación no se conserva.
         """
 
         if not isinstance(key, str):
@@ -87,7 +119,40 @@ class Component:
                 "Property key cannot be empty"
             )
 
+        previous_value = (
+            self.properties.get(
+                key,
+                None
+            )
+        )
+
+        had_previous_value = (
+            key in self.properties
+        )
+
         self.properties[key] = value
+
+        try:
+
+            self.validate()
+
+        except Exception:
+
+            # ----------------------------------------------
+            # Rollback
+            # ----------------------------------------------
+
+            if had_previous_value:
+
+                self.properties[key] = (
+                    previous_value
+                )
+
+            else:
+
+                del self.properties[key]
+
+            raise
 
         return value
 
@@ -129,15 +194,37 @@ class Component:
         Elimina una propiedad.
 
         Devuelve True si existía.
+
+        El componente se mantiene válido después
+        de eliminar la propiedad.
         """
 
-        if key in self.properties:
+        if key not in self.properties:
+            return False
 
-            del self.properties[key]
+        previous_value = (
+            self.properties[key]
+        )
 
-            return True
+        del self.properties[key]
 
-        return False
+        try:
+
+            self.validate()
+
+        except Exception:
+
+            # ----------------------------------------------
+            # Rollback
+            # ----------------------------------------------
+
+            self.properties[key] = (
+                previous_value
+            )
+
+            raise
+
+        return True
 
 
     # ========================================================
@@ -210,6 +297,8 @@ class Component:
         Los hijos aparecen bajo su propio nombre.
         """
 
+        self.validate()
+
         result = {}
 
         result.update(
@@ -234,11 +323,10 @@ def build_countdown_tree():
     Construye la jerarquía visual base
     de Countdown OS.
 
-    En esta etapa comenzamos a asignar
-    propiedades visuales directamente
-    a los componentes.
+    Las propiedades visuales abstractas
+    pertenecen al Component System.
 
-    Las coordenadas todavía pertenecen
+    Las coordenadas pertenecen
     al Layout Engine.
     """
 
@@ -404,174 +492,4 @@ def build_countdown_tree():
         }
     )
 
-    content.add_child(
-        journey
-    )
-
-    countdown.add_child(
-        content
-    )
-
-
-    # ========================================================
-    # JOURNEY
-    # ========================================================
-
-    line = Component(
-        "Line",
-        properties={
-            "type": "shape"
-        }
-    )
-
-    origin = Component(
-        "Origin",
-        properties={
-            "type": "shape"
-        }
-    )
-
-    plane = Component(
-        "Plane",
-        properties={
-            "type": "text"
-        }
-    )
-
-    hearts = Component(
-        "Hearts",
-        properties={
-            "type": "container"
-        }
-    )
-
-    journey.add_child(
-        line
-    )
-
-    journey.add_child(
-        origin
-    )
-
-    journey.add_child(
-        plane
-    )
-
-    journey.add_child(
-        hearts
-    )
-
-
-    # ========================================================
-    # HEARTS
-    # ========================================================
-
-    destination = Component(
-        "Destination",
-        properties={
-            "type": "text"
-        }
-    )
-
-    arrival = Component(
-        "Arrival",
-        properties={
-            "type": "text"
-        }
-    )
-
-    hearts.add_child(
-        destination
-    )
-
-    hearts.add_child(
-        arrival
-    )
-
-
-    # ========================================================
-    # FOOTER
-    # ========================================================
-
-    footer = Component(
-        "Footer",
-        properties={
-            "type": "text"
-        }
-    )
-
-    countdown.add_child(
-        footer
-    )
-
-
-    # ========================================================
-    # RETURN TREE
-    # ========================================================
-
-    return countdown
-
-
-# ============================================================
-# TREE SERIALIZATION
-# ============================================================
-
-def build_component_tree():
-    """
-    Construye el árbol y devuelve su representación
-    serializable.
-    """
-
-    tree = build_countdown_tree()
-
-    return {
-        tree.name: tree.to_dict()
-    }
-
-
-# ============================================================
-# MANUAL TEST
-# ============================================================
-
-if __name__ == "__main__":
-
-    tree = build_countdown_tree()
-
-    print()
-    print("=" * 50)
-    print("       COUNTDOWN OS — COMPONENT SYSTEM")
-    print("=" * 50)
-
-    print()
-    print(f"Root: {tree.name}")
-
-    print()
-    print("Children:")
-
-    for child in tree.children:
-
-        print(
-            f"  └── {child.name}"
-        )
-
-    print()
-    print(
-        f"Found Plane: "
-        f"{tree.find('Plane') is not None}"
-    )
-
-    print()
-    print(
-        f"Plane type: "
-        f"{tree.find('Plane').get_property('type')}"
-    )
-
-    print()
-    print(
-        f"Header type: "
-        f"{tree.find('Header').get_property('type')}"
-    )
-
-    print()
-    print("🟢 Component properties initialized")
-    print()
+    content.add
