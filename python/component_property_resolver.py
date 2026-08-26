@@ -33,15 +33,6 @@ class ComponentPropertyResolver:
         component=None,
         fallback=None,
     ):
-        """
-        Crea un resolver asociado a un componente.
-
-        component:
-            Instancia de Component.
-
-        fallback:
-            Diccionario opcional de valores legacy.
-        """
 
         self.component = component
 
@@ -202,6 +193,32 @@ class ComponentPropertyResolver:
 
 
     # ========================================================
+    # FONT SIZE
+    # ========================================================
+
+    def resolve_font_size(
+        self,
+        default=None,
+    ):
+        """
+        Resuelve específicamente font_size.
+
+        La prioridad continúa siendo:
+
+            Component font_size
+                ↓
+            Resolver fallback
+                ↓
+            Default
+        """
+
+        return self.resolve(
+            "font_size",
+            default
+        )
+
+
+    # ========================================================
     # RESOLVE REQUIRED
     # ========================================================
 
@@ -307,12 +324,33 @@ def resolve_component_property(
 ):
     """
     API simple para resolver una propiedad.
+    """
+
+    resolver = ComponentPropertyResolver(
+        component=component
+    )
+
+    return resolver.resolve(
+        key,
+        fallback
+    )
+
+
+# ============================================================
+# FONT SIZE API
+# ============================================================
+
+def resolve_font_size(
+    component,
+    fallback=None,
+):
+    """
+    API específica para font_size.
 
     Ejemplo:
 
-        resolve_component_property(
+        resolve_font_size(
             title_component,
-            "font_size",
             18
         )
 
@@ -322,15 +360,14 @@ def resolve_component_property(
 
         De lo contrario:
 
-        18
+        fallback.
     """
 
     resolver = ComponentPropertyResolver(
         component=component
     )
 
-    return resolver.resolve(
-        key,
+    return resolver.resolve_font_size(
         fallback
     )
 
@@ -401,6 +438,20 @@ if __name__ == "__main__":
 
 
     # ========================================================
+    # FONT SIZE API
+    # ========================================================
+
+    font_size = resolve_font_size(
+        title,
+        18
+    )
+
+    print(
+        f"Resolved font_size: {font_size}"
+    )
+
+
+    # ========================================================
     # FALLBACK
     # ========================================================
 
@@ -453,5 +504,8 @@ if __name__ == "__main__":
 
 
     print()
-    print("🟢 Property Resolver initialized")
+    print(
+        "🟢 Property Resolver font_size migration ready"
+    )
+
     print()
