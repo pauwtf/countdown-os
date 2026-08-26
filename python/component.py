@@ -12,13 +12,26 @@ class Component:
     """
     Componente base del sistema visual de Countdown OS.
 
-    Cada componente puede tener:
-        - nombre
-        - propiedades
-        - hijos
+    Cada componente contiene:
 
-    Esto permite construir una jerarquía visual
-    independiente del sistema de coordenadas.
+        - name
+        - properties
+        - children
+
+    Las properties representan características visuales
+    abstractas del componente.
+
+    IMPORTANTE:
+
+    El Component System NO conoce:
+
+        - KWGT
+        - coordenadas KWGT
+        - Web Get
+        - fórmulas KWGT
+        - lógica de rendering
+
+    Es independiente del sistema de coordenadas.
     """
 
     def __init__(
@@ -26,35 +39,145 @@ class Component:
         name,
         properties=None,
     ):
+
+        if not isinstance(name, str):
+            raise TypeError(
+                "Component name must be a string"
+            )
+
+        if not name.strip():
+            raise ValueError(
+                "Component name cannot be empty"
+            )
+
         self.name = name
-        self.properties = properties or {}
+
+        self.properties = (
+            properties.copy()
+            if properties
+            else {}
+        )
+
         self.children = []
+
+
+    # ========================================================
+    # PROPERTIES
+    # ========================================================
+
+    def set_property(
+        self,
+        key,
+        value,
+    ):
+        """
+        Define o actualiza una propiedad.
+
+        Las propiedades pueden contener cualquier
+        dato visual abstracto.
+        """
+
+        if not isinstance(key, str):
+            raise TypeError(
+                "Property key must be a string"
+            )
+
+        if not key.strip():
+            raise ValueError(
+                "Property key cannot be empty"
+            )
+
+        self.properties[key] = value
+
+        return value
+
+
+    def get_property(
+        self,
+        key,
+        default=None,
+    ):
+        """
+        Obtiene una propiedad.
+
+        Si no existe, devuelve default.
+        """
+
+        return self.properties.get(
+            key,
+            default
+        )
+
+
+    def has_property(
+        self,
+        key,
+    ):
+        """
+        Comprueba si el componente posee
+        una propiedad.
+        """
+
+        return key in self.properties
+
+
+    def remove_property(
+        self,
+        key,
+    ):
+        """
+        Elimina una propiedad.
+
+        Devuelve True si existía.
+        """
+
+        if key in self.properties:
+
+            del self.properties[key]
+
+            return True
+
+        return False
+
 
     # ========================================================
     # CHILDREN
     # ========================================================
 
-    def add_child(self, component):
+    def add_child(
+        self,
+        component,
+    ):
         """
         Añade un componente hijo.
         """
 
-        if not isinstance(component, Component):
+        if not isinstance(
+            component,
+            Component
+        ):
             raise TypeError(
                 "component must be an instance of Component"
             )
 
-        self.children.append(component)
+        self.children.append(
+            component
+        )
 
         return component
+
 
     # ========================================================
     # FIND
     # ========================================================
 
-    def find(self, name):
+    def find(
+        self,
+        name,
+    ):
         """
-        Busca recursivamente un componente por nombre.
+        Busca recursivamente un componente
+        por nombre.
         """
 
         if self.name == name:
@@ -62,12 +185,15 @@ class Component:
 
         for child in self.children:
 
-            result = child.find(name)
+            result = child.find(
+                name
+            )
 
             if result is not None:
                 return result
 
         return None
+
 
     # ========================================================
     # SERIALIZATION
@@ -77,15 +203,24 @@ class Component:
         """
         Convierte el componente y sus hijos
         en una estructura de diccionario.
+
+        Las propiedades pertenecen directamente
+        al componente.
+
+        Los hijos aparecen bajo su propio nombre.
         """
 
         result = {}
 
-        result.update(self.properties)
+        result.update(
+            self.properties
+        )
 
         for child in self.children:
 
-            result[child.name] = child.to_dict()
+            result[child.name] = (
+                child.to_dict()
+            )
 
         return result
 
@@ -96,10 +231,15 @@ class Component:
 
 def build_countdown_tree():
     """
-    Construye la jerarquía visual base de Countdown OS.
+    Construye la jerarquía visual base
+    de Countdown OS.
 
-    El árbol representa la estructura visual,
-    no las coordenadas ni la lógica de KWGT.
+    En esta etapa comenzamos a asignar
+    propiedades visuales directamente
+    a los componentes.
+
+    Las coordenadas todavía pertenecen
+    al Layout Engine.
     """
 
     # ========================================================
@@ -110,44 +250,62 @@ def build_countdown_tree():
         "Countdown"
     )
 
+
     # ========================================================
     # BACKGROUND
     # ========================================================
 
     background = Component(
-        "Background"
+        "Background",
+        properties={
+            "type": "container"
+        }
     )
 
     countdown.add_child(
         background
     )
 
+
     # ========================================================
     # COVER
     # ========================================================
 
     cover = Component(
-        "Cover"
+        "Cover",
+        properties={
+            "type": "container"
+        }
     )
 
     countdown.add_child(
         cover
     )
 
+
     # ========================================================
     # HEADER
     # ========================================================
 
     header = Component(
-        "Header"
+        "Header",
+        properties={
+            "type": "container"
+        }
     )
 
     title = Component(
-        "Title"
+        "Title",
+        properties={
+            "type": "text"
+        }
     )
 
     days = Component(
-        "Days"
+        "Days",
+        properties={
+            "type": "text"
+        }
     )
 
     header.add_child(
@@ -162,20 +320,30 @@ def build_countdown_tree():
         header
     )
 
+
     # ========================================================
     # GRADIENT
     # ========================================================
 
     gradient = Component(
-        "Gradient"
+        "Gradient",
+        properties={
+            "type": "container"
+        }
     )
 
     vertical = Component(
-        "Vertical"
+        "Vertical",
+        properties={
+            "type": "gradient"
+        }
     )
 
     horizontal = Component(
-        "Horizontal"
+        "Horizontal",
+        properties={
+            "type": "gradient"
+        }
     )
 
     gradient.add_child(
@@ -190,16 +358,23 @@ def build_countdown_tree():
         gradient
     )
 
+
     # ========================================================
     # COUNTER
     # ========================================================
 
     counter = Component(
-        "Counter"
+        "Counter",
+        properties={
+            "type": "container"
+        }
     )
 
     days_remaining = Component(
-        "DaysRemaining"
+        "DaysRemaining",
+        properties={
+            "type": "text"
+        }
     )
 
     counter.add_child(
@@ -210,16 +385,23 @@ def build_countdown_tree():
         counter
     )
 
+
     # ========================================================
     # CONTENT
     # ========================================================
 
     content = Component(
-        "Content"
+        "Content",
+        properties={
+            "type": "container"
+        }
     )
 
     journey = Component(
-        "Journey"
+        "Journey",
+        properties={
+            "type": "container"
+        }
     )
 
     content.add_child(
@@ -230,24 +412,37 @@ def build_countdown_tree():
         content
     )
 
+
     # ========================================================
     # JOURNEY
     # ========================================================
 
     line = Component(
-        "Line"
+        "Line",
+        properties={
+            "type": "shape"
+        }
     )
 
     origin = Component(
-        "Origin"
+        "Origin",
+        properties={
+            "type": "shape"
+        }
     )
 
     plane = Component(
-        "Plane"
+        "Plane",
+        properties={
+            "type": "text"
+        }
     )
 
     hearts = Component(
-        "Hearts"
+        "Hearts",
+        properties={
+            "type": "container"
+        }
     )
 
     journey.add_child(
@@ -266,16 +461,23 @@ def build_countdown_tree():
         hearts
     )
 
+
     # ========================================================
     # HEARTS
     # ========================================================
 
     destination = Component(
-        "Destination"
+        "Destination",
+        properties={
+            "type": "text"
+        }
     )
 
     arrival = Component(
-        "Arrival"
+        "Arrival",
+        properties={
+            "type": "text"
+        }
     )
 
     hearts.add_child(
@@ -286,17 +488,22 @@ def build_countdown_tree():
         arrival
     )
 
+
     # ========================================================
     # FOOTER
     # ========================================================
 
     footer = Component(
-        "Footer"
+        "Footer",
+        properties={
+            "type": "text"
+        }
     )
 
     countdown.add_child(
         footer
     )
+
 
     # ========================================================
     # RETURN TREE
@@ -354,5 +561,17 @@ if __name__ == "__main__":
     )
 
     print()
-    print("🟢 Component tree generated")
+    print(
+        f"Plane type: "
+        f"{tree.find('Plane').get_property('type')}"
+    )
+
+    print()
+    print(
+        f"Header type: "
+        f"{tree.find('Header').get_property('type')}"
+    )
+
+    print()
+    print("🟢 Component properties initialized")
     print()
