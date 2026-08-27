@@ -20,14 +20,13 @@ from component import (
     build_countdown_tree
 )
 
-from component_property_resolver import (
-    resolve_component_property,
-    resolve_component_properties
-)
-
 from kwgt_coordinate_adapter import (
     adapt_directional_position,
     adapt_dual_x_position
+)
+
+from component_property_resolver import (
+    resolve_component_property
 )
 
 
@@ -53,6 +52,7 @@ def resolve_position(parent_position, local_position):
         local_y = float(local_y)
 
     except (TypeError, ValueError) as error:
+
         raise TypeError(
             "Layout coordinates must be numeric. "
             f"parent={parent_position}, "
@@ -71,8 +71,8 @@ def resolve_position(parent_position, local_position):
 
 def resolve_kwgt_position(position):
     """
-    Convierte una posición interna del Layout Engine
-    a coordenadas direccionales de KWGT.
+    Convierte una posición abstracta del Layout Engine
+    a coordenadas direccionales compatibles con KWGT.
 
     Countdown OS:
 
@@ -80,13 +80,6 @@ def resolve_kwgt_position(position):
         -X = izquierda
         +Y = arriba
         -Y = abajo
-
-    KWGT:
-
-        x_right
-        x_left
-        y_up
-        y_down
     """
 
     return adapt_directional_position(
@@ -111,6 +104,7 @@ def normalize_progress(progress):
         progress = float(progress)
 
     except (TypeError, ValueError) as error:
+
         raise TypeError(
             f"Progress must be numeric: {progress}"
         ) from error
@@ -128,11 +122,13 @@ def normalize_progress(progress):
 def resolve_plane_position(progress):
     """
     Calcula la posición dinámica del Plane.
+
+    progress:
+        0 → inicio
+        1 → destino
     """
 
-    progress = normalize_progress(
-        progress
-    )
+    progress = normalize_progress(progress)
 
     return {
         "x_left": (
@@ -157,9 +153,6 @@ def resolve_plane_position(progress):
 def get_component_tree():
     """
     Devuelve el árbol estructural de Countdown OS.
-
-    El Component System define la jerarquía
-    y las propiedades visuales abstractas.
     """
 
     return build_countdown_tree()
@@ -206,10 +199,6 @@ def build_layout(event):
         "Horizontal"
     )
 
-    counter_component = component_tree.find(
-        "Counter"
-    )
-
     days_remaining_component = component_tree.find(
         "DaysRemaining"
     )
@@ -244,7 +233,6 @@ def build_layout(event):
     # ========================================================
 
     layout = {
-
         "version": "1.2",
 
         "system": (
@@ -252,11 +240,8 @@ def build_layout(event):
         ),
 
         "canvas": {
-
             "width": CANVAS["width"],
-
             "height": CANVAS["height"],
-
             "anchor": CANVAS["anchor"]
         },
 
@@ -269,9 +254,7 @@ def build_layout(event):
     # ========================================================
 
     background_position = {
-
         "x": BACKGROUND["x"],
-
         "y": BACKGROUND["y"]
     }
 
@@ -292,9 +275,7 @@ def build_layout(event):
         "Background_shape": {
 
             "position": {
-
                 "x": 0,
-
                 "y": 0
             },
 
@@ -315,22 +296,20 @@ def build_layout(event):
     # ========================================================
 
     cover_position = {
-
         "x": COVER["x"],
-
         "y": COVER["y"]
     }
-
-    cover_value = resolve_component_property(
-        cover_component,
-        "value",
-        COVER["image"]["text"]["value"]
-    )
 
     cover_font_size = resolve_component_property(
         cover_component,
         "font_size",
         COVER["image"]["text"]["font_size"]
+    )
+
+    cover_value = resolve_component_property(
+        cover_component,
+        "value",
+        COVER["image"]["text"]["value"]
     )
 
     layout["components"]["Cover"] = {
@@ -344,18 +323,14 @@ def build_layout(event):
         "coverImage": {
 
             "position": {
-
                 "x": COVER["image"]["x"],
-
                 "y": COVER["image"]["y"]
             },
 
             "coverText": {
 
                 "position": {
-
                     "x": COVER["image"]["text"]["x"],
-
                     "y": COVER["image"]["text"]["y"]
                 },
 
@@ -372,16 +347,12 @@ def build_layout(event):
     # ========================================================
 
     title_position = {
-
         "x": HEADER["title"]["x"],
-
         "y": HEADER["title"]["y"]
     }
 
     days_position = {
-
         "x": HEADER["days"]["x"],
-
         "y": HEADER["days"]["y"]
     }
 
@@ -447,26 +418,22 @@ def build_layout(event):
     # ========================================================
 
     vertical_position = {
-
         "x": GRADIENT["vertical"]["x"],
-
         "y": GRADIENT["vertical"]["y"]
     }
 
     horizontal_position = {
-
         "x": GRADIENT["horizontal"]["x"],
-
         "y": GRADIENT["horizontal"]["y"]
     }
 
-    vertical_type = resolve_component_property(
+    vertical_shape_type = resolve_component_property(
         vertical_component,
         "shape_type",
         "rectangle"
     )
 
-    horizontal_type = resolve_component_property(
+    horizontal_shape_type = resolve_component_property(
         horizontal_component,
         "shape_type",
         "rectangle"
@@ -484,7 +451,7 @@ def build_layout(event):
 
             "GradientVerticalShape": {
 
-                "type": vertical_type,
+                "type": vertical_shape_type,
 
                 "width": (
                     GRADIENT["vertical"]["width"]
@@ -506,7 +473,7 @@ def build_layout(event):
 
             "GradientHorizontalShape": {
 
-                "type": horizontal_type,
+                "type": horizontal_shape_type,
 
                 "width": (
                     GRADIENT["horizontal"]["width"]
@@ -525,27 +492,19 @@ def build_layout(event):
     # ========================================================
 
     counter_position = {
-
         "x": COUNTER["x"],
-
         "y": COUNTER["y"]
     }
 
     days_remaining_position = {
-
         "x": COUNTER["days_remaining"]["x"],
-
         "y": COUNTER["days_remaining"]["y"]
     }
 
     days_remaining_font_size = resolve_component_property(
         days_remaining_component,
         "font_size",
-        COUNTER[
-            "days_remaining"
-        ][
-            "font_size"
-        ]
+        COUNTER["days_remaining"]["font_size"]
     )
 
     layout["components"]["Counter"] = {
@@ -582,9 +541,7 @@ def build_layout(event):
     # ========================================================
 
     content_position = {
-
         "x": CONTENT["x"],
-
         "y": CONTENT["y"]
     }
 
@@ -603,7 +560,7 @@ def build_layout(event):
 
 
     # ========================================================
-    # JOURNEY CHILDREN
+    # JOURNEY CHILDREN POSITIONS
     # ========================================================
 
     line_position = resolve_position(
@@ -645,13 +602,18 @@ def build_layout(event):
         )
     )
 
+
+    # ========================================================
+    # PLANE POSITION
+    # ========================================================
+
     plane_position = resolve_plane_position(
         event.get("progress")
     )
 
 
     # ========================================================
-    # JOURNEY PROPERTIES
+    # JOURNEY COMPONENT PROPERTIES
     # ========================================================
 
     line_type = resolve_component_property(
@@ -699,31 +661,25 @@ def build_layout(event):
     destination_font_size = resolve_component_property(
         destination_component,
         "font_size",
-        JOURNEY[
-            "hearts"
-        ][
-            "destination"
-        ][
-            "font_size"
-        ]
+        JOURNEY["hearts"]["destination"]["font_size"]
+    )
+
+    destination_value = resolve_component_property(
+        destination_component,
+        "value",
+        None
     )
 
     arrival_font_size = resolve_component_property(
         arrival_component,
         "font_size",
-        JOURNEY[
-            "hearts"
-        ][
-            "arrival"
-        ][
-            "font_size"
-        ]
+        JOURNEY["hearts"]["arrival"]["font_size"]
     )
 
-    footer_font_size = resolve_component_property(
-        footer_component,
-        "font_size",
-        FOOTER["font_size"]
+    arrival_value = resolve_component_property(
+        arrival_component,
+        "value",
+        None
     )
 
 
@@ -733,4 +689,247 @@ def build_layout(event):
 
     journey = {
 
-       
+        "position": journey_position,
+
+        "kwgt_position": resolve_kwgt_position(
+            journey_position
+        ),
+
+        "Line": {
+
+            "position": line_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                line_position
+            ),
+
+            "JourneyLineShape": {
+
+                "type": line_type,
+
+                "width": line_width,
+
+                "height": line_height
+            }
+        },
+
+        "Origin": {
+
+            "position": origin_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                origin_position
+            ),
+
+            "OriginShape": {
+
+                "type": origin_type,
+
+                "size": origin_size
+            }
+        },
+
+        "Plane": {
+
+            "x_left": (
+                plane_position["x_left"]
+            ),
+
+            "x_right": (
+                plane_position["x_right"]
+            ),
+
+            "y": (
+                plane_position["y"]
+            ),
+
+            "kwgt_position": adapt_dual_x_position(
+
+                plane_position["x_left"],
+
+                plane_position["x_right"],
+
+                plane_position["y"]
+
+            ),
+
+            "PlaneText": {
+
+                "font_size": plane_font_size,
+
+                "value": plane_value
+            }
+        },
+
+        "Hearts": {
+
+            "position": hearts_position,
+
+            "kwgt_position": resolve_kwgt_position(
+                hearts_position
+            ),
+
+            "Destination": {
+
+                "position": {
+
+                    "x": (
+                        JOURNEY["hearts"]["destination"]["x"]
+                    ),
+
+                    "y": (
+                        JOURNEY["hearts"]["destination"]["y"]
+                    )
+                },
+
+                "DestinationText": {
+
+                    "font_size": destination_font_size,
+
+                    "value": (
+                        destination_value
+                        if destination_value is not None
+                        else event.get(
+                            "destinationDisplay",
+                            ""
+                        )
+                    )
+                }
+            },
+
+            "Arrival": {
+
+                "position": {
+
+                    "x": (
+                        JOURNEY["hearts"]["arrival"]["x"]
+                    ),
+
+                    "y": (
+                        JOURNEY["hearts"]["arrival"]["y"]
+                    )
+                },
+
+                "ArrivalText": {
+
+                    "font_size": arrival_font_size,
+
+                    "value": (
+                        arrival_value
+                        if arrival_value is not None
+                        else event.get(
+                            "arrivalDisplay",
+                            ""
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+
+    layout["components"]["Content"] = {
+
+        "position": content_position,
+
+        "kwgt_position": resolve_kwgt_position(
+            content_position
+        ),
+
+        "journey": journey
+    }
+
+
+    # ========================================================
+    # FOOTER
+    # ========================================================
+
+    footer_position = {
+        "x": FOOTER["x"],
+        "y": FOOTER["y"]
+    }
+
+    footer_font_size = resolve_component_property(
+        footer_component,
+        "font_size",
+        FOOTER["font_size"]
+    )
+
+    footer_value = resolve_component_property(
+        footer_component,
+        "value",
+        None
+    )
+
+    layout["components"]["Footer"] = {
+
+        "position": footer_position,
+
+        "kwgt_position": resolve_kwgt_position(
+            footer_position
+        ),
+
+        "FooterText": {
+
+            "font_size": footer_font_size,
+
+            "value": (
+                footer_value
+                if footer_value is not None
+                else event.get(
+                    "notesDisplay",
+                    ""
+                )
+            )
+        }
+    }
+
+
+    # ========================================================
+    # TEST
+    # ========================================================
+
+    layout["components"]["test"] = {
+
+        "TestText": {
+
+            "font_size": TEST["font_size"],
+
+            "value": ""
+        }
+    }
+
+
+    # ========================================================
+    # COMPONENT TREE VALIDATION
+    # ========================================================
+
+    expected_components = [
+
+        "Background",
+        "Cover",
+        "Header",
+        "Gradient",
+        "Counter",
+        "Content",
+        "Footer"
+
+    ]
+
+    for component_name in expected_components:
+
+        if component_tree.find(
+            component_name
+        ) is None:
+
+            raise ValueError(
+                "Component System is missing "
+                f"component: {component_name}"
+            )
+
+
+    # ========================================================
+    # RETURN
+    # ========================================================
+
+    return layout
