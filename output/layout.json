@@ -259,7 +259,7 @@
             },
             "DestinationText": {
               "font_size": 14,
-              "value": ""
+              "value": "♡"
             },
             "kwgt_position": {
               "x_right": 0.0,
@@ -275,7 +275,7 @@
             },
             "ArrivalText": {
               "font_size": 14,
-              "value": ""
+              "value": "❤️"
             },
             "kwgt_position": {
               "x_right": 0.0,
