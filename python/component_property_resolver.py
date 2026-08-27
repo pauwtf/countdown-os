@@ -4,24 +4,26 @@
 # ============================================================
 
 
-# ============================================================
-# COMPONENT PROPERTY RESOLVER
-# ============================================================
-
 class ComponentPropertyResolver:
     """
     Resuelve propiedades visuales de Countdown OS.
 
-    Orden de resolución:
+    Prioridad:
 
         1. Component property
-        2. Legacy / layout_tokens fallback
+        2. Fallback / legacy value
         3. Explicit default
         4. None
 
-    Este sistema permite migrar progresivamente
-    desde layout_tokens.py hacia Component System
-    sin romper la implementación existente.
+    Opacity usa internamente la escala 0.0–1.0.
+
+    Conversión desde KWGT:
+
+        100% → 1.00
+         86% → 0.86
+         60% → 0.60
+         30% → 0.30
+          5% → 0.05
     """
 
     # ========================================================
@@ -90,7 +92,7 @@ class ComponentPropertyResolver:
 
 
     # ========================================================
-    # HAS COMPONENT PROPERTY
+    # PROPERTY CHECKS
     # ========================================================
 
     def has_component_property(
@@ -98,7 +100,7 @@ class ComponentPropertyResolver:
         key,
     ):
         """
-        Comprueba si la propiedad existe
+        Comprueba si existe una propiedad
         directamente en el componente.
         """
 
@@ -109,10 +111,6 @@ class ComponentPropertyResolver:
             key
         )
 
-
-    # ========================================================
-    # HAS FALLBACK PROPERTY
-    # ========================================================
 
     def has_fallback_property(
         self,
@@ -193,32 +191,6 @@ class ComponentPropertyResolver:
 
 
     # ========================================================
-    # FONT SIZE
-    # ========================================================
-
-    def resolve_font_size(
-        self,
-        default=None,
-    ):
-        """
-        Resuelve específicamente font_size.
-
-        La prioridad continúa siendo:
-
-            Component font_size
-                ↓
-            Resolver fallback
-                ↓
-            Default
-        """
-
-        return self.resolve(
-            "font_size",
-            default
-        )
-
-
-    # ========================================================
     # RESOLVE REQUIRED
     # ========================================================
 
@@ -259,18 +231,18 @@ class ComponentPropertyResolver:
         """
         Resuelve múltiples propiedades.
 
-        properties puede ser:
+        Lista / tupla:
 
             ["font_size", "color"]
 
-        o:
+        Diccionario:
 
             {
                 "font_size": 18,
-                "color": "white"
+                "color": "#FFFFFF"
             }
 
-        En el segundo caso, los valores funcionan
+        Los valores del diccionario funcionan
         como fallbacks.
         """
 
@@ -313,8 +285,249 @@ class ComponentPropertyResolver:
         )
 
 
+    # ========================================================
+    # VISUAL PROPERTY HELPERS
+    # ========================================================
+
+    def resolve_font_size(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "font_size",
+            default
+        )
+
+
+    def resolve_color(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "color",
+            default
+        )
+
+
+    def resolve_opacity(
+        self,
+        default=None,
+    ):
+        """
+        Resuelve opacity en escala 0.0–1.0.
+
+        También acepta temporalmente porcentajes
+        0–100 para facilitar la migración de valores
+        directamente medidos en KWGT.
+
+        Ejemplos:
+
+            100 → 1.00
+             86 → 0.86
+             60 → 0.60
+             30 → 0.30
+              5 → 0.05
+        """
+
+        value = self.resolve(
+            "opacity",
+            default
+        )
+
+        if value is None:
+            return None
+
+
+        try:
+
+            value = float(
+                value
+            )
+
+        except (
+            TypeError,
+            ValueError
+        ) as error:
+
+            raise TypeError(
+                f"Opacity must be numeric: {value}"
+            ) from error
+
+
+        # ====================================================
+        # KWGT PERCENTAGE → INTERNAL NORMALIZED VALUE
+        # ====================================================
+
+        if (
+            value > 1.0
+            and value <= 100.0
+        ):
+
+            value /= 100.0
+
+
+        if (
+            value < 0.0
+            or value > 1.0
+        ):
+
+            raise ValueError(
+                "Opacity must be between "
+                "0.0 and 1.0, or a percentage "
+                f"from 0 to 100: {value}"
+            )
+
+
+        return value
+
+
+    def resolve_visibility(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "visible",
+            default
+        )
+
+
+    def resolve_alignment(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "align",
+            default
+        )
+
+
+    def resolve_font_weight(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "font_weight",
+            default
+        )
+
+
+    def resolve_font_family(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "font_family",
+            default
+        )
+
+
+    def resolve_font_style(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "font_style",
+            default
+        )
+
+
+    def resolve_shape_type(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "shape_type",
+            default
+        )
+
+
+    def resolve_width(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "width",
+            default
+        )
+
+
+    def resolve_height(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "height",
+            default
+        )
+
+
+    def resolve_size(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "size",
+            default
+        )
+
+
+    def resolve_radius(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "radius",
+            default
+        )
+
+
+    def resolve_direction(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "direction",
+            default
+        )
+
+
+    def resolve_color_start(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "color_start",
+            default
+        )
+
+
+    def resolve_color_end(
+        self,
+        default=None,
+    ):
+
+        return self.resolve(
+            "color_end",
+            default
+        )
+
+
 # ============================================================
-# SIMPLE FUNCTION API
+# SIMPLE PROPERTY API
 # ============================================================
 
 def resolve_component_property(
@@ -323,7 +536,7 @@ def resolve_component_property(
     fallback=None,
 ):
     """
-    API simple para resolver una propiedad.
+    Resuelve una propiedad individual.
     """
 
     resolver = ComponentPropertyResolver(
@@ -337,42 +550,6 @@ def resolve_component_property(
 
 
 # ============================================================
-# FONT SIZE API
-# ============================================================
-
-def resolve_font_size(
-    component,
-    fallback=None,
-):
-    """
-    API específica para font_size.
-
-    Ejemplo:
-
-        resolve_font_size(
-            title_component,
-            18
-        )
-
-    Resultado:
-
-        Component font_size si existe.
-
-        De lo contrario:
-
-        fallback.
-    """
-
-    resolver = ComponentPropertyResolver(
-        component=component
-    )
-
-    return resolver.resolve_font_size(
-        fallback
-    )
-
-
-# ============================================================
 # MULTIPLE PROPERTY API
 # ============================================================
 
@@ -381,7 +558,7 @@ def resolve_component_properties(
     properties,
 ):
     """
-    Resuelve múltiples propiedades de un componente.
+    Resuelve múltiples propiedades.
     """
 
     resolver = ComponentPropertyResolver(
@@ -390,6 +567,28 @@ def resolve_component_properties(
 
     return resolver.resolve_many(
         properties
+    )
+
+
+# ============================================================
+# OPACITY API
+# ============================================================
+
+def resolve_component_opacity(
+    component,
+    fallback=None,
+):
+    """
+    Resuelve opacity usando la escala
+    interna 0.0–1.0.
+    """
+
+    resolver = ComponentPropertyResolver(
+        component=component
+    )
+
+    return resolver.resolve_opacity(
+        fallback
     )
 
 
@@ -403,9 +602,9 @@ if __name__ == "__main__":
 
 
     print()
-    print("=" * 55)
+    print("=" * 60)
     print("       COUNTDOWN OS — PROPERTY RESOLVER")
-    print("=" * 55)
+    print("=" * 60)
 
 
     # ========================================================
@@ -416,96 +615,92 @@ if __name__ == "__main__":
         "Title",
         properties={
             "type": "text",
-            "font_size": 24
-        }
-    )
-
-
-    # ========================================================
-    # COMPONENT PRIORITY
-    # ========================================================
-
-    value = resolve_component_property(
-        title,
-        "font_size",
-        18
-    )
-
-    print()
-    print(
-        f"Component property: {value}"
-    )
-
-
-    # ========================================================
-    # FONT SIZE API
-    # ========================================================
-
-    font_size = resolve_font_size(
-        title,
-        18
-    )
-
-    print(
-        f"Resolved font_size: {font_size}"
-    )
-
-
-    # ========================================================
-    # FALLBACK
-    # ========================================================
-
-    fallback_value = resolve_component_property(
-        title,
-        "color",
-        "white"
-    )
-
-    print(
-        f"Fallback property: {fallback_value}"
-    )
-
-
-    # ========================================================
-    # DEFAULT
-    # ========================================================
-
-    default_value = resolve_component_property(
-        title,
-        "opacity"
-    )
-
-    print(
-        f"Missing property: {default_value}"
-    )
-
-
-    # ========================================================
-    # MULTIPLE
-    # ========================================================
-
-    properties = resolve_component_properties(
-        title,
-        {
             "font_size": 18,
-            "color": "white",
-            "opacity": 1.0
+            "color": "#FFFFFF",
+            "opacity": 0.86,
+            "visible": True,
+            "align": "left"
         }
     )
 
-    print()
-    print("Resolved properties:")
 
-    for key, value in properties.items():
+    resolver = ComponentPropertyResolver(
+        component=title
+    )
+
+
+    # ========================================================
+    # VISUAL PROPERTIES
+    # ========================================================
+
+    print()
+
+    print(
+        f"Font size: "
+        f"{resolver.resolve_font_size()}"
+    )
+
+    print(
+        f"Color: "
+        f"{resolver.resolve_color()}"
+    )
+
+    print(
+        f"Opacity: "
+        f"{resolver.resolve_opacity()}"
+    )
+
+    print(
+        f"Visible: "
+        f"{resolver.resolve_visibility()}"
+    )
+
+    print(
+        f"Align: "
+        f"{resolver.resolve_alignment()}"
+    )
+
+    print(
+        f"Font weight: "
+        f"{resolver.resolve_font_weight()}"
+    )
+
+
+    # ========================================================
+    # OPACITY NORMALIZATION
+    # ========================================================
+
+    print()
+    print(
+        "KWGT opacity normalization:"
+    )
+
+
+    for percentage in [
+        100,
+        86,
+        60,
+        30,
+        5
+    ]:
+
+        resolver = ComponentPropertyResolver(
+            fallback={
+                "opacity": percentage
+            }
+        )
+
+        normalized = resolver.resolve_opacity()
 
         print(
-            f"  {key}: {value}"
+            f"  {percentage}% → "
+            f"{normalized:.2f}"
         )
 
 
     print()
     print(
-        "🟢 Property Resolver font_size migration ready"
+        "🟢 Property Resolver ready"
     )
 
     print()
