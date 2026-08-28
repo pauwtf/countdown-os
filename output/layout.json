@@ -26,7 +26,9 @@
         "BackgroundShape": {
           "type": "rectangle",
           "width": 400,
-          "height": 200
+          "height": 200,
+          "opacity": 1.0,
+          "visible": true
         },
         "kwgt_position": {
           "x_right": 0.0,
@@ -57,8 +59,13 @@
             "x": 0,
             "y": 0
           },
+          "font_family": "Roboto",
           "font_size": 240,
-          "value": "♡",
+          "color": "#FFFFFF",
+          "opacity": 0.3,
+          "visible": true,
+          "align": "left",
+          "value": "♥",
           "kwgt_position": {
             "x_right": 0.0,
             "x_left": 0.0,
@@ -87,7 +94,12 @@
           "y_down": 125.0
         },
         "TitleText": {
+          "font_family": "Cutive Mono",
           "font_size": 18,
+          "color": "#FFFFFF",
+          "opacity": 0.86,
+          "visible": true,
+          "align": "left",
           "value": "UNTIL ALEX"
         }
       },
@@ -103,7 +115,12 @@
           "y_down": 0.0
         },
         "DaysText": {
+          "font_family": "Cutive Mono",
           "font_size": 15,
+          "color": "#FFFFFF",
+          "opacity": 1.0,
+          "visible": true,
+          "align": "left",
           "value": "days"
         }
       }
@@ -122,8 +139,11 @@
         },
         "GradientVerticalShape": {
           "type": "rectangle",
-          "width": 400,
-          "height": 200
+          "width": 380,
+          "height": 180,
+          "radius": 20,
+          "direction": "vertical",
+          "visible": true
         }
       },
       "Horizontal": {
@@ -139,8 +159,11 @@
         },
         "GradientHorizontalShape": {
           "type": "rectangle",
-          "width": 400,
-          "height": 200
+          "width": 380,
+          "height": 180,
+          "radius": 20,
+          "direction": "horizontal",
+          "visible": true
         }
       }
     },
@@ -167,8 +190,13 @@
           "y_down": 0.0
         },
         "DaysRemainingText": {
+          "font_family": "Cutive Mono",
           "font_size": 100,
-          "value": "39"
+          "color": "#FFFFFF",
+          "opacity": 1.0,
+          "visible": true,
+          "align": "left",
+          "value": "38"
         }
       }
     },
@@ -208,7 +236,11 @@
           "JourneyLineShape": {
             "type": "rectangle",
             "width": 258,
-            "height": 1
+            "height": 1,
+            "radius": 20,
+            "color": "#FFFFFF",
+            "opacity": 0.6,
+            "visible": true
           }
         },
         "Origin": {
@@ -224,20 +256,28 @@
           },
           "OriginShape": {
             "type": "circle",
-            "size": 5
+            "size": 5,
+            "color": "#FFFFFF",
+            "opacity": 1.0,
+            "visible": true
           }
         },
         "Plane": {
-          "x_left": 375.1428571428571,
+          "x_left": 378.85714285714283,
           "x_right": 275,
           "y": 93,
           "kwgt_position": {
-            "x_left": 375.1428571428571,
+            "x_left": 378.85714285714283,
             "x_right": 275.0,
             "y": 93.0
           },
           "PlaneText": {
+            "font_family": "Cutive Mono",
             "font_size": 30,
+            "color": "#FFFFFF",
+            "opacity": 1.0,
+            "visible": true,
+            "align": "left",
             "value": "✈"
           }
         },
@@ -258,7 +298,12 @@
               "y": 0
             },
             "DestinationText": {
+              "font_family": "Cutive Mono",
               "font_size": 14,
+              "color": "#FFFFFF",
+              "opacity": 1.0,
+              "visible": true,
+              "align": "left",
               "value": "♡"
             },
             "kwgt_position": {
@@ -274,7 +319,12 @@
               "y": 0
             },
             "ArrivalText": {
+              "font_family": "Cutive Mono",
               "font_size": 14,
+              "color": "#FFFFFF",
+              "opacity": 1.0,
+              "visible": true,
+              "align": "left",
               "value": "❤️"
             },
             "kwgt_position": {
@@ -300,6 +350,10 @@
       },
       "FooterText": {
         "font_size": 10,
+        "color": "#FFFFFF",
+        "opacity": 1.0,
+        "visible": true,
+        "align": "left",
         "value": "Comprar cacao"
       }
     },
