@@ -327,7 +327,7 @@ def build_countdown_tree():
         properties={
             "type": "text",
 
-            "value": "♥",
+            "value": "♡",
 
             "font_family": "Roboto",
 
