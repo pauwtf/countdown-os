@@ -196,7 +196,7 @@
           "opacity": 1.0,
           "visible": true,
           "align": "left",
-          "value": "1"
+          "value": "0"
         }
       }
     },
@@ -263,11 +263,11 @@
           }
         },
         "Plane": {
-          "x_left": 516.2857142857143,
+          "x_left": 520.0,
           "x_right": 275,
           "y": 93,
           "kwgt_position": {
-            "x_left": 516.2857142857143,
+            "x_left": 520.0,
             "x_right": 275.0,
             "y": 93.0
           },
