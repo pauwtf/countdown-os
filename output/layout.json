@@ -100,7 +100,7 @@
           "opacity": 0.86,
           "visible": true,
           "align": "left",
-          "value": "UNTIL ALEX"
+          "value": "Mi cumpleaños / Navidad"
         }
       },
       "Days": {
@@ -196,7 +196,7 @@
           "opacity": 1.0,
           "visible": true,
           "align": "left",
-          "value": "-37"
+          "value": "43"
         }
       }
     },
@@ -263,11 +263,11 @@
           }
         },
         "Plane": {
-          "x_left": 520.0,
+          "x_left": 0.0,
           "x_right": 275,
           "y": 93,
           "kwgt_position": {
-            "x_left": 520.0,
+            "x_left": 0.0,
             "x_right": 275.0,
             "y": 93.0
           },
@@ -354,7 +354,7 @@
         "opacity": 1.0,
         "visible": true,
         "align": "left",
-        "value": "Comprar cacao"
+        "value": ""
       }
     },
     "test": {

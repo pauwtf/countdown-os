@@ -1,15 +1,15 @@
 {
-  "title": "UNTIL ALEX",
-  "start_date": "2026-05-18",
-  "target_date": "2026-10-05",
-  "days_remaining": -37,
-  "progress": 1,
-  "category": "♥️ Love",
-  "icon": "♡",
-  "status": "COMPLETED",
-  "notes": "Comprar cacao",
-  "titleDisplay": "UNTIL ALEX",
-  "daysDisplay": "-37",
-  "progressDisplay": "100%",
-  "notesDisplay": "Comprar cacao"
+  "title": "Mi cumpleaños / Navidad",
+  "start_date": null,
+  "target_date": "2026-12-25",
+  "days_remaining": 43,
+  "progress": null,
+  "category": "🎄 Christmas",
+  "icon": "🎄",
+  "status": "ACTIVE",
+  "notes": "",
+  "titleDisplay": "Mi cumpleaños / Navidad",
+  "daysDisplay": "43",
+  "progressDisplay": "",
+  "notesDisplay": ""
 }
